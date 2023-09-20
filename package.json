@@ -1,0 +1,24 @@
+{
+  "name": "sos",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vicons/material": "^0.12.0",
+    "naive-ui": "^2.34.4",
+    "register-service-worker": "^1.7.2",
+    "vue": "^3.3.4",
+    "vue-meta": "^3.0.0-alpha.10",
+    "vue-router": "^4.2.4",
+    "vuex": "^4.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.4.5"
+  }
+}
