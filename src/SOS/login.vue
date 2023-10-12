@@ -27,6 +27,14 @@
               </div>
             </n-col>
           </n-row>
+          <n-space horizontal item-style="display: flex;" align="center">
+            <p>New Here?</p>
+            <router-link to="/register" #="{ navigate, href }" custom style="margin-right:20px;">
+              <n-a :href="href" @click="navigate">
+                <n-text class="nav">Sign Up</n-text>
+              </n-a>
+            </router-link>
+          </n-space>
         </n-form>
       </n-card>
     </n-space>

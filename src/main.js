@@ -5,6 +5,7 @@ import { createMetaManager, plugin as metaPlugin } from 'vue-meta'
 import store from './store'
 import SOS from './SOS/SOS.vue'
 import {FontAwesomeIcon} from "./plugins/font-awesome";
+import './style.css'
 
 const metaManager = createMetaManager();
 

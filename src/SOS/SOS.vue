@@ -39,12 +39,4 @@ export default {
   background-color: rgb(239, 222, 205);
 }
 
-@font-face {
-  font-family: 'Montserrat-Regular';
-  src: url('Montserrat-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-
 </style>
