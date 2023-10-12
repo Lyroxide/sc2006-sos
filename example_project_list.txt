@@ -1,2 +1,0 @@
-Node JS React Example:
-https://github.com/basir/node-react-ecommerce

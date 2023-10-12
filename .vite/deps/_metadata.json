@@ -1,0 +1,80 @@
+{
+  "hash": "3bff89a1",
+  "browserHash": "8b7fdbba",
+  "optimized": {
+    "@fortawesome/fontawesome-svg-core": {
+      "src": "../../node_modules/@fortawesome/fontawesome-svg-core/index.mjs",
+      "file": "@fortawesome_fontawesome-svg-core.js",
+      "fileHash": "93d84ccf",
+      "needsInterop": false
+    },
+    "@fortawesome/free-solid-svg-icons": {
+      "src": "../../node_modules/@fortawesome/free-solid-svg-icons/index.mjs",
+      "file": "@fortawesome_free-solid-svg-icons.js",
+      "fileHash": "d864fb1e",
+      "needsInterop": false
+    },
+    "@fortawesome/vue-fontawesome": {
+      "src": "../../node_modules/@fortawesome/vue-fontawesome/index.es.js",
+      "file": "@fortawesome_vue-fontawesome.js",
+      "fileHash": "7b998765",
+      "needsInterop": false
+    },
+    "@vicons/fa": {
+      "src": "../../node_modules/@vicons/fa/es/index.js",
+      "file": "@vicons_fa.js",
+      "fileHash": "3e7781ae",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "d01e4930",
+      "needsInterop": false
+    },
+    "naive-ui": {
+      "src": "../../node_modules/naive-ui/es/index.js",
+      "file": "naive-ui.js",
+      "fileHash": "ad686c2b",
+      "needsInterop": false
+    },
+    "vue": {
+      "src": "../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "8f745970",
+      "needsInterop": false
+    },
+    "vue-meta": {
+      "src": "../../node_modules/vue-meta/dist/vue-meta.esm-browser.min.js",
+      "file": "vue-meta.js",
+      "fileHash": "6b1271e9",
+      "needsInterop": false
+    },
+    "vue-router": {
+      "src": "../../node_modules/vue-router/dist/vue-router.mjs",
+      "file": "vue-router.js",
+      "fileHash": "8e26caa9",
+      "needsInterop": false
+    },
+    "vuex": {
+      "src": "../../node_modules/vuex/dist/vuex.esm-bundler.js",
+      "file": "vuex.js",
+      "fileHash": "bd66bb52",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-RZIAPKJ3": {
+      "file": "chunk-RZIAPKJ3.js"
+    },
+    "chunk-3GOOGFKQ": {
+      "file": "chunk-3GOOGFKQ.js"
+    },
+    "chunk-QNGQRF5U": {
+      "file": "chunk-QNGQRF5U.js"
+    },
+    "chunk-ZC22LKFR": {
+      "file": "chunk-ZC22LKFR.js"
+    }
+  }
+}
