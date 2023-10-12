@@ -2,18 +2,15 @@
   <n-layout-header >
     <n-space item-style="display: flex; " justify="space-between" align="center" class="header" style="flex-warp: nowarp;">
       <n-space item-style="display: flex;" align="center">
-        <n-a @click="goToDashboard">
-          <n-image src="" style="width:40px;height:40px"  preview-disabled/>
-        </n-a>
 
-        <n-space item-style="display: flex;" align="center" >
-          <n-a @click="goToDashboard">
-            <n-image src="" style="height:30px"  preview-disabled class="logo"/>
+        <router-link to="/" #="{ navigate, href }" custom>
+          <n-a :href="href" @click="navigate">
+            <n-text class="nav">Let's Makan Together</n-text>
           </n-a>
-        </n-space>
+        </router-link>
 
       </n-space>
-      <template v-if="isAuthenticated">
+      <template v-if="currentUser">
         <n-space justify="end" item-style="display: flex;" align="center">
           <router-link to="/profile" #="{ navigate, href }" custom style="margin-right:20px;">
             <n-a :href="href" @click="navigate">
@@ -40,26 +37,19 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { useRouter as router } from 'vue-router';
-
 export default {
   computed: {
-    ...mapGetters(["currentUser", "isAuthenticated"])
+    currentUser() {
+      return this.$store.state.auth.user;
+    }
   },
-  methods:{
-    signOut() {
-      this.$store.commit('signout');
-    },
-    goToDashboard() {
-      if (this.isAuthenticated) {
-        router.push('/dashboard')
-      } else {
-        router.push('/')
-      }
+  methods: {
+    logOut() {
+      this.$store.dispatch('auth/logout');
+      this.$router.push('/login');
     }
   }
-}
+};
 </script>
 
 <style>
