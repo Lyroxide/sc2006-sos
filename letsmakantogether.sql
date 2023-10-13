@@ -1,5 +1,7 @@
+/*======================================================*/
+/*								                                      */
 /*  Database Script for setting up the database         */
-/*								                        */
+/*								                                      */
 /*======================================================*/
 DROP Database LetsMakanTogether
 
@@ -147,7 +149,7 @@ CREATE TABLE dbo.GroupChatMessages
   CONSTRAINT FK_GroupChatMessages_UserID FOREIGN KEY (UserID)
   REFERENCES dbo.User(UserID)
 )
-
+GO
 
 /* Table: GroupMember */
 CREATE TABLE dbo.GroupMember
