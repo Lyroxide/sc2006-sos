@@ -1,112 +1,61 @@
-import ApiService from "@/common/api.service";
-import JwtService from "@/common/jwt.service";
-import {
-    LOGIN,
-    LOGOUT,
-    REGISTER,
-    CHECK_AUTH,
-    UPDATE_USER
-} from "./actions.type";
-import { SET_AUTH, PURGE_AUTH, SET_ERROR } from "./mutations.type";
+import AuthService from '../services/auth.service';
 
-const state = {
-    errors: null,
-    user: {},
-    isAuthenticated: !!JwtService.getToken()
-};
+const user = JSON.parse(localStorage.getItem('user'));
+const initialState = user
+    ? { status: { loggedIn: true }, user }
+    : { status: { loggedIn: false }, user: null };
 
-const getters = {
-    currentUser(state) {
-        return state.user;
-    },
-    isAuthenticated(state) {
-        return state.isAuthenticated;
-    }
-};
-
-const actions = {
-    [LOGIN](context, credentials) {
-        return new Promise(resolve => {
-            ApiService.post("users/login", { user: credentials })
-                .then(({ data }) => {
-                    context.commit(SET_AUTH, data.user);
-                    resolve(data);
-                })
-                .catch(({ response }) => {
-                    context.commit(SET_ERROR, response.data.errors);
-                });
-        });
-    },
-    [LOGOUT](context) {
-        context.commit(PURGE_AUTH);
-    },
-    [REGISTER](context, credentials) {
-        return new Promise((resolve, reject) => {
-            ApiService.post("users", { user: credentials })
-                .then(({ data }) => {
-                    context.commit(SET_AUTH, data.user);
-                    resolve(data);
-                })
-                .catch(({ response }) => {
-                    context.commit(SET_ERROR, response.data.errors);
-                    reject(response);
-                });
-        });
-    },
-    [CHECK_AUTH](context) {
-        if (JwtService.getToken()) {
-            ApiService.setHeader();
-            ApiService.get("user")
-                .then(({ data }) => {
-                    context.commit(SET_AUTH, data.user);
-                })
-                .catch(({ response }) => {
-                    context.commit(SET_ERROR, response.data.errors);
-                });
-        } else {
-            context.commit(PURGE_AUTH);
+export const auth = {
+    namespaced: true,
+    state: initialState,
+    actions: {
+        login({ commit }, user) {
+            return AuthService.login(user).then(
+                user => {
+                    commit('loginSuccess', user);
+                    return Promise.resolve(user);
+                },
+                error => {
+                    commit('loginFailure');
+                    return Promise.reject(error);
+                }
+            );
+        },
+        logout({ commit }) {
+            AuthService.logout();
+            commit('logout');
+        },
+        register({ commit }, user) {
+            return AuthService.register(user).then(
+                response => {
+                    commit('registerSuccess');
+                    return Promise.resolve(response.data);
+                },
+                error => {
+                    commit('registerFailure');
+                    return Promise.reject(error);
+                }
+            );
         }
     },
-    [UPDATE_USER](context, payload) {
-        const { email, username, password, image, bio } = payload;
-        const user = {
-            email,
-            username,
-            bio,
-            image
-        };
-        if (password) {
-            user.password = password;
+    mutations: {
+        loginSuccess(state, user) {
+            state.status.loggedIn = true;
+            state.user = user;
+        },
+        loginFailure(state) {
+            state.status.loggedIn = false;
+            state.user = null;
+        },
+        logout(state) {
+            state.status.loggedIn = false;
+            state.user = null;
+        },
+        registerSuccess(state) {
+            state.status.loggedIn = false;
+        },
+        registerFailure(state) {
+            state.status.loggedIn = false;
         }
-
-        return ApiService.put("user", user).then(({ data }) => {
-            context.commit(SET_AUTH, data.user);
-            return data;
-        });
     }
-};
-
-const mutations = {
-    [SET_ERROR](state, error) {
-        state.errors = error;
-    },
-    [SET_AUTH](state, user) {
-        state.isAuthenticated = true;
-        state.user = user;
-        state.errors = {};
-        JwtService.saveToken(state.user.token);
-    },
-    [PURGE_AUTH](state) {
-        state.isAuthenticated = false;
-        state.user = {};
-        state.errors = {};
-        JwtService.destroyToken();
-    }
-};
-
-export default {
-    state,
-    actions,
-    mutations,
-    getters
 };
