@@ -5,5 +5,10 @@ Pre-req:
 	- sudo systemctl disable apache2
 	- sudo systemctl stop apache2
 
-Installation:
+Others:
+- SSL to enabled HTTPs settings
 
+Installation:
+	- Run bash script to run
+
+Path Settings:
