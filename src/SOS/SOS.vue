@@ -33,10 +33,20 @@ export default {
 </script>
 
 <style>
-
 .site {
-  height: 100vh;
+  display: flex;
+  flex-direction: column; /* make main axis vertical */
+  min-height: 100vh; /* minimum height of site */
   background-color: rgb(239, 222, 205);
 }
 
+.site > * {
+  flex-shrink: 0; /* prevent flex items from being smaller than content */
+}
+
+/* all your inner pages here */
+router-view {
+  flex-grow: 1; /* consume all available free space */
+  overflow:auto; /* add scroll to router-view content if needed instead of the whole page */
+}
 </style>

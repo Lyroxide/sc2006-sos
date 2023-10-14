@@ -6,6 +6,8 @@ import store from './store'
 import SOS from './SOS/SOS.vue'
 import {FontAwesomeIcon} from "./plugins/font-awesome";
 import './style.css'
+import 'bootstrap'
+
 
 const metaManager = createMetaManager();
 
