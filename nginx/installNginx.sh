@@ -23,6 +23,10 @@ fi
 
 sudo apt update
 sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common nginx
-
+sudo cp nginx.conf /etc/nginx/nginx.conf
+sudo cp letsmakantogether.com /etc/nginx/sites-available/letsmakantogether.com
+sudo rm -f /etc/nginx/sites-enabled/letsmakantogether.com
+sudo cp hosts /etc/hosts
+#sudo ln -s /etc/nginx/sites-available/letsmakantogether.com /etc/nginx/sites-enabled/letsmakantogether.com
 
 

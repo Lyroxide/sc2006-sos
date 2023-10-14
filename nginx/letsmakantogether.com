@@ -2,6 +2,8 @@ server {
     listen 80;
     listen [::]:80;
     server_name letsmakantogether.com www.letsmakantogether.com;
+    #root /var/www/html/letsmakantogether;
+    #index index.html index.nginx-debian.html;
 
     return 301 https://$server_name;
 }
@@ -13,9 +15,9 @@ server {
     include /etc/nginx/snippets/self-signed.conf;
     include /etc/nginx/snippets/ssl-params.conf;
 
-    server_name blackwidow.com www.blackwidow.com;
+    server_name letsmakantogether.com www.letsmakantogether.com;
 
-    root /var/www/html/angular;
+    root /var/www/html/letsmakantogether;
     index index.html index.nginx-debian.html;
 
     location /api {
