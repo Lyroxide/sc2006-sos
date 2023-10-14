@@ -1,1 +1,9 @@
 Documentation for Nginx
+
+Pre-req:
+- Disable Apache Web Server if installed
+	- sudo systemctl disable apache2
+	- sudo systemctl stop apache2
+
+Installation:
+
