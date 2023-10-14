@@ -32,9 +32,12 @@ export default {
 </script>
 
 <style>
-.footer{
-  margin: 5%;
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
   padding: 20px;
+  background-color: #f8f9fa;
 }
 
 </style>
