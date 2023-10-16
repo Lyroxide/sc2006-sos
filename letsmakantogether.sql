@@ -175,7 +175,7 @@ CREATE TABLE dbo.RegionPreference
 (
   [RegionPreferenceID]        int                   IDENTITY (1,1),
   [RegionType]                varchar(255)          NOT NULL,
-
+  
   CONSTRAINT PK_Region_Preference PRIMARY KEY NONCLUSTERED (RegionPreferenceID)
 )
 GO
@@ -416,4 +416,3 @@ SET IDENTITY_INSERT [dbo].[User] ON
 INSERT [dbo].[User] ([UserID], [UserName], [Name], [Email], [Age], [Gender], [Password]) VALUES (1, 'Sanrio123', 'Cinnamon', 'sanrio_cinnamon@gmail.com', 18, 'F', '123456')
 INSERT [dbo].[User] ([UserID], [UserName], [Name], [Email], [Age], [Gender], [Password]) VALUES (2, 'Tanny23', 'Tom Tan', 'tantom@gmail.com', 24, 'M', 'ilovepeanuts')
 SET IDENTITY_INSERT [dbo].[User] OFF
-
