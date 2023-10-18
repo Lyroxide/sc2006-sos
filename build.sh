@@ -1,4 +1,5 @@
 #!/bin/bash
 
 npm i
-npm run build --outputPath=/var/www/html/letsmakantogether
+npm run build
+sudo cp -r ./dist /var/www/html/letsmakantogether
