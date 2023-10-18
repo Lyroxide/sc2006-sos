@@ -4,6 +4,7 @@ import Home from '../SOS/about.vue'
 import Login from '../SOS/login.vue'
 import Footer from '../SOS/footer.vue'
 import Header from '../SOS/header.vue'
+import FindGroups from '../SOS/findgroups.vue'
 
 
 const routes = [
@@ -26,6 +27,11 @@ const routes = [
         path: "/header",
         name: "header",
         component: Header,
+    },
+    {
+        path: "/findgroups",
+        name: "findgroups",
+        component: FindGroups,
     }
 ];
 

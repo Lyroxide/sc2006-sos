@@ -12,6 +12,14 @@ class UserService {
         return axios.get(API_URL + 'user', { headers: authHeader() });
     }
 
+    getGroupDetails() {
+        return axios.get(API_URL + 'group', { headers: authHeader() });
+    }
+
+    joinGroup(groupId) {
+        return axios.post(API_URL + `group/join/${groupId}`, {}, {headers: authHeader()});
+    }
+
 }
 
 export default new UserService();
