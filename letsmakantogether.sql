@@ -415,4 +415,118 @@ GO
 SET IDENTITY_INSERT [dbo].[User] ON 
 INSERT [dbo].[User] ([UserID], [UserName], [Name], [Email], [Age], [Gender], [Password]) VALUES (1, 'Sanrio123', 'Cinnamon', 'sanrio_cinnamon@gmail.com', 18, 'F', '123456')
 INSERT [dbo].[User] ([UserID], [UserName], [Name], [Email], [Age], [Gender], [Password]) VALUES (2, 'Tanny23', 'Tom Tan', 'tantom@gmail.com', 24, 'M', 'ilovepeanuts')
+INSERT [dbo].[User] ([UserID], [UserName], [Name], [Email], [Age], [Gender], [Password]) VALUES (3, 'Pancake77', 'Best Pancake', 'pancakemaybe@gmail.com', 22, 'M', 'ilovepancakes17')
+INSERT [dbo].[User] ([UserID], [UserName], [Name], [Email], [Age], [Gender], [Password]) VALUES (4, 'Waffle12', 'Best Waffle', 'wafflechoco@gmail.com', 25, 'M', 'ilovechoco12')
 SET IDENTITY_INSERT [dbo].[User] OFF
+
+SET IDENTITY_INSERT [dbo].[FoodPreference] ON
+INSERT [dbo].[FoodPreference] ([FoodPreferenceID], [FoodType]) VALUES (1, 'Western')
+INSERT [dbo].[FoodPreference] ([FoodPreferenceID], [FoodType]) VALUES (2, 'Chinese')
+INSERT [dbo].[FoodPreference] ([FoodPreferenceID], [FoodType]) VALUES (3, 'Japanese')
+INSERT [dbo].[FoodPreference] ([FoodPreferenceID], [FoodType]) VALUES (4, 'Korean')
+SET IDENTITY_INSERT [dbo].[FoodPreference] OFF
+
+SET IDENTITY_INSERT [dbo].[RegionPreference] ON
+INSERT [dbo].[RegionPreference] ([RegionPreferenceID], [RegionType]) VALUES (1, 'North')
+INSERT [dbo].[RegionPreference] ([RegionPreferenceID], [RegionType]) VALUES (2, 'South')
+INSERT [dbo].[RegionPreference] ([RegionPreferenceID], [RegionType]) VALUES (3, 'East')
+INSERT [dbo].[RegionPreference] ([RegionPreferenceID], [RegionType]) VALUES (4, 'West')
+SET IDENTITY_INSERT [dbo].[RegionPreference] OFF
+
+SET IDENTITY_INSERT [dbo].[UserPicture] ON
+INSERT [dbo].[UserPicture] ([PictureID], [PictureFile], [UserID]) VALUES (1, 'Chrysanthemum.jpg', 1)
+INSERT [dbo].[UserPicture] ([PictureID], [PictureFile], [UserID]) VALUES (2, 'Desert.jpg', 2)
+INSERT [dbo].[UserPicture] ([PictureID], [PictureFile], [UserID]) VALUES (3, 'Hydrangeas.jpg', 3)
+INSERT [dbo].[UserPicture] ([PictureID], [PictureFile], [UserID]) VALUES (4, 'Jellyfish.jpg', 4)
+SET IDENTITY_INSERT [dbo].[UserPicture] OFF
+
+SET IDENTITY_INSERT [dbo].[UserFoodPreference] ON
+INSERT [dbo].[UserFoodPreference] ([UserFoodPreferenceID], [UserID], [FoodPreferenceID]) VALUES (1, 1, 1)
+INSERT [dbo].[UserFoodPreference] ([UserFoodPreferenceID], [UserID], [FoodPreferenceID]) VALUES (2, 1, 2)
+INSERT [dbo].[UserFoodPreference] ([UserFoodPreferenceID], [UserID], [FoodPreferenceID]) VALUES (3, 2, 3)
+INSERT [dbo].[UserFoodPreference] ([UserFoodPreferenceID], [UserID], [FoodPreferenceID]) VALUES (4, 3, 4)
+SET IDENTITY_INSERT [dbo].[UserFoodPreference] OFF
+
+SET IDENTITY_INSERT [dbo].[UserRegionPreference] ON
+INSERT [dbo].[UserRegionPreference] ([UserRegionPreferenceID], [UserID], [RegionPreferenceID]) VALUES (1, 1, 1)
+INSERT [dbo].[UserRegionPreference] ([UserRegionPreferenceID], [UserID], [RegionPreferenceID]) VALUES (2, 1, 2)
+INSERT [dbo].[UserRegionPreference] ([UserRegionPreferenceID], [UserID], [RegionPreferenceID]) VALUES (3, 2, 3)
+INSERT [dbo].[UserRegionPreference] ([UserRegionPreferenceID], [UserID], [RegionPreferenceID]) VALUES (4, 3, 4)
+SET IDENTITY_INSERT [dbo].[UserRegionPreference] OFF
+
+SET IDENTITY_INSERT [dbo].[Group] ON
+INSERT [dbo].[Group] ([GroupID], [GroupName], [GroupDesc], [Capacity], [GroupDate]) VALUES (1, 'Western Food Lovers', 'For people who love western food', 4, '26-Apr-2019')
+INSERT [dbo].[Group] ([GroupID], [GroupName], [GroupDesc], [Capacity], [GroupDate]) VALUES (2, 'Chinese Food Lovers', 'For people who love chinese food', 4, '28-Apr-2019')
+INSERT [dbo].[Group] ([GroupID], [GroupName], [GroupDesc], [Capacity], [GroupDate]) VALUES (3, 'Japanese Food Lovers', 'For people who love japanese food', 4, '30-Apr-2019')
+INSERT [dbo].[Group] ([GroupID], [GroupName], [GroupDesc], [Capacity], [GroupDate]) VALUES (4, 'Korean Food Lovers', 'For people who love korean food', 4, '02-May-2019')
+SET IDENTITY_INSERT [dbo].[Group] OFF
+
+SET IDENTITY_INSERT [dbo].[GroupChat] ON
+INSERT [dbo].[GroupChat] ([GroupChatID], [GroupID], [UserID]) VALUES (1, 1, 1)
+INSERT [dbo].[GroupChat] ([GroupChatID], [GroupID], [UserID]) VALUES (2, 2, 2)
+INSERT [dbo].[GroupChat] ([GroupChatID], [GroupID], [UserID]) VALUES (3, 3, 3)
+INSERT [dbo].[GroupChat] ([GroupChatID], [GroupID], [UserID]) VALUES (4, 4, 4)
+SET IDENTITY_INSERT [dbo].[GroupChat] OFF
+
+SET IDENTITY_INSERT [dbo].[GroupChatMessages] ON
+INSERT [dbo].[GroupChatMessages] ([GroupChatMessagesID], [GroupChatID], [UserID], [ChatDate], [ChatMessage], [Pinned]) VALUES (1, 1, 1, '26-Apr-2019', 'Hi everyone!', 'N')
+INSERT [dbo].[GroupChatMessages] ([GroupChatMessagesID], [GroupChatID], [UserID], [ChatDate], [ChatMessage], [Pinned]) VALUES (2, 2, 2, '28-Apr-2019', 'Hii everyone!', 'N')
+INSERT [dbo].[GroupChatMessages] ([GroupChatMessagesID], [GroupChatID], [UserID], [ChatDate], [ChatMessage], [Pinned]) VALUES (3, 3, 3, '30-Apr-2019', 'Hello everyone!', 'N')
+INSERT [dbo].[GroupChatMessages] ([GroupChatMessagesID], [GroupChatID], [UserID], [ChatDate], [ChatMessage], [Pinned]) VALUES (4, 4, 4, '02-May-2019', 'Helloo everyone!', 'N')
+SET IDENTITY_INSERT [dbo].[GroupChatMessages] OFF
+
+SET IDENTITY_INSERT [dbo].[GroupMember] ON
+INSERT [dbo].[GroupMember] ([GroupMemberID], [UserID], [GroupID]) VALUES (1, 1, 1)
+INSERT [dbo].[GroupMember] ([GroupMemberID], [UserID], [GroupID]) VALUES (2, 2, 2)
+INSERT [dbo].[GroupMember] ([GroupMemberID], [UserID], [GroupID]) VALUES (3, 3, 3)
+INSERT [dbo].[GroupMember] ([GroupMemberID], [UserID], [GroupID]) VALUES (4, 4, 4)
+SET IDENTITY_INSERT [dbo].[GroupMember] OFF
+
+SET IDENTITY_INSERT [dbo].[GroupPicture] ON
+INSERT [dbo].[GroupPicture] ([PictureID], [GroupID], [PictureFile]) VALUES (1, 1, 'Chrysanthemum.jpg')
+INSERT [dbo].[GroupPicture] ([PictureID], [GroupID], [PictureFile]) VALUES (2, 2, 'Desert.jpg')
+INSERT [dbo].[GroupPicture] ([PictureID], [GroupID], [PictureFile]) VALUES (3, 3, 'Hydrangeas.jpg')
+INSERT [dbo].[GroupPicture] ([PictureID], [GroupID], [PictureFile]) VALUES (4, 4, 'Jellyfish.jpg')
+SET IDENTITY_INSERT [dbo].[GroupPicture] OFF
+
+SET IDENTITY_INSERT [dbo].[GroupFoodPreference] ON
+INSERT [dbo].[GroupFoodPreference] ([GroupFoodPreferenceID], [GroupID], [FoodPreferenceID]) VALUES (1, 1, 1)
+INSERT [dbo].[GroupFoodPreference] ([GroupFoodPreferenceID], [GroupID], [FoodPreferenceID]) VALUES (2, 1, 2)
+INSERT [dbo].[GroupFoodPreference] ([GroupFoodPreferenceID], [GroupID], [FoodPreferenceID]) VALUES (3, 2, 3)
+INSERT [dbo].[GroupFoodPreference] ([GroupFoodPreferenceID], [GroupID], [FoodPreferenceID]) VALUES (4, 3, 4)
+SET IDENTITY_INSERT [dbo].[GroupFoodPreference] OFF
+
+SET IDENTITY_INSERT [dbo].[GroupRegionPreference] ON
+INSERT [dbo].[GroupRegionPreference] ([GroupRegionPreferenceID], [GroupID], [RegionPreferenceID]) VALUES (1, 1, 1)
+INSERT [dbo].[GroupRegionPreference] ([GroupRegionPreferenceID], [GroupID], [RegionPreferenceID]) VALUES (2, 1, 2)
+INSERT [dbo].[GroupRegionPreference] ([GroupRegionPreferenceID], [GroupID], [RegionPreferenceID]) VALUES (3, 2, 3)
+INSERT [dbo].[GroupRegionPreference] ([GroupRegionPreferenceID], [GroupID], [RegionPreferenceID]) VALUES (4, 3, 4)
+SET IDENTITY_INSERT [dbo].[GroupRegionPreference] OFF
+
+SET IDENTITY_INSERT [dbo].[Meeting] ON
+INSERT [dbo].[Meeting] ([MeetingID], [GroupID], [MeetingDate], [MeetingDescription]) VALUES (1, 1, '26-Apr-2019', 'Western Food Lovers')
+INSERT [dbo].[Meeting] ([MeetingID], [GroupID], [MeetingDate], [MeetingDescription]) VALUES (2, 2, '28-Apr-2019', 'Chinese Food Lovers')
+INSERT [dbo].[Meeting] ([MeetingID], [GroupID], [MeetingDate], [MeetingDescription]) VALUES (3, 3, '30-Apr-2019', 'Japanese Food Lovers')
+INSERT [dbo].[Meeting] ([MeetingID], [GroupID], [MeetingDate], [MeetingDescription]) VALUES (4, 4, '02-May-2019', 'Korean Food Lovers')
+SET IDENTITY_INSERT [dbo].[Meeting] OFF
+
+SET IDENTITY_INSERT [dbo].[GroupMeeting] ON
+INSERT [dbo].[GroupMeeting] ([GroupMeetingID], [GroupID], [MeetingID]) VALUES (1, 1, 1)
+INSERT [dbo].[GroupMeeting] ([GroupMeetingID], [GroupID], [MeetingID]) VALUES (2, 2, 2)
+INSERT [dbo].[GroupMeeting] ([GroupMeetingID], [GroupID], [MeetingID]) VALUES (3, 3, 3)
+INSERT [dbo].[GroupMeeting] ([GroupMeetingID], [GroupID], [MeetingID]) VALUES (4, 4, 4)
+SET IDENTITY_INSERT [dbo].[GroupMeeting] OFF
+
+SET IDENTITY_INSERT [dbo].[FoodDetail] ON
+INSERT [dbo].[FoodDetail] ([FoodID], [MeetingID], [FoodName], [FoodDescription], [FoodPrice]) VALUES (1, 1, 'Chicken Chop', 'Chicken Chop with fries', 10.00)
+INSERT [dbo].[FoodDetail] ([FoodID], [MeetingID], [FoodName], [FoodDescription], [FoodPrice]) VALUES (2, 2, 'Chicken Rice', 'Chicken Rice with soup', 5.00)
+INSERT [dbo].[FoodDetail] ([FoodID], [MeetingID], [FoodName], [FoodDescription], [FoodPrice]) VALUES (3, 3, 'Sushi', 'Sushi with wasabi', 15.00)
+INSERT [dbo].[FoodDetail] ([FoodID], [MeetingID], [FoodName], [FoodDescription], [FoodPrice]) VALUES (4, 4, 'Bibimbap', 'Bibimbap with kimchi', 12.00)
+SET IDENTITY_INSERT [dbo].[FoodDetail] OFF
+
+SET IDENTITY_INSERT [dbo].[Location] ON
+INSERT [dbo].[Location] ([LocationID], [MeetingID], [LocationName], [LocationAddress], [Longitude], [Latitude]) VALUES (1, 1, 'KFC', '123 North Street', 103.851959, 1.290270)
+INSERT [dbo].[Location] ([LocationID], [MeetingID], [LocationName], [LocationAddress], [Longitude], [Latitude]) VALUES (2, 2, 'MCD', '123 South Street', 103.851959, 1.290270)
+INSERT [dbo].[Location] ([LocationID], [MeetingID], [LocationName], [LocationAddress], [Longitude], [Latitude]) VALUES (3, 3, 'Sushi Express', '123 East Street', 103.851959, 1.290270)
+INSERT [dbo].[Location] ([LocationID], [MeetingID], [LocationName], [LocationAddress], [Longitude], [Latitude]) VALUES (4, 4, 'Bibimbap', '123 West Street', 103.851959, 1.290270)
+SET IDENTITY_INSERT [dbo].[Location] OFF
