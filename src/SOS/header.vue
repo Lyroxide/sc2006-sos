@@ -19,6 +19,14 @@
           </router-link>
           <n-button type="error" ghost @click="signOut">Sign Out</n-button>
         </n-space>
+
+        <router-link to="/" #="{ navigate, href }" custom>
+          <n-a :href="href" @click="navigate">
+            <n-text class="nav">Find Groups</n-text>
+          </n-a>
+        </router-link>
+
+
       </template>
       <template v-else>
         <n-space justify="end" item-style="display: flex;" align="center">
