@@ -1,6 +1,6 @@
 <template>
-  <n-space vertical class="searchpage">
-    <h1>Groups</h1>
+  <n-space vertical class="findgroups">
+    <n-h1> Find Groups Here!</n-h1>
     <n-space item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: nowrap;">
       <n-input v-model:value="searchvalue" type="text" :loading="isSearching" @keyup.enter="searchRequest" default-value="Search">
       </n-input>
@@ -21,38 +21,33 @@
     <n-collapse-transition :show="show">
 
     </n-collapse-transition>
+    <n-scrollbar style="max-height: 500px">
+      <n-space class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: wrap;">
+        <n-card hoverable v-for="(group, index) in groups" :key="group.id" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
 
-      <n-space horizontal class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: nowrap;">
+          <n-space vertical align="center" justify="center" item-style="display: flex;">
+            <n-space class="card-top" justify="start">
+              <n-h1 class ="group-name"> {{ group.name }} </n-h1>
+              <font-awesome-icon :icon="['fas', 'user']" class="shift-icon" />
+              <n-text class="group-capacity">{{ group.capacity }}</n-text>
+            </n-space>
+            <n-space class="group-description" justify="center" align="center">
+              {{ group.description }}
+            </n-space>
+          </n-space>
+          <n-space class="group-tags" justify="start">
+            <n-button v-for="tag in group.tags" :key="tag" class="tag">{{ tag }}</n-button>
+          </n-space>
+          <n-space class="group-footer" justify="center" align="center">
+            <n-button circle @click="joinGroup(group)">
+              <font-awesome-icon :icon="['fas', 'user-plus']"/>
+            </n-button>
+          </n-space>
 
-        <div class="card-container" v-for="group in groups" :key="group.id">
-          <n-card hoverable class="custom-card">
-            <h1>{{ group.name }}</h1>
-            <p>{{ group.description }}</p>
-            <p>{{ group.capacity }}</p>
-          </n-card>
-        </div>
-
+        </n-card>
       </n-space>
-
-
-
-
+    </n-scrollbar>
   </n-space>
-
-
-
-
-
- <!--  <div class="vertical-scroll-container">
-    // assume each group object in the groups array has id, name, and description properties
-    // adjust the template code based on the actual structure of your group objects
-    <div class="scrolling-wrapper">
-      <div class="card" v-for="group in groups" :key="group.id">
-        <h2>{{ group.name }}</h2>
-        <p>{{ group.description }}</p>
-      </div>
-    </div>
-  </div>-->
 
 
 </template>
@@ -75,52 +70,62 @@ export default defineComponent({
         id: 1,
         name: "Group 1",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        capacity: "50/50"
+        capacity: "50/50",
+        tags: ["Vegan", "Italian cuisine"]
       },
       {
         id: 2,
         name: "Group 2",
         description: "Nulla tempus est nec tellus ultrices, vitae accumsan nisl cursus.",
-        capacity: "40/50"
+        capacity: "40/50",
+        tags: ["Brunch", "Fine dining"]
       },
       {
       id: 3,
         name: "Group 3",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        capacity: "50/50"
+        capacity: "50/50",
+        tags: ["Korean cuisine", "Seafood"]
       },
       {
        id: 4,
         name: "Group 4",
         description: "Nulla tempus est nec tellus ultrices, vitae accumsan nisl cursus.",
-        capacity: "40/50"
+        capacity: "40/50",
+        tags: ["Vegetarian", "Organic"]
       },
 
       {
         id: 5,
         name: "Group 5",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        capacity: "50/50"
+        capacity: "50/50",
+        tags: ["Hawker food", "Halal","Local (Singaporean) Cuisine"]
       },
+
       {
         id: 6,
         name: "Group 6",
-        description: "Nulla tempus est nec tellus ultrices, vitae accumsan nisl cursus.",
-        capacity: "40/50"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        capacity: "50/50",
+        tags: ["Seafood", "Japanese cuisine"]
       },
+
       {
         id: 7,
         name: "Group 7",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        capacity: "50/50"
+        capacity: "50/50",
+        tags: ["Brunch", "Desserts"]
       },
+
       {
         id: 8,
         name: "Group 8",
-        description: "Nulla tempus est nec tellus ultrices, vitae accumsan nisl cursus.",
-        capacity: "40/50"
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        capacity: "50/50",
+        tags: ["Alcohol", "Drinks only", "Pub food"]
       },
-
 
       // Add more dummy groups as needed
     ]);
@@ -172,50 +177,91 @@ export default defineComponent({
 
 
 
-<style scoped>
-.n-card {
-  max-width: 300px;
-}
-.scrolling-wrapper {
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
-}
+<style>
 
-.card-item {
-  display: inline-block;
-  width: 300px;
-  height: 200px;
-  margin-right: 10px;
-  border-radius: 30px;
-}
 
-.card-container {
-  display: flex;
+.custom-card-first {
   justify-content: center;
   align-items: center;
-
-  width: 300px;
-  height: 200px;
-  margin-right: 10px;
-  border-radius: 40px;
-  padding: 20px;
-
-}
-
-
-.custom-card {
-  /* Add your custom styles for the card */
-  display: inline-block;
-  width: 300px;
-  height: 300px;
-  margin-right:00px;
+  background-color: rgba(254,170,0,.60); /* Replace with your desired color for the top half */
+  width: 400px;
+  height: 400px;
   border-radius: 30px;
+}
+
+.custom-card-second {
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(120,132,2, .60); /* Replace with your desired color for the top half */
+  width: 400px;
+  height: 400px;
+  border-radius: 30px;
+}
+
+.custom-card-third {
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(87, 40, 34, .60); /* Replace with your desired color for the top half */
+  width: 400px;
+  height: 400px;
+  border-radius: 30px;
+}
+
+
+.shift-icon {
+  position: absolute;
+  top: 29px;
+  right: 20px;
+}
+
+.group-capacity {
+
+  position: absolute;
+  top: 42px;
+  right: 15px;
+  font-size: 12px;
 
 }
 
-.custom-card .n-card-title {
-  /* Add your custom styles for the title section */
+.findgroups {
+  margin: 2% 21%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
+
+
+
+.shift-icon {
+  margin-right: 5px;
+}
+
+.group-description {
+  background-color: rgb(239, 222, 205);
+  height: 200px;
+  width: 350px;
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 30px;
+}
+
+.group-tags {
+  flex-grow: 1;
+  padding: 10px;
+
+}
+
+.tag {
+  background-color: rgba(255, 255, 255, .40);
+  border-radius: 30px;
+  padding: 15px;
+  font-size: 10px;
+
+
+}
+
+
+
 
 </style>
