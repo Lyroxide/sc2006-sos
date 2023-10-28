@@ -5,7 +5,8 @@ import Login from '../SOS/login.vue'
 import Footer from '../SOS/footer.vue'
 import Header from '../SOS/header.vue'
 import FindGroups from '../SOS/findgroups.vue'
-
+import Register from '../SOS/register.vue'
+import FindFood from '../SOS/findfood.vue'
 
 const routes = [
     {
@@ -17,6 +18,11 @@ const routes = [
         path: "/login",
         name: "login",
         component: Login,
+    },
+    {
+        path: "/register",
+        name: "register",
+        component: Register,
     },
     {
         path: "/footer",
@@ -32,6 +38,11 @@ const routes = [
         path: "/findgroups",
         name: "findgroups",
         component: FindGroups,
+    },
+    {
+        path: "/findfood",
+        name: "findfood",
+        component: FindFood,
     }
 ];
 

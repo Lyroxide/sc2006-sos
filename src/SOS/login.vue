@@ -1,5 +1,5 @@
 <template>
-  <n-space vertical class="login">
+  <n-space vertical class="login" style="margin-top: 130px;" >
     <n-space item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: nowrap;">
       <n-card title="Login" size="huge">
         <n-form ref="formRef" :model="model" :rules="rules">
@@ -27,7 +27,7 @@
               </div>
             </n-col>
           </n-row>
-          <n-space horizontal item-style="display: flex;" align="center">
+          <n-space horizontal item-style="display: flex; front-size:0px" align="center" >
             <p>New Here?</p>
             <router-link to="/register" #="{ navigate, href }" custom style="margin-right:20px;">
               <n-a :href="href" @click="navigate">
