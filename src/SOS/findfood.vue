@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <input id="pac-input" class="controls" type="text" placeholder="Search for food">
     <div id="map"></div>
     <div id="side-panel"></div>
@@ -16,16 +16,23 @@ export default {
 
       displayPlaceDetails(place) {
         const sidePanel = document.getElementById('side-panel');
+        sidePanel.style.display = 'block';
         sidePanel.innerHTML = '';
         const nameElement = document.createElement('h2');
         nameElement.textContent = place.name; // Name
         sidePanel.appendChild(nameElement);
+        const addressHeader = document.createElement('h3');
+        addressHeader.textContent = 'Address:';
+        sidePanel.appendChild(addressHeader);
         const addressElement = document.createElement('p');
         addressElement.textContent = place.formatted_address; //Address
         sidePanel.appendChild(addressElement);
-        const ratingElement = document.createElement('p');
+        const ratingElement = document.createElement('h3');
         ratingElement.textContent = `Rating: ${place.rating}`; //Rating
         sidePanel.appendChild(ratingElement);
+        const reviewsHeader = document.createElement('h3');
+        reviewsHeader.textContent = 'Reviews:';
+        sidePanel.appendChild(reviewsHeader);
         place.reviews.forEach(review => {
           const reviewElement = document.createElement('p');
           reviewElement.textContent = review.text; //Review
@@ -51,7 +58,7 @@ export default {
       searchBox.addListener('places_changed', () => {
         const places = searchBox.getPlaces();
 
-        if (places.length == 0) {
+        if (places.length == 0) { //sanity check
           return;
         }
 
@@ -69,24 +76,22 @@ export default {
           } else {
             bounds.extend(place.geometry.location);
           }
-          new google.maps.Marker({
+
+          const marker = new google.maps.Marker({
             map: map,
             position: place.geometry.location,
             placeId: place.place_id  // Store the placeId in the marker
           });
-
-          //GET placeID FROM SELECTED PLACE
-          const placeId = place.place_id;
-
-          const service = new google.maps.places.PlacesService(map);
-          service.getDetails({
-            placeId: placeId,
-            fields: ['name', 'formatted_address', 'rating', 'reviews']
-          }, (place, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-              // Place details are available
-              this.displayPlaceDetails(place);
-            }
+          marker.addListener('click', () => {    //only display details when pin is clicked :D
+            const service = new google.maps.places.PlacesService(map);
+            service.getDetails({
+              placeId: marker.placeId,  // Use the placeId from the marker
+              fields: ['name', 'formatted_address', 'rating', 'reviews']
+            }, (place, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK) {
+                this.displayPlaceDetails(place);
+              }
+            });
           });
 
 
@@ -99,9 +104,16 @@ export default {
 </script>
 
 <style scoped>
+
+.container{
+//display: flex;
+//flex-direction: column;
+//height: 80vh;  /* Full viewport height */
+}
+
 #map {
   width: 80%;
-  height: 550px;
+  height: 650px;
   margin: 30px auto auto;
 
 }
@@ -115,9 +127,11 @@ export default {
   height: 32px;
   outline: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px ;
 }
 
 #pac-input {
+
   background-color: #fff;
   font-family: Roboto;
   font-size: 15px;
@@ -125,22 +139,25 @@ export default {
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 400px;
-  margin-left: 550px;
-  margin-top: 60px;
+  margin-left: 680px;
+  margin-top: 90px;
+
 }
 
 
 
  #side-panel {
+   display: none;
    position: fixed;
-   top: 0;
-   right: 0;
+   top:23.3%;
+   right: 10%;
    width: 300px;
-   height: 100%;
+   height: 60%;
    background-color: #f9f9f9;
    overflow-y: auto;
    padding: 20px;
-   box-shadow: -1px 0 2px rgba(0, 0, 0, 0.1);
+   box-shadow: -1px 0 20px rgba(0, 0, 0, 0.1);
+
  }
 
 #side-panel h2 {
@@ -152,5 +169,4 @@ export default {
   margin: 0 0 10px;
 }
 </style>
-
 

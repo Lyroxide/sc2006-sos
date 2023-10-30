@@ -14,7 +14,7 @@
             />
           </n-form-item>
           <n-row :gutter="[0, 24]">
-            <n-col :span="24">
+            <n-col :span="16">
               <div style="display: flex; justify-content: flex-end">
                 <n-button
                     :disabled="!model.username || !model.password"
@@ -27,13 +27,11 @@
               </div>
             </n-col>
           </n-row>
-          <n-space horizontal item-style="display: flex; front-size:0px" align="center" >
-            <p>New Here?</p>
-            <router-link to="/register" #="{ navigate, href }" custom style="margin-right:20px;">
-              <n-a :href="href" @click="navigate">
-                <n-text class="nav">Sign Up</n-text>
-              </n-a>
-            </router-link>
+          <n-space horizontal item-style="display: flex; front-size:0px" align="center" justify="center">
+            <n-p>New Here?</n-p>
+            <n-a @click="goTo('/register')">
+              <n-p style="color: #342628;">Register!</n-p>
+            </n-a>
           </n-space>
         </n-form>
       </n-card>
@@ -45,11 +43,12 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMessage } from "naive-ui";
-import store from "../store/index.js";
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex'
 
 export default defineComponent({
   setup() {
+    const store = useStore();
     const router = useRouter();
     const formRef = ref(null);
     const message = useMessage();
@@ -96,10 +95,15 @@ export default defineComponent({
       });
     }
 
+    const goTo = (path) => {
+      router.push(path)
+    }
+
     return {
       formRef,
       model: modelRef,
       rules,
+      goTo,
       handleLoginButtonClick
     };
   },
