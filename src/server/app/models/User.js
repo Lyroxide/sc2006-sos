@@ -1,29 +1,44 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-// import Group from './Group.js';
-// Assuming you have another model named Group
 
 const User = sequelize.define('User', {
-    username: {
-        type: DataTypes.STRING,
-    },
-    name: {
-        type: DataTypes.STRING,
-    },
-    email: {
-        type: DataTypes.STRING,
-    },
-    password: {
-        type: DataTypes.STRING,
-    },
-    age: {
+    UserID: {
         type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    gender: {
+    Username: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+    },
+    Name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    Email: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+            isEmail: true
+        }
+    },
+    Age: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    Gender: {
         type: DataTypes.CHAR,
+        allowNull: false,
     },
+    Password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    }
+}, {
+    tableName: 'Users',
+    timestamps: false,
 });
-
-//User.hasMany(Group);
 
 export default User;

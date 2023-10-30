@@ -46,9 +46,11 @@
 import { defineComponent, ref } from "vue";
 import { useMessage } from "naive-ui";
 import store from "../store/index.js";
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
     const formRef = ref(null);
     const message = useMessage();
     const modelRef = ref({
@@ -79,7 +81,7 @@ export default defineComponent({
         if (!errors) {
           store.dispatch("auth/login", modelRef.value).then(
               () => {
-                this.$router.push("/profile");
+                router.push("/findgroups");
                 message.success("Login Success");
               })
               .catch((err) => {

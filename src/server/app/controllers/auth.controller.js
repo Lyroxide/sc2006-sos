@@ -7,7 +7,7 @@ import User from '../models/User.js';
 const router = express.Router();
 
 // Validate and authenticate user login
-router.post('/login', [
+router.post('/users', [
     check('username').notEmpty(),
     check('password').notEmpty()
 ], async (req, res) => {
@@ -19,9 +19,14 @@ router.post('/login', [
     }
 
     const user = await User.findOne({ where: { username: req.body.username } });
-    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
-    if (!user || !passwordIsValid) {
-        return res.status(401);
+    if (!user) {
+        // User not found with provided username
+        return res.status(401).send("User not found");
+    }
+    const passwordIsValid = bcrypt.compareSync(req.body.password, user.dataValues.Password);
+    if (!passwordIsValid) {
+        // Password is not valid
+        return res.status(401).send("Provided password is incorrect");
     }
 
     const token = jwt.sign({ id: user.id }, 'secretKey', {
@@ -35,7 +40,5 @@ router.post('/login', [
         accessToken: token
     });
 });
-
-// implement other endpoints similarly
 
 export default router;
