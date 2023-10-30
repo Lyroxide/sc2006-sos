@@ -2,9 +2,8 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
 import Group from "./Group.js";
 
-
-const Meeting = sequelize.define('Meeting', {
-    MeetingID: {
+const GroupPicture = sequelize.define('GroupPicture', {
+    PictureID: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -17,17 +16,13 @@ const Meeting = sequelize.define('Meeting', {
             key: 'id'
         }
     },
-    MeetingDate: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
-    MeetingDescription: {
+    FilePath: {
         type: DataTypes.STRING,
-        allowNull: false
-    }
+        allowNull: false,
+    },
 }, {
-    tableName: 'Meeting',
-    timestamps: false,
+    tableName: 'GroupPicture',
+    timestamps: false
 });
 
-export default Meeting;
+export default GroupPicture;
