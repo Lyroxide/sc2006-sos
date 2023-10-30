@@ -22,6 +22,7 @@ router.post('/users', [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
+  
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
     const user = {
         Username: req.body.username,

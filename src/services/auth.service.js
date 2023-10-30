@@ -25,7 +25,6 @@ class AuthService {
     }
 
     register(user) {
-        console.log(user);
         return axios.post(API_URL + "users", {
             name: user.name,
             username: user.username,
