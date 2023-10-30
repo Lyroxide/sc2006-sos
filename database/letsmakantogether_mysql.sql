@@ -212,7 +212,7 @@ INSERT INTO Users (UserID, UserName, `Name`, Email, Age, Gender, `Password`) VAL
 (3, 'Pancake77', 'Best Pancake', 'pancakemaybe@gmail.com', 22, 'M', '$2y$10$hBTKGexS/gA0pLnoRJrkGemr9mO9uHPE7kVtuLvt96H26825vhLlC'),
 (4, 'Waffle12', 'Best Waffle', 'wafflechoco@gmail.com', 25, 'M', '$2y$10$sh4MZ0SkKEqD4tjoxWukyuFXSruMIZkMyxBuGq9AUIu0nMX3BK9KG');
 
--- FoodPreference
+-- FoodPreferenceRegionPreference
 INSERT INTO FoodPreference (FoodPreferenceID, FoodType) VALUES
 (1, 'Western'),
 (2, 'Chinese'),
