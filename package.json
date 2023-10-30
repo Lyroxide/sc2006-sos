@@ -26,7 +26,7 @@
     "joi": "^17.11.0",
     "jquery": "^3.6.0",
     "jsonwebtoken": "^9.0.2",
-    "mssql": "^10.0.1",
+    "mysql2": "^3.6.2",
     "naive-ui": "^2.35.0",
     "popper.js": "^1.16.1",
     "register-service-worker": "^1.7.2",
