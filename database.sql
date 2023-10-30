@@ -207,10 +207,10 @@ CREATE TABLE Location (
 /* Start of generation of sample data */
 -- Users
 INSERT INTO Users (UserID, UserName, `Name`, Email, Age, Gender, `Password`) VALUES
-(1, 'Sanrio123', 'Cinnamon', 'sanrio_cinnamon@gmail.com', 18, 'F', '123456'),
-(2, 'Tanny23', 'Tom Tan', 'tantom@gmail.com', 24, 'M', 'ilovepeanuts'),
-(3, 'Pancake77', 'Best Pancake', 'pancakemaybe@gmail.com', 22, 'M', 'ilovepancakes17'),
-(4, 'Waffle12', 'Best Waffle', 'wafflechoco@gmail.com', 25, 'M', 'ilovechoco12');
+(1, 'Sanrio123', 'Cinnamon', 'sanrio_cinnamon@gmail.com', 18, 'F', '$2y$10$y1B/5ZA3xKVpXM2rDt.ho.PHR2eRDL7fRAeWCn7N9HONFiB0TcYgu'),
+(2, 'Tanny23', 'Tom Tan', 'tantom@gmail.com', 24, 'M', '$2y$10$ftvAzhHjM10IeIhyaRB1tOcX3O3h1aRgTryXhmBJ.l1ikgpJva8dq'),
+(3, 'Pancake77', 'Best Pancake', 'pancakemaybe@gmail.com', 22, 'M', '$2y$10$hBTKGexS/gA0pLnoRJrkGemr9mO9uHPE7kVtuLvt96H26825vhLlC'),
+(4, 'Waffle12', 'Best Waffle', 'wafflechoco@gmail.com', 25, 'M', '$2y$10$sh4MZ0SkKEqD4tjoxWukyuFXSruMIZkMyxBuGq9AUIu0nMX3BK9KG');
 
 -- FoodPreference
 INSERT INTO FoodPreference (FoodPreferenceID, FoodType) VALUES

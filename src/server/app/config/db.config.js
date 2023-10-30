@@ -1,8 +1,13 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('database', 'username', 'password', {
+const sequelize = new Sequelize('letsmakantogether', 'root', 'KUPp55pp3EEh^8CK%P7A', {
     host: 'localhost',
-    dialect: 'mssql'
+    port: 3306,
+    dialect: 'mysql',
+    define: {
+        freezeTableName: true,
+        timestamps: false
+    }
 });
 
 export default sequelize;
