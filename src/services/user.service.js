@@ -16,8 +16,9 @@ class UserService {
         return axios.get(API_URL + 'group', { headers: authHeader() });
     }
 
-    joinGroup(groupId) {
-        return axios.post(API_URL + `group/join/${groupId}`, {}, {headers: authHeader()});
+    joinGroup(GroupID, UserID) {
+        let data = { GroupID, UserID }
+        return axios.post(API_URL + `group-members`, data, {headers: authHeader()});
     }
 
 }

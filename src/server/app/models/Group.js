@@ -23,9 +23,9 @@ const Group = sequelize.define('Group', {
         type: DataTypes.DATE,
         allowNull: false,
     }
-    },{
+},{
     tableName: 'Groups',
-    timestamps: false,
+    timestamps: false
 });
 
 export default Group;

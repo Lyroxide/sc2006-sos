@@ -1,12 +1,39 @@
 import express from 'express';
 import Group from '../models/Group.js';
+import GroupMember from '../models/GroupMember.js';
+import GroupFoodPreference from '../models/GroupFoodPreference.js';
+import GroupRegionPreference from '../models/GroupRegionPreference.js';
+import FoodPreference from '../models/FoodPreference.js';
+import RegionPreference from '../models/RegionPreference.js';
 
 const router = express.Router();
 
+
 // route to get all groups
 router.get('/groups', async (req, res) => {
+
     try {
         const groups = await Group.findAll();
+
+        for (let group of groups) {
+            group.setDataValue('memberCount', await GroupMember.findAndCountAll({ where: { GroupID: group.GroupID} }));
+            const groupFoodPreferences = await GroupFoodPreference.findAll({ where: { GroupID: group.GroupID } })
+            let foodPreferences = [];
+            for (let fp of groupFoodPreferences) {
+                const f = await FoodPreference.findAll({where : { FoodPreferenceID: fp.FoodPreferenceID}});
+                for (let x of f) {
+                    foodPreferences.push(x.FoodType);
+                }
+            }
+            group.setDataValue('foodPreferences', foodPreferences);
+
+            const groupRegionPreference = await GroupRegionPreference.findOne({ where: { GroupID: group.GroupID } });
+            const r = await RegionPreference.findAll({where: {RegionPreferenceID: groupRegionPreference.RegionPreferenceID}});
+            for (let x of r) {
+                group.setDataValue('regionPreference', x.RegionType);
+            }
+
+        }
         res.send(groups);
     } catch (error) {
         res.status(500).send({

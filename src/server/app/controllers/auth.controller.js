@@ -38,11 +38,10 @@ router.post('/users', [
     const token = jwt.sign({ id: user.id }, 'secretKey', {
         expiresIn: 86400 // 24 hours
     });
-
     return res.status(200).send({
-        id: user.id,
-        username: user.username,
-        email: user.email,
+        id: user.dataValues.UserID,
+        username: user.dataValues.Username,
+        email: user.dataValues.Email,
         accessToken: token
     });
 });

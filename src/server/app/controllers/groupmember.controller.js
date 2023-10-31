@@ -21,7 +21,7 @@ router.post('/group-members', async (req, res) => {
             UserID,
             GroupID
         });
-        res.status(201).json(newGroupMember);
+        res.send(newGroupMember);
     } catch(error) {
         res.status(500).json({ message: error.message || "An error occurred while creating a new group member." });
     }
