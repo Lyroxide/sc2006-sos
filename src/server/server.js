@@ -25,7 +25,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api', foodPreferenceRoutes);
 app.use('/api', groupFoodPreferenceRoutes);
 app.use('/api', groupMemberRoutes);
