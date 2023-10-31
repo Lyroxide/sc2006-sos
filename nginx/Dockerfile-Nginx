@@ -11,7 +11,7 @@ RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesourc
 RUN apt-get update && \
 apt-get install -y nodejs git
 
-COPY ../vue ./vue
+COPY ./vue ./vue
 RUN cd vue && npm i && npm run build
 
 #Debugging Path Directory
