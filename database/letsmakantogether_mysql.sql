@@ -83,7 +83,7 @@ CREATE TABLE `Groups` (
   GroupName VARCHAR(50) NOT NULL,
   GroupDesc VARCHAR(255) NOT NULL,
   Capacity INT NOT NULL,
-  GroupDate DATE NOT NULL,
+  GroupDate DATETIME NOT NULL,
   PRIMARY KEY (GroupID)
 );
 
@@ -162,7 +162,7 @@ CREATE TABLE GroupRegionPreference (
 CREATE TABLE Meeting (
   MeetingID INT AUTO_INCREMENT,
   GroupID INT NOT NULL,
-  MeetingDate DATE NOT NULL,
+  MeetingDate DATETIME NOT NULL,
   MeetingDescription VARCHAR(255) NOT NULL,
   FoodName VARCHAR(255) NOT NULL,
   FoodDesc VARCHAR(255) NOT NULL,
