@@ -42,7 +42,6 @@ app.use('/api', locationRoutes);
 
 app.get('/', (req, res) => {
     res.json({message: "Welcome to the application."});
-    console.log(`My server is now running at landing page.`);
 });
 
 const PORT = process.env.PORT || 8080;
