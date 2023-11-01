@@ -13,40 +13,15 @@
       </n-button>
     </n-space>
 
-    <!--<n-dropdown trigger="hover" :options="options" @select="handleSelect" />-->
-
-  <!-- <n-button @click="show = !show" color:green >
-      Filter
-    </n-button>
-    <n-collapse-transition :show="show">
-      <div>
-        <n-button>Option 1</n-button>
-        <n-button>Option 2</n-button>
-        <n-button>Option 3</n-button>
-      </div>
-    </n-collapse-transition> -->
 
     <n-space vertical>
-      <n-space>
-        <n-cascader
-            v-model:value="value"
-            multiple
-            placeholder=" "
-            clearable
-            :max-tag-count="responsiveMaxTagCount ? 'responsive' : undefined"
-            :expand-trigger="hoverTrigger ? 'hover' : 'click'"
-            :options="options"
-            :cascade="cascade"
-            :check-strategy="checkStrategyIsChild ? 'child' : 'all'"
-            :show-path="showPath"
-            :filterable="filterable"
-            :clear-filter-after-select="clearFilterAfterSelect"
-            @update:value="handleUpdateValue"
-            >
-        </n-cascader>
-      </n-space>
+      <n-select
+          v-model:value="selectedValue"
+          filterable
+          placeholder="Food Preferences"
+          :options="options"
+      ></n-select>
     </n-space>
-
 
 
         <n-scrollbar style="max-height: 500px">
@@ -84,79 +59,7 @@
     import {useMessage} from "naive-ui";
     import {SearchOutlined} from "@vicons/material";
     import store from "../store/index.js";
-
-    const food_filter = {
-        Cuisines: [
-          'Chinese Cuisine',
-          'Fusion Food',
-          'Hawker Food',
-          'Indian Cuisine',
-          'Italian Cuisine',
-          'Japanese Cuisine',
-          'Korean Cuisine',
-          'Kosher',
-          'Local (Singaporean) Cuisine',
-          'Malay Cuisine',
-          'Mediterranean',
-          'Pub Food',
-          'Street Food',
-          'Thai Cuisine'
-        ],
-        Drinks: [
-          'Alcohol',
-          'Drinks Only'
-        ],
-        Diets: [
-          'Allergen-Specific',
-          'Dairy-Free',
-          'Farm-to-Table',
-          'Gluten-Free',
-          'Health Food',
-          'Halal',
-          'High Fibre',
-          'High Protein',
-          'Ketogenic',
-          'Low-Carb',
-          'Low-Fat',
-          'Low-Sodium',
-          'Low-Sugar',
-          'Non-Alcoholic',
-          'Organic',
-          'Paleo',
-          'Pescatarian',
-          'Plant-Based',
-          'Seafood',
-          'Superfoods',
-          'Vegan',
-          'Vegetarian',
-          'Zero Waste'
-        ],
-        'All-day': [
-          'Artisan Food',
-          'BBQ',
-          'Baked Goods & Pastries',
-          'Brunch',
-          'Buffet',
-          'Café',
-          'Comfort Food',
-          'Desserts',
-          'Fine Dining',
-          'Fruits & Salads',
-          'High Tea'
-        ]
-      };
-
-
-
-      function getOptions() {
-  return Object.entries(food_filter).map(([category, items]) => ({
-    value: category,
-    label: category,
-    children: items.map(item => ({ value: item, label: item })),
-  }));
-}
-
-
+    
 
       export default defineComponent({
         components: {
@@ -206,18 +109,62 @@
             searchRequest,
             joinGroup,
 
-            checkStrategyIsChild: ref(true),
-            cascade: ref(true),
-            showPath: ref(true),
-            hoverTrigger: ref(true),
-            value: ref(null),
-            filterable: ref(true),
-            responsiveMaxTagCount: ref(true),
-            clearFilterAfterSelect: ref(true),
-            options: getOptions(),
-            handleUpdateValue(value, options) {
-              console.log(value, options);
-            }
+            selectedValue: ref(null),
+            options: [
+              'Chinese Cuisine',
+              'Fusion Food',
+              'Hawker Food',
+              'Indian Cuisine',
+              'Italian Cuisine',
+              'Japanese Cuisine',
+              'Korean Cuisine',
+              'Kosher',
+              'Local (Singaporean) Cuisine',
+              'Malay Cuisine',
+              'Mediterranean',
+              'Pub Food',
+              'Street Food',
+              'Thai Cuisine',
+              'Alcohol',
+              'Drinks Only',
+              'Allergen-Specific',
+              'Dairy-Free',
+              'Farm-to-Table',
+              'Gluten-Free',
+              'Health Food',
+              'Halal',
+              'High Fibre',
+              'High Protein',
+              'Ketogenic',
+              'Low-Carb',
+              'Low-Fat',
+              'Low-Sodium',
+              'Low-Sugar',
+              'Non-Alcoholic',
+              'Organic',
+              'Paleo',
+              'Pescatarian',
+              'Plant-Based',
+              'Seafood',
+              'Superfoods',
+              'Vegan',
+              'Vegetarian',
+              'Zero Waste',
+              'Artisan Food',
+              'BBQ',
+              'Baked Goods & Pastries',
+              'Brunch',
+              'Buffet',
+              'Café',
+              'Comfort Food',
+              'Desserts',
+              'Fine Dining',
+              'Fruits & Salads',
+              'High Tea'
+            ].map(item => ({
+              value: item,
+              label: item,
+            }))
           };
         },
       });

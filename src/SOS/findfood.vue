@@ -1,9 +1,12 @@
 <template>
   <div class="container">
     <input id="pac-input" class="controls" type="text" placeholder="Search for food">
-    <div id="map"></div>
-    <div id="side-panel"></div>
+    <div id="map-side-panel">
+      <div id="map"></div>
+      <div id="side-panel"></div>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -13,36 +16,6 @@ export default {
     this.initMap();
   },
   methods: {
-
-      displayPlaceDetails(place) {
-        const sidePanel = document.getElementById('side-panel');
-        sidePanel.style.display = 'block';
-        sidePanel.innerHTML = '';
-        const nameElement = document.createElement('h2');
-        nameElement.textContent = place.name; // Name
-        sidePanel.appendChild(nameElement);
-        const addressHeader = document.createElement('h3');
-        addressHeader.textContent = 'Address:';
-        sidePanel.appendChild(addressHeader);
-        const addressElement = document.createElement('p');
-        addressElement.textContent = place.formatted_address; //Address
-        sidePanel.appendChild(addressElement);
-        const ratingElement = document.createElement('h3');
-        ratingElement.textContent = `Rating: ${place.rating}`; //Rating
-        sidePanel.appendChild(ratingElement);
-        const reviewsHeader = document.createElement('h3');
-        reviewsHeader.textContent = 'Reviews:';
-        sidePanel.appendChild(reviewsHeader);
-        place.reviews.forEach(review => {
-          const reviewElement = document.createElement('p');
-          reviewElement.textContent = review.text; //Review
-          sidePanel.appendChild(reviewElement);
-        });
-
-      },
-
-
-
     initMap() {
       const input = document.getElementById('pac-input');
       const map = new google.maps.Map(document.getElementById('map'), {
@@ -86,7 +59,7 @@ export default {
             const service = new google.maps.places.PlacesService(map);
             service.getDetails({
               placeId: marker.placeId,  // Use the placeId from the marker
-              fields: ['name', 'formatted_address', 'rating', 'reviews']
+              fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos']
             }, (place, status) => {
               if (status === google.maps.places.PlacesServiceStatus.OK) {
                 this.displayPlaceDetails(place);
@@ -94,28 +67,87 @@ export default {
             });
           });
 
-
         });
         map.fitBounds(bounds);
       });
-    }
-  }
+    }, //close initMap
+
+    displayPlaceDetails(place) {
+
+      const sidePanel = document.getElementById('side-panel');
+      sidePanel.style.display = 'block';
+      sidePanel.innerHTML = '';
+
+      const nameElement = document.createElement('h2');
+      nameElement.textContent = place.name; // Name
+      sidePanel.appendChild(nameElement);
+      const addressHeader = document.createElement('h3');
+      addressHeader.textContent = 'Address:';
+      sidePanel.appendChild(addressHeader);''
+      const addressElement = document.createElement('p');
+      addressElement.textContent = place.formatted_address; //Address
+      sidePanel.appendChild(addressElement);
+      const ratingElement = document.createElement('h3');
+      ratingElement.textContent = `Rating: ${place.rating}`; //Rating
+      sidePanel.appendChild(ratingElement);
+      const contactHeader = document.createElement('h3');
+      contactHeader.textContent = 'Contact:';
+      sidePanel.appendChild(contactHeader);
+      if(place.website) {
+        const websiteElement = document.createElement('a');
+        websiteElement.href = `${place.website}`;
+        websiteElement.textContent = `${place.website}`; //website
+        sidePanel.appendChild(websiteElement);
+      }
+      const newLine = document.createElement('h3');
+      newLine.textContent = '';
+      sidePanel.appendChild(newLine);
+
+      if (place.formatted_phone_number) {
+        const phoneNumberElement = document.createElement('a');
+        phoneNumberElement.href = `${place.formatted_phone_number}`;
+        phoneNumberElement.textContent = `\n ${place.formatted_phone_number}`; //phone no.
+        sidePanel.appendChild(phoneNumberElement);
+      }
+      const reviewsHeader = document.createElement('h3');
+      reviewsHeader.textContent = 'Reviews:';
+      sidePanel.appendChild(reviewsHeader);
+      place.reviews.forEach(review => {
+        const reviewElement = document.createElement('p');
+        reviewElement.textContent = review.text; //Review
+        sidePanel.appendChild(reviewElement);
+      });
+      /*
+      const photoElement = document.createElement('img');
+      if (place.photos && place.photos.length > 0) {
+        const photoReference = place.photos[1].photo_reference; //DISPLAY PHOTO OF PLACE
+        photoElement.src = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=AIzaSyCJEbankCC_fPBj9rycpHn_l1YKRtFnA6E`;
+      }
+      sidePanel.appendChild(photoElement); */
+    }, //close displayplacedetails
+  } //close methods
 }
 </script>
 
 <style scoped>
 
-.container{
-//display: flex;
-//flex-direction: column;
-//height: 80vh;  /* Full viewport height */
+/*.container{
+display: flex;
+flex-direction: column;
+height: 80vh;
 }
+
+#map-side-panel {
+ display: flex;
+flex-direction: row;
+}  */
+
 
 #map {
   width: 80%;
   height: 650px;
   margin: 30px auto auto;
-
+  flex-grow:1;
 }
 
 .controls {
@@ -157,7 +189,7 @@ export default {
    overflow-y: auto;
    padding: 20px;
    box-shadow: -1px 0 20px rgba(0, 0, 0, 0.1);
-
+   flex-grow: 1;
  }
 
 #side-panel h2 {
