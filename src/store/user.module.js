@@ -1,26 +1,11 @@
 import UserService from '../services/user.service';
-import GroupService from '../services/group.service.js';
 
-const state = {
-    groups: [],
-};
+const state = JSON.parse(localStorage.getItem('user'));
 
 const actions = {
-    getGroupDetails({ rootState }, { commit }) {
+    getUserDetails({ rootState }) {
         let UserID = rootState.auth.user.id;
-        return UserService.getGroupDetails(UserID).then(
-            response => {
-                commit('groupsSuccess', response.data);
-                return Promise.resolve(response.data);
-            },
-            error => {
-                return Promise.reject(error);
-            }
-        );
-    },
-    joinGroup({ rootState }, GroupID) {
-        let UserID = rootState.auth.user.id;
-        return UserService.joinGroup(GroupID, UserID).then(
+        return UserService.getUserDetails(UserID).then(
             response => {
                 return Promise.resolve(response.data);
             },
@@ -29,19 +14,21 @@ const actions = {
             }
         );
     },
-    getOwnGroups({ rootState }) {
+    editUserDetails({ rootState }, { commit }, user) {
         let UserID = rootState.auth.user.id;
-        return UserService.getOwnGroups(UserID).then(
+        return UserService.editUserDetails(UserID, user).then(
             response => {
+                commit('editSuccess');
                 return Promise.resolve(response.data);
             },
             error => {
                 return Promise.reject(error);
             }
-        );
+        )
     },
-    getAllGroups() {
-        return GroupService.getAllGroups().then(
+    getUserFoodPreferences({ rootState }) {
+        let UserID = rootState.auth.user.id;
+        return UserService.getUserFoodPreferences(UserID).then(
             response => {
                 return Promise.resolve(response.data);
             },
@@ -50,58 +37,48 @@ const actions = {
             }
         )
     },
-    createGroup({ rootState }, Group) {
+    editUserFoodPreferences({ rootState }, pref) {
         let UserID = rootState.auth.user.id;
-        return GroupService.createGroup(UserID, Group).then(
+        return UserService.editUserFoodPreferences(UserID, pref).then(
             response => {
                 return Promise.resolve(response.data);
             },
             error => {
                 return Promise.reject(error);
             }
-        );
+        )
     },
-    editGroup(Group) {
-        return GroupService.editGroup(Group).then(
-            response => {
-                return Promise.resolve(response.data);
-            },
-            error => {
-                return Promise.reject(error);
-            }
-        );
-    },
-    deleteGroup(Group) {
-        return GroupService.deleteGroup(Group).then(
-            response => {
-                return Promise.resolve(response.data);
-            },
-            error => {
-                return Promise.reject(error);
-            }
-        );
-    },
-    leaveGroup({ rootState }, Group) {
+    getUserRegionalPreferences({ rootState }) {
         let UserID = rootState.auth.user.id;
-        return GroupService.leaveGroup(UserID, Group).then(
+        return UserService.getUserRegionalPreferences(UserID).then(
             response => {
                 return Promise.resolve(response.data);
             },
             error => {
                 return Promise.reject(error);
             }
-        );
+        )
     },
-
+    editUserRegionalPreferences({ rootState }, pref) {
+        let UserID = rootState.auth.user.id;
+        return UserService.editUserRegionalPreferences(UserID, pref).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        )
+    },
 };
 
 const mutations = {
-    groupsSuccess(state, groups) {
-        state.groups = groups;
+    editSuccess(state, user) {
+        state.user = user;
     },
 };
 
-export const group = {
+export const user = {
     namespaced: true,
     state,
     actions,

@@ -13,6 +13,16 @@ router.get('/group-members', async (req, res) => {
     }
 });
 
+router.get('/group-members/user/:UserID', async (req, res) => {
+    try {
+        const UserID = req.params.UserID;
+        const userGroupMembers = await GroupMember.findAll({ where: { UserID } });
+        res.status(200).json(userGroupMembers);
+    } catch(error) {
+        res.status(500).json({ message: error.message || `An error occurred while retrieving group members for user ${UserID}` });
+    }
+});
+
 // POST new group member
 router.post('/group-members', async (req, res) => {
     try {

@@ -2,14 +2,13 @@
   <n-layout-header >
     <n-space item-style="display: flex; " justify="space-evenly" align="center" class="header">
 
-      <n-a @click="goTo('/')">
-        <n-space item-style="display: flex;" align="center">
-          <font-awesome-icon :icon="['fas', 'bowl-food']" style="color:#F7F4E4; font-size: 3em;"/>
-          <n-text class="main">Let's Makan <br> Together</n-text>
-        </n-space>
-      </n-a>
-
       <template v-if="currentUser">
+        <n-a @click="goTo('/dashboard')">
+          <n-space item-style="display: flex;" align="center">
+            <font-awesome-icon :icon="['fas', 'bowl-food']" style="color:#F7F4E4; font-size: 3em;"/>
+            <n-text class="main">Let's Makan <br> Together</n-text>
+          </n-space>
+        </n-a>
         <n-space class="nav-menu" justify= "start" item-style="display: flex;" align="start">
 
           <n-space>
@@ -43,6 +42,12 @@
 
       </template>
       <template v-else>
+        <n-a @click="goTo('/')">
+          <n-space item-style="display: flex;" align="center">
+            <font-awesome-icon :icon="['fas', 'bowl-food']" style="color:#F7F4E4; font-size: 3em;"/>
+            <n-text class="main">Let's Makan <br> Together</n-text>
+          </n-space>
+        </n-a>
         <n-space class="login" justify="end" item-style="display: flex;" align="center">
           <n-a @click="goTo('/login')">
             <n-button round strong color='#FEAA00' style="color: #F7F4E4;">Sign In</n-button>

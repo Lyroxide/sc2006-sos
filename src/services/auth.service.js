@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_URL = 'http://localhost:8080/api/';
+import { API_URL } from './docker.ip.js';
 
 
 class AuthService {
