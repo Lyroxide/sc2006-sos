@@ -4,7 +4,13 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+
 const router = express.Router();
+
+router.get('/users', async (req, res) => {
+    const users = await User.findAll();
+    return res.send(users);
+});
 
 // Validate and authenticate user login
 router.post('/users', [

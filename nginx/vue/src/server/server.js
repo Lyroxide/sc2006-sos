@@ -17,11 +17,16 @@ import locationRoutes from "./app/controllers/location.controller.js";
 
 const app = express();
 
+/*
 let corsOptions = {
     origin: "http://localhost:8081"
 };
 
+
 app.use(cors(corsOptions));
+*/
+
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -42,6 +47,7 @@ app.use('/api', locationRoutes);
 
 app.get('/', (req, res) => {
     res.json({message: "Welcome to the application."});
+    console.log(`Server is running on now.`);
 });
 
 const PORT = process.env.PORT || 8080;

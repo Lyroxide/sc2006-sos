@@ -29,7 +29,7 @@ const User = sequelize.define('User', {
         allowNull: false,
     },
     Gender: {
-        type: DataTypes.CHAR,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     Password: {
