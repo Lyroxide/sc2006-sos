@@ -79,6 +79,7 @@ CREATE TABLE UserRegionPreference (
 -- Table: Groups
 CREATE TABLE `Groups` (
   GroupID INT AUTO_INCREMENT,
+  OwnerID INT NOT NULL,
   GroupName VARCHAR(50) NOT NULL,
   GroupDesc VARCHAR(255) NOT NULL,
   Capacity INT NOT NULL,
@@ -163,31 +164,10 @@ CREATE TABLE Meeting (
   GroupID INT NOT NULL,
   MeetingDate DATE NOT NULL,
   MeetingDescription VARCHAR(255) NOT NULL,
+  FoodName VARCHAR(255) NOT NULL,
+  FoodDesc VARCHAR(255) NOT NULL,
   PRIMARY KEY (MeetingID),
   FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
-);
-
-
--- Table: GroupMeeting
-CREATE TABLE GroupMeeting (
-  GroupMeetingID INT AUTO_INCREMENT,
-  GroupID INT NOT NULL,
-  MeetingID INT NOT NULL,
-  PRIMARY KEY (GroupMeetingID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
-  FOREIGN KEY (MeetingID) REFERENCES Meeting(MeetingID)
-);
-
-
--- Table: FoodDetail
-CREATE TABLE FoodDetail (
-  FoodID INT AUTO_INCREMENT,
-  MeetingID INT NOT NULL,
-  FoodName VARCHAR(50) NOT NULL,
-  FoodDescription VARCHAR(255) NOT NULL,
-  FoodPrice DECIMAL(5,2) NOT NULL,
-  PRIMARY KEY (FoodID),
-  FOREIGN KEY (MeetingID) REFERENCES Meeting(MeetingID)
 );
 
 
@@ -295,11 +275,11 @@ INSERT INTO UserRegionPreference (UserRegionPreferenceID, UserID, RegionPreferen
 (4, 3, 4);
 
 -- Groups
-INSERT INTO `Groups` (GroupID, GroupName, GroupDesc, Capacity, GroupDate) VALUES
-(1, 'Grass', 'Join our weekend gatherings in Singapore as we, a community of vegetarians, embark on a journey to explore exciting vegetarian dining options. Come along and discover fresh plant-based delights with us each weekend!', 50, '2019-04-26'),
-(2, 'Beer Kakis', 'We\'re a fun-loving bunch of pub enthusiasts! Come join us for Friday night experiences in Singapore as we explore the city\'s vibrant pub scene. Join our quest to discover all great pubs in town and unwind every week. NO SEH NO GO HOME!', 50, '2019-04-28'),
-(3, 'Sushi lovers', 'Sushi is love. Sushi is life.', 40, '2019-04-30'),
-(4, 'Caifan Gang', 'JIA FAN ZHE GE NA GE!!! Join us as we are on a hunt for cheap and nice caifan!', 40, '2019-05-02');
+INSERT INTO `Groups` (GroupID, OwnerID, GroupName, GroupDesc, Capacity, GroupDate) VALUES
+(1, 1, 'Grass', 'Join our weekend gatherings in Singapore as we, a community of vegetarians, embark on a journey to explore exciting vegetarian dining options. Come along and discover fresh plant-based delights with us each weekend!', 50, '2019-04-26'),
+(2, 2, 'Beer Kakis', 'We\'re a fun-loving bunch of pub enthusiasts! Come join us for Friday night experiences in Singapore as we explore the city\'s vibrant pub scene. Join our quest to discover all great pubs in town and unwind every week. NO SEH NO GO HOME!', 50, '2019-04-28'),
+(3, 3, 'Sushi lovers', 'Sushi is love. Sushi is life.', 40, '2019-04-30'),
+(4, 4, 'Caifan Gang', 'JIA FAN ZHE GE NA GE!!! Join us as we are on a hunt for cheap and nice caifan!', 40, '2019-05-02');
 
 -- GroupChat
 INSERT INTO GroupChat (GroupChatID, GroupID, UserID) VALUES
@@ -345,8 +325,8 @@ INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPrefe
 (4, 4, 4);
 
 -- Meeting
-INSERT INTO Meeting (MeetingID, GroupID, MeetingDate, MeetingDescription) VALUES
-(1, 1, '2019-05-03', 'Western food meetup'),
-(2, 2, '2019-05-05', 'Chinese food meetup'),
-(3, 3, '2019-05-07', 'Japanese food meetup'),
-(4, 4, '2019-05-09', 'Korean food meetup');
+INSERT INTO Meeting (MeetingID, GroupID, MeetingDate, MeetingDescription, FoodName, FoodDesc) VALUES
+(1, 1, '2019-05-03', 'Vegetarian food meetup', 'Vegetarian Bee Hoon', 'We shall consume all of the vegtarian beehoon'),
+(2, 2, '2019-05-05', 'Beer meetup', 'Tiger Beer', 'Drink all day! Happy Hour!'),
+(3, 3, '2019-05-07', 'Sushi Tuna Meetup', 'SushiExpress' ,'Eat all the cheap sushi!'),
+(4, 4, '2019-05-09', 'Caifan Meetup', 'Chang Cheng Caifan' ,'See who has the cheapest best selection!');
