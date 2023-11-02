@@ -6,11 +6,9 @@ const state = {
 };
 
 const actions = {
-    getGroupDetails({ rootState }, { commit }) {
-        let UserID = rootState.auth.user.id;
-        return UserService.getGroupDetails(UserID).then(
+    getGroupDetails(GroupID) {
+        return GroupService.getGroupDetails(GroupID).then(
             response => {
-                commit('groupsSuccess', response.data);
                 return Promise.resolve(response.data);
             },
             error => {

@@ -9,7 +9,7 @@
       display in cards
   -->
 
-  <n-space class="dashboard">
+  <n-space class="dashboard" align="center" justify="center" item-style="display: flex;" style="flex-wrap: wrap;">
     <n-space class="carousel-container">
       <n-carousel autoplay>
         <img class="carousel-img circle" src="../assets/Carou1.png">
@@ -20,37 +20,39 @@
     </n-space>
 
     <n-space class="dashboard-panel">
-      <n-space class="time-date-container">
+      <n-space class="time-container">
         <n-text class="time">{{ time }}</n-text>
+      </n-space>
+
+      <n-space class="day-date-year-container">
         <n-text class="day-date-year">{{ date }}</n-text>
-        <n-space class="scrollable-card">
-          <n-scrollbar style="max-height:500px">
-            <n-space class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: wrap;">
-              <n-card hoverable v-for="(group, index) in groups" :key="group.id" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
-                <n-space vertical align="center" justify="center" item-style="display: flex;">
-                  <n-space class="card-top" justify="start">
+      </n-space>
 
-                    <n-h1 class ="group-name"> {{ group.GroupName }} </n-h1>
-                    <font-awesome-icon :icon="['fas', 'user']" class="shift-icon" />
+      <n-space class="scrollable-card">
+        <n-scrollbar style="max-height:500px">
+          <n-space class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: wrap;">
+            <n-card hoverable v-for="(group, index) in groups" :key="group.id" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
+              <n-space vertical align="center" justify="center" item-style="display: flex;">
+                <n-space class="card-top" justify="start">
 
-                    <n-text class="group-date">{{  }}</n-text>
-                    <n-text class="group-time">{{  }}</n-text>
-                    <n-text class="group-location">
+                  <n-h1 class ="group-name"> {{ group.GroupName }} </n-h1>
+                  <font-awesome-icon :icon="['fas', 'user']" class="shift-icon" />
+
+                  <n-text class="group-date">{{  }}</n-text>
+                  <n-text class="group-time">{{  }}</n-text>
+                  <n-text class="group-location">
                       <n-ellipsis style="max-width: 100px">{{  }}</n-ellipsis>
-                    </n-text>
+                  </n-text>
 
-                    </n-space>
                   </n-space>
-                <n-space class="group-footer" justify="center" align="center"></n-space>
-              </n-card>
-            </n-space>
-          </n-scrollbar>
-        </n-space>
+                </n-space>
+              <n-space class="group-footer" justify="center" align="center"></n-space>
+            </n-card>
+          </n-space>
+        </n-scrollbar>
       </n-space>
     </n-space>
-
   </n-space>
-
 
 </template>
 
@@ -114,6 +116,14 @@ export default defineComponent({
 
 <style>
 .dashboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dashboard-panel {
   margin: 10% 10%;
   display: flex;
   flex-direction: row;
@@ -121,26 +131,31 @@ export default defineComponent({
   align-items: center;
 }
 
-.dashboard-panel {
-  /* Add your custom styles for the dashboard panel container */
-}
-
-.time-date-container {
-  /* Add your custom styles for the time date container */
-    width: 100%;
-    color: #342628;
-
-}
 
 .time {
-  /* Add your custom styles for the time element */
-  font-size: 30px;
+  font-size: 45px;
+}
 
+
+.day-date-year-container{
+  position: relative;
+  top: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.time-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
 .day-date-year{
-  /* Add your custom styles for the day-date-year element */
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .scrollable-card {
@@ -180,10 +195,12 @@ export default defineComponent({
 
 @media screen and (min-width: 600px) {
   .carousel-container {
-    width: 100%;
-    padding: 50px;
-    /*padding-right: 10px;*/
+    margin: 10% 10%;
+    width: 20%;
+    padding: 40px;
     overflow: visible;
+    display: flex;
+    flex-wrap: wrap;
   }
   .carousel-img {
     width: 100%;
@@ -195,9 +212,6 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 600px) {
-  .dashboard {
-    flex-direction: column;
-  }
   .carousel-container {
     width: 400px;
     height: 400px;
@@ -213,5 +227,4 @@ export default defineComponent({
   }
 
 }
-
 </style>

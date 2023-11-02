@@ -12,7 +12,7 @@
         <n-space class="nav-menu" justify= "start" item-style="display: flex;" align="start">
 
           <n-space>
-            <n-a @click="goTo('/groups')">
+            <n-a @click="goTo('/mygroups')">
               <n-text class="nav-text" :class="{ 'selected': $route.path === '/groups' }">My Groups</n-text>
             </n-a>
           </n-space>

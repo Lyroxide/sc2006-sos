@@ -7,6 +7,10 @@ class GroupService {
         return axios.get(API_URL + 'groups', { headers: authHeader() });
     }
 
+    getGroupDetails(GroupID) {
+        return axios.get(API_URL + `groups/${GroupID}`, { headers: authHeader() });
+    }
+
     createGroup(UserID, Group) {
         let data = { UserID, Group };
         return axios.post(API_URL + 'groups', data, { headers: authHeader() });
@@ -23,6 +27,7 @@ class GroupService {
     leaveGroup(UserID, Group) {
         return axios.delete(API_URL + 'group-members', Group, { headers: authHeader() });
     }
+
 
 }
 

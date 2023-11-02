@@ -43,10 +43,10 @@ router.get('/groups', async (req, res) => {
 });
 
 // route to get one group
-router.get('/groups/:id', async (req, res) => {
+router.get('/groups/:GroupID', async (req, res) => {
     try {
-        const group = await Group.findOne({ where: { GroupID: req.params.id } });
-        if(group) {
+        const group = await Group.findOne({ where: { GroupID: req.params.GroupID } });
+        if (group) {
             res.send(group);
         } else {
             res.status(404).send({ message: 'Group not found!' });

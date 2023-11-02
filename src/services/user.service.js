@@ -33,10 +33,6 @@ class UserService {
         return axios.put(API_URL + 'user-regional-preferences', data, { headers: authHeader() });
     }
 
-    getGroupDetails(UserID) {
-        return axios.get(API_URL + 'groups', { headers: authHeader() });
-    } //still unsure how to tackle this get request
-
     joinGroup(GroupID, UserID) {
         let data = { GroupID, UserID }
         return axios.post(API_URL + `group-members`, data, {headers: authHeader()});

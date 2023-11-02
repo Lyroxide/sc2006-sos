@@ -8,6 +8,8 @@ import FindGroups from '../SOS/findgroups.vue'
 import Register from '../SOS/register.vue'
 import FindFood from '../SOS/findfood.vue'
 import Dashboard from '../SOS/dashboard.vue';
+import MyGroups from '../SOS/mygroups.vue';
+import EditProfile from '../SOS/editprofile.vue';
 
 const routes = [
     {
@@ -49,8 +51,19 @@ const routes = [
         path: "/dashboard",
         name: "dashboard",
         component: Dashboard,
-    }
+    },
+    {
+        path: "/mygroups",
+        name: "mygroups",
+        component: MyGroups,
+    },
+    {
+        path: "/editprofile",
+        name: "editprofile",
+        component: EditProfile,
+    },
 ];
+
 
 const router = createRouter({
     history: createWebHistory(),

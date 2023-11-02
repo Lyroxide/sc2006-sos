@@ -18,7 +18,7 @@
                 type="password"
                 @input="handlePasswordInput"
                 @keydown.enter.prevent
-                placeholder =""
+                placeholder ="Min 8 Characters"
             />
           </n-form-item>
           <n-form-item ref="rPasswordFormItemRef" first path="confirmPassword" label="Confirm Password">
@@ -27,7 +27,7 @@
                 :disabled="!model.password"
                 type="password"
                 @keydown.enter.prevent
-                placeholder =""
+                placeholder ="Min 8 Characters"
             />
             </n-form-item>
 
