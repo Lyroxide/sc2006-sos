@@ -3,9 +3,20 @@ import Meeting from '../models/Meeting.js';
 
 const router = express.Router();
 
-router.get('/meetings/:id', async (req, res) => {
+
+router.get('/meetings/', async (req, res) => {
     try {
-        const meeting = await Meeting.findOne({ where: { MeetingID: req.params.id } });
+        const meeting = await Meeting.findAll();
+        res.send(meeting);
+    } catch (error) {
+        res.status(500).send({ message: error.message || "Error retrieving meeting." });
+    }
+});
+
+router.get('/meetings/groups/:GroupID', async (req, res) => {
+    try {
+        let GroupID = req.params.GroupID;
+        const meeting = await Meeting.findAll({ where: { GroupID } });
         res.send(meeting);
     } catch (error) {
         res.status(500).send({ message: error.message || "Error retrieving meeting." });

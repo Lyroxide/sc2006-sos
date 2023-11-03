@@ -79,10 +79,11 @@ CREATE TABLE UserRegionPreference (
 -- Table: Groups
 CREATE TABLE `Groups` (
   GroupID INT AUTO_INCREMENT,
+  OwnerID INT NOT NULL,
   GroupName VARCHAR(50) NOT NULL,
   GroupDesc VARCHAR(255) NOT NULL,
   Capacity INT NOT NULL,
-  GroupDate DATE NOT NULL,
+  GroupDate DATETIME NOT NULL,
   PRIMARY KEY (GroupID)
 );
 
@@ -161,33 +162,12 @@ CREATE TABLE GroupRegionPreference (
 CREATE TABLE Meeting (
   MeetingID INT AUTO_INCREMENT,
   GroupID INT NOT NULL,
-  MeetingDate DATE NOT NULL,
+  MeetingDate DATETIME NOT NULL,
   MeetingDescription VARCHAR(255) NOT NULL,
+  FoodName VARCHAR(255) NOT NULL,
+  FoodDesc VARCHAR(255) NOT NULL,
   PRIMARY KEY (MeetingID),
   FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
-);
-
-
--- Table: GroupMeeting
-CREATE TABLE GroupMeeting (
-  GroupMeetingID INT AUTO_INCREMENT,
-  GroupID INT NOT NULL,
-  MeetingID INT NOT NULL,
-  PRIMARY KEY (GroupMeetingID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
-  FOREIGN KEY (MeetingID) REFERENCES Meeting(MeetingID)
-);
-
-
--- Table: FoodDetail
-CREATE TABLE FoodDetail (
-  FoodID INT AUTO_INCREMENT,
-  MeetingID INT NOT NULL,
-  FoodName VARCHAR(50) NOT NULL,
-  FoodDescription VARCHAR(255) NOT NULL,
-  FoodPrice DECIMAL(5,2) NOT NULL,
-  PRIMARY KEY (FoodID),
-  FOREIGN KEY (MeetingID) REFERENCES Meeting(MeetingID)
 );
 
 
@@ -214,10 +194,56 @@ INSERT INTO Users (UserID, UserName, `Name`, Email, Age, Gender, `Password`) VAL
 
 -- FoodPreferenceRegionPreference
 INSERT INTO FoodPreference (FoodPreferenceID, FoodType) VALUES
-(1, 'Western'),
-(2, 'Chinese'),
-(3, 'Japanese'),
-(4, 'Korean');
+(1, 'Chinese Cuisine'),
+(2, 'Fusion Food'),
+(3, 'Hawker Food'),
+(4, 'Indian Cuisine'),
+(5, 'Italian Cuisine'),
+(6, 'Japanese Cuisine'),
+(7, 'Korean Cuisine'),
+(8, 'Kosher'),
+(9, 'Local (Singaporean) Cuisine'),
+(10, 'Malay Cuisine'),
+(11, 'Mediterranean'),
+(12, 'Pub Food'),
+(13, 'Street Food'),
+(14, 'Thai Cuisine'),
+(15, 'Alcohol'),
+(16, 'Drinks Only'),
+(17, 'Allergen-Specific'),
+(18, 'Dairy-Free'),
+(19, 'Farm-to-Table'),
+(20, 'Gluten-Free'),
+(21, 'Health Food'),
+(22, 'Halal'),
+(23, 'High Fibre'),
+(24, 'High Protein'),
+(25, 'Ketogenic'),
+(26, 'Low-Carb'),
+(27, 'Low-Fat'),
+(28, 'Low-Sodium'),
+(29, 'Low-Sugar'),
+(30, 'Non-Alcoholic'),
+(31, 'Organic'),
+(32, 'Paleo'),
+(33, 'Pescatarian'),
+(34, 'Plant-Based'),
+(35, 'Seafood'),
+(36, 'Superfoods'),
+(37, 'Vegan'),
+(38, 'Vegetarian'),
+(39, 'Zero Waste'),
+(40, 'Artisan Food'),
+(41, 'BBQ'),
+(42, 'Baked Goods & Pastries'),
+(43, 'Brunch'),
+(44, 'Buffet'),
+(45, 'Café'),
+(46, 'Comfort Food'),
+(47, 'Desserts'),
+(48, 'Fine Dining'),
+(49, 'Fruits & Salads'),
+(50, 'High Tea');
 
 -- RegionPreference
 INSERT INTO RegionPreference (RegionPreferenceID, RegionType) VALUES
@@ -249,11 +275,11 @@ INSERT INTO UserRegionPreference (UserRegionPreferenceID, UserID, RegionPreferen
 (4, 3, 4);
 
 -- Groups
-INSERT INTO `Groups` (GroupID, GroupName, GroupDesc, Capacity, GroupDate) VALUES
-(1, 'Western Food Lovers', 'For people who love western food', 4, '2019-04-26'),
-(2, 'Chinese Food Lovers', 'For people who love Chinese food', 4, '2019-04-28'),
-(3, 'Japanese Food Lovers', 'For people who love Japanese food', 4, '2019-04-30'),
-(4, 'Korean Food Lovers', 'For people who love Korean food', 4, '2019-05-02');
+INSERT INTO `Groups` (GroupID, OwnerID, GroupName, GroupDesc, Capacity, GroupDate) VALUES
+(1, 1, 'Grass', 'Join our weekend gatherings in Singapore as we, a community of vegetarians, embark on a journey to explore exciting vegetarian dining options. Come along and discover fresh plant-based delights with us each weekend!', 50, '2019-04-26'),
+(2, 2, 'Beer Kakis', 'We\'re a fun-loving bunch of pub enthusiasts! Come join us for Friday night experiences in Singapore as we explore the city\'s vibrant pub scene. Join our quest to discover all great pubs in town and unwind every week. NO SEH NO GO HOME!', 50, '2019-04-28'),
+(3, 3, 'Sushi lovers', 'Sushi is love. Sushi is life.', 40, '2019-04-30'),
+(4, 4, 'Caifan Gang', 'JIA FAN ZHE GE NA GE!!! Join us as we are on a hunt for cheap and nice caifan!', 40, '2019-05-02');
 
 -- GroupChat
 INSERT INTO GroupChat (GroupChatID, GroupID, UserID) VALUES
@@ -285,21 +311,22 @@ INSERT INTO GroupPicture (PictureID, GroupID, PictureFile) VALUES
 
 -- GroupFoodPreference
 INSERT INTO GroupFoodPreference (GroupFoodPreferenceID, GroupID, FoodPreferenceID) VALUES
-(1, 1, 1),
-(2, 1, 2),
-(3, 2, 3),
-(4, 3, 4);
+(1, 1, 38),
+(2, 2, 15),
+(3, 3, 6),
+(4, 4, 9),
+(5, 1, 31);
 
 -- GroupRegionPreference
 INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPreferenceID) VALUES
 (1, 1, 1),
-(2, 1, 2),
-(3, 2, 3),
-(4, 3, 4);
+(2, 2, 2),
+(3, 3, 3),
+(4, 4, 4);
 
 -- Meeting
-INSERT INTO Meeting (MeetingID, GroupID, MeetingDate, MeetingDescription) VALUES
-(1, 1, '2019-05-03', 'Western food meetup'),
-(2, 2, '2019-05-05', 'Chinese food meetup'),
-(3, 3, '2019-05-07', 'Japanese food meetup'),
-(4, 4, '2019-05-09', 'Korean food meetup');
+INSERT INTO Meeting (MeetingID, GroupID, MeetingDate, MeetingDescription, FoodName, FoodDesc) VALUES
+(1, 1, '2019-05-03', 'Vegetarian food meetup', 'Vegetarian Bee Hoon', 'We shall consume all of the vegtarian beehoon'),
+(2, 2, '2019-05-05', 'Beer meetup', 'Tiger Beer', 'Drink all day! Happy Hour!'),
+(3, 3, '2019-05-07', 'Sushi Tuna Meetup', 'SushiExpress' ,'Eat all the cheap sushi!'),
+(4, 4, '2019-05-09', 'Caifan Meetup', 'Chang Cheng Caifan' ,'See who has the cheapest best selection!');
