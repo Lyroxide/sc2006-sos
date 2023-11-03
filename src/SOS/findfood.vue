@@ -2,7 +2,7 @@
   <div class="container">
     <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴"> 
     <!-- get current location button -->
-    <n-button class="controls" id="get-current-location">Get Current Location</n-button>
+    <n-button class="controls" id="get-current-location">Get Current Location📍</n-button>
     <div id="map-side-panel">
       <div id="map"></div>
       <div id="side-panel"></div>
@@ -146,7 +146,11 @@ export default {
       // center the button in the card
       const closeButton = document.createElement('button');
       closeButton.style.margin = '0 auto';
+      closeButton.style.borderRadius = '30px';
+      // change the button color to brown
+      closeButton.style.backgroundColor = '#342628';
       closeButton.textContent = 'Close';
+      
       closeButton.addEventListener('click', () => {
         sidePanel.style.display = 'none';
       });
