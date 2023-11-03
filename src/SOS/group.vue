@@ -16,23 +16,31 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, toRefs , watch} from 'vue';
 import store from '../store/index.js';
 
 export default {
   props: {
     groupId: {
-      type: Number,
+      type: String,
       required: true,
     },
   },
 
   setup(props) {
-    const group = ref({});
+    const group = ref([]);
 
-    onMounted(async () => {
-      group.value = await store.dispatch('group/getGroupDetails', props.groupId);
-    });
+    watch(() => props.groupId, async (newVal) => {
+      if (newVal) {
+        console.log(newVal);
+        group.value = await store.dispatch('group/getGroupDetails', newVal)
+            .then(data => data)
+            .catch(error => console.error(error));
+        console.log(group.value);
+      }
+    }, {immediate: true});
+
+
 
     return {
       group,

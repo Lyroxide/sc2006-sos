@@ -7,8 +7,8 @@
           animated
           :placement="placement"
       >
-        <n-tab-pane v-for="group in groups" :key="group.id" :name="group.GroupName" tab="{{ group.GroupName }}">
-          <Group :group-id="group.id"></Group>
+        <n-tab-pane v-for="group in groups" :key="group.GroupID" :name="group.GroupName" :tab="group.GroupName">
+          <Group :group-id="group.GroupID"/>
         </n-tab-pane>
       </n-tabs>
     </n-space>
@@ -37,6 +37,8 @@ export default defineComponent({
         groups.value.push(g);
       }
     })
+
+    console.log(groups);
 
     return {
       groups,

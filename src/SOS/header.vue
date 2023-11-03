@@ -13,7 +13,7 @@
 
           <n-space>
             <n-a @click="goTo('/mygroups')">
-              <n-text class="nav-text" :class="{ 'selected': $route.path === '/groups' }">My Groups</n-text>
+              <n-text class="nav-text" :class="{ 'selected': $route.path === '/mygroups' }">My Groups</n-text>
             </n-a>
           </n-space>
 

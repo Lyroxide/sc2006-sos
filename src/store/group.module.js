@@ -6,15 +6,15 @@ const state = {
 };
 
 const actions = {
-    getGroupDetails(GroupID) {
-        return GroupService.getGroupDetails(GroupID).then(
-            response => {
-                return Promise.resolve(response.data);
-            },
-            error => {
-                return Promise.reject(error);
-            }
-        );
+    async getGroupDetails({ commit }, GroupID) {
+        try {
+            const response = await GroupService.getGroupDetails(GroupID);
+            console.log(response.data);
+            commit('groupsSuccess', response.data); // commits to mutation – updates state with the received data.
+            return response.data; // returns the data to calling function
+        } catch (error) {
+            console.error(error);
+        }
     },
     joinGroup({ rootState }, GroupID) {
         let UserID = rootState.auth.user.id;
@@ -94,10 +94,10 @@ const actions = {
 };
 
 const mutations = {
-    groupsSuccess(state, groups) {
-        state.groups = groups;
+    groupsSuccess(state, groupDetails) {
+        state.groups = groupDetails; // use singular if it's for a specific group's details
     },
-};
+}
 
 export const group = {
     namespaced: true,
