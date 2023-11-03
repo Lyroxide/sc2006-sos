@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <input id="pac-input" class="controls" type="text" placeholder="Search for food">
+    <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴"> 
+    <!-- get current location button -->
+    <n-button class="controls" id="get-current-location">Get Current Location</n-button>
     <div id="map-side-panel">
       <div id="map"></div>
       <div id="side-panel"></div>
@@ -15,7 +17,23 @@ export default {
   mounted() {
     this.initMap();
   },
+  data() {
+    return {
+      markers: []
+    }
+  },
   methods: {
+    clearMarkers() {
+      for (const marker of this.markers) {
+        console.log(marker);
+        marker.setMap(null); // Remove the marker from the map
+        marker.setVisible(false); // Hide the marker
+      }
+      // console.log(this.markers.length);
+      this.markers = []; // Clear the markers array
+      // console.log(this.markers.length);
+    },
+
     initMap() {
       const input = document.getElementById('pac-input');
       const map = new google.maps.Map(document.getElementById('map'), {
@@ -29,6 +47,7 @@ export default {
       });
 
       searchBox.addListener('places_changed', () => {
+        this.clearMarkers();
         const places = searchBox.getPlaces();
 
         if (places.length == 0) { //sanity check
@@ -49,12 +68,14 @@ export default {
           } else {
             bounds.extend(place.geometry.location);
           }
-
+          // console.log(place.geometry.location);
           const marker = new google.maps.Marker({
             map: map,
             position: place.geometry.location,
             placeId: place.place_id  // Store the placeId in the marker
           });
+          this.markers.push(marker); // Push the marker to the array
+          
           marker.addListener('click', () => {    //only display details when pin is clicked :D
             const service = new google.maps.places.PlacesService(map);
             service.getDetails({
@@ -73,7 +94,7 @@ export default {
     }, //close initMap
 
     displayPlaceDetails(place) {
-
+      console.log(place);
       const sidePanel = document.getElementById('side-panel');
       sidePanel.style.display = 'block';
       sidePanel.innerHTML = '';
@@ -82,41 +103,69 @@ export default {
       nameElement.textContent = place.name; // Name
       sidePanel.appendChild(nameElement);
       const addressHeader = document.createElement('h3');
-      addressHeader.textContent = 'Address:';
+      addressHeader.textContent = '🏠Address:';
       sidePanel.appendChild(addressHeader);''
       const addressElement = document.createElement('p');
       addressElement.textContent = place.formatted_address; //Address
       sidePanel.appendChild(addressElement);
-      const ratingElement = document.createElement('h3');
-      ratingElement.textContent = `Rating: ${place.rating}`; //Rating
-      sidePanel.appendChild(ratingElement);
-      const contactHeader = document.createElement('h3');
-      contactHeader.textContent = 'Contact:';
-      sidePanel.appendChild(contactHeader);
-      if(place.website) {
-        const websiteElement = document.createElement('a');
-        websiteElement.href = `${place.website}`;
-        websiteElement.textContent = `${place.website}`; //website
-        sidePanel.appendChild(websiteElement);
+      
+      // if places rating is not undefined, display rating
+      if(place.rating){
+        const ratingElement = document.createElement('h3');
+        ratingElement.textContent = `⭐ Rating: ${place.rating}/5 ⭐`; //Rating
+        sidePanel.appendChild(ratingElement);
       }
+
+      if(place.formatted_phone_number){
+        const contactHeader = document.createElement('h3');
+        contactHeader.textContent = `📞 Contact: ${place.formatted_phone_number}`;
+        sidePanel.appendChild(contactHeader);
+      }
+      // const contactHeader = document.createElement('h3');
+      // contactHeader.textContent = `📞 Contact: ${place.formatted_phone_number}`;
+      // sidePanel.appendChild(contactHeader);
+      // if(place.website) {
+      //   const websiteElement = document.createElement('a');
+      //   websiteElement.href = `${place.website}`;
+      //   websiteElement.textContent = `${place.website}`; //website
+      //   sidePanel.appendChild(websiteElement);
+      // }
+      // open website in new tab
+      const websiteElement = document.createElement('a');
+      websiteElement.target = '_blank';
+      websiteElement.href = `https://www.google.com/search?q=${place.name}`;
+      websiteElement.textContent = `Google 🔎: ${place.name}`;
+      sidePanel.appendChild(websiteElement);
+
+
       const newLine = document.createElement('h3');
       newLine.textContent = '';
       sidePanel.appendChild(newLine);
 
-      if (place.formatted_phone_number) {
-        const phoneNumberElement = document.createElement('a');
-        phoneNumberElement.href = `${place.formatted_phone_number}`;
-        phoneNumberElement.textContent = `\n ${place.formatted_phone_number}`; //phone no.
-        sidePanel.appendChild(phoneNumberElement);
-      }
-      const reviewsHeader = document.createElement('h3');
-      reviewsHeader.textContent = 'Reviews:';
-      sidePanel.appendChild(reviewsHeader);
-      place.reviews.forEach(review => {
-        const reviewElement = document.createElement('p');
-        reviewElement.textContent = review.text; //Review
-        sidePanel.appendChild(reviewElement);
+      // add button for closing this element
+      // center the button in the card
+      const closeButton = document.createElement('button');
+      closeButton.style.margin = '0 auto';
+      closeButton.textContent = 'Close';
+      closeButton.addEventListener('click', () => {
+        sidePanel.style.display = 'none';
       });
+      sidePanel.appendChild(closeButton);
+
+      // if (place.formatted_phone_number) {
+      //   const phoneNumberElement = document.createElement('a');
+      //   phoneNumberElement.href = `${place.formatted_phone_number}`;
+      //   phoneNumberElement.textContent = `\n ${place.formatted_phone_number}`; //phone no.
+      //   sidePanel.appendChild(phoneNumberElement);
+      // }
+      // const reviewsHeader = document.createElement('h3');
+      // reviewsHeader.textContent = 'Reviews:';
+      // sidePanel.appendChild(reviewsHeader);
+      // place.reviews.forEach(review => {
+      //   const reviewElement = document.createElement('p');
+      //   reviewElement.textContent = review.text; //Review
+      //   sidePanel.appendChild(reviewElement);
+      // });
       /*
       const photoElement = document.createElement('img');
       if (place.photos && place.photos.length > 0) {
@@ -190,6 +239,7 @@ flex-direction: row;
    padding: 20px;
    box-shadow: -1px 0 20px rgba(0, 0, 0, 0.1);
    flex-grow: 1;
+   opacity: 0.8;
  }
 
 #side-panel h2 {
