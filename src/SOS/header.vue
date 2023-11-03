@@ -31,8 +31,8 @@
         </n-space>
 
         <n-space justify="end" align="center" class="nav-end">
-          <n-a @click="goTo('/profile')">
-            <n-text class="nav-text" :class="{ 'selected': $route.path === '/profile' }">My Profile</n-text>
+          <n-a @click="goTo('/editprofile')">
+            <n-text class="nav-text" :class="{ 'selected': $route.path === '/editprofile' }">My Profile</n-text>
           </n-a>
           <n-button strong round type="error" @click="signOut">Sign Out</n-button>
         </n-space>

@@ -1,16 +1,7 @@
 <template>
-  <!--
-  should have:
-    carousel
-    time
-    day date
-    scrollable card
-      pull next meeting details from all the groups the user is part of
-      display in cards
-  -->
 
-  <n-space class="dashboard" align="center" justify="center" item-style="display: flex;" style="flex-wrap: wrap;">
-    <n-space class="carousel-container">
+  <n-space class="dashboard" item-style="display:flex;" align="center" justify="space-evenly" style="flex-wrap: nowrap;">
+    <n-space class="carousel-container" justify="center">
       <n-carousel autoplay>
         <img class="carousel-img circle" src="../assets/Carou1.png">
         <img class="carousel-img circle" src="../assets/Carou2.png">
@@ -18,8 +9,7 @@
         <img class="carousel-img circle" src="../assets/Carou4.png">
       </n-carousel>
     </n-space>
-
-    <n-space class="dashboard-panel">
+    <n-space vertical class="text-container">
       <n-space class="time-container">
         <n-text class="time">{{ time }}</n-text>
       </n-space>
@@ -28,30 +18,25 @@
         <n-text class="day-date-year">{{ date }}</n-text>
       </n-space>
 
-      <n-space class="scrollable-card">
-        <n-scrollbar style="max-height:500px">
-          <n-space class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: wrap;">
-            <n-card hoverable v-for="(group, index) in groups" :key="group.id" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
-              <n-space vertical align="center" justify="center" item-style="display: flex;">
-                <n-space class="card-top" justify="start">
+      <n-scrollbar style="max-height: 300px">
+        <n-space class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: wrap;">
+          <n-card hoverable v-for="(meeting, index) in meetings" :key="meeting.ID" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
+            <n-space vertical align="center" justify="center" item-style="display: flex;">
+              <n-space class="card-top" justify="start">
+                <n-h1 class ="group-name"> {{ meeting.group.GroupName }} </n-h1>
+                <font-awesome-icon :icon="['fas', 'user']" class="shift-icon" />
+                <n-text class="group-mdate">{{ meeting.mDate }}</n-text>
+                <n-text class="group-mtime">{{ meeting.mTime }}</n-text>
+                <n-text class="group-mloc">{{ meeting.mLoc }}</n-text>
+              </n-space>
+            </n-space>
+          </n-card>
+        </n-space>
+      </n-scrollbar>
 
-                  <n-h1 class ="group-name"> {{ group.GroupName }} </n-h1>
-                  <font-awesome-icon :icon="['fas', 'user']" class="shift-icon" />
 
-                  <n-text class="group-date">{{  }}</n-text>
-                  <n-text class="group-time">{{  }}</n-text>
-                  <n-text class="group-location">
-                      <n-ellipsis style="max-width: 100px">{{  }}</n-ellipsis>
-                  </n-text>
-
-                  </n-space>
-                </n-space>
-              <n-space class="group-footer" justify="center" align="center"></n-space>
-            </n-card>
-          </n-space>
-        </n-scrollbar>
-      </n-space>
     </n-space>
+
   </n-space>
 
 </template>
@@ -62,6 +47,7 @@
 import {defineComponent, ref, computed, onMounted} from "vue";
 import {useMessage} from "naive-ui";
 import store from "../store/index.js";
+import { generateDummyGroups, generateDummyMeetings } from "@/utils/dummyData";
 
 
 export default defineComponent({
@@ -72,43 +58,51 @@ export default defineComponent({
       date: null
     }
   },
+
+
   beforeDestroy() {
     // prevent memory leak
     clearInterval(this.interval)
   },
   created() {
     this.interval = setInterval(() => {
-      let currentDate = new Date()
+      let currentDate = new Date();
       this.time = Intl.DateTimeFormat(navigator.language, {
         hour: 'numeric',
         minute: 'numeric',
         second: 'numeric',
         hour12: false
-      }).format(currentDate)
+      }).format(currentDate);
       this.date = Intl.DateTimeFormat(navigator.language, {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
-      }).format(currentDate)
-    }, 1000)
+      }).format(currentDate);
+    }, 1000);
   },
 
   setup() {
-
+    const meetings = ref([]);
     const message = useMessage();
 
-    onMounted(async() => {
+    // create dummy meetings
+
+    /* onMounted(async() => {
       const groups = await store.dispatch("group/getOwnGroups");
       for (let group of groups) {
-        const meetings = await store.dispatch("meeting/getMeeting", group.GroupID);
-        console.log(meetings);
+        const ms = await store.dispatch("meeting/getMeeting", group.GroupID);
+        for (let m of ms) {
+          // meetings.value.push(m);
+        }
       }
     })
     return {
+      meetings: meetings.value,
+    }; */
 
-    };
   },
+
 });
 
 </script>
@@ -116,51 +110,42 @@ export default defineComponent({
 
 <style>
 .dashboard {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.dashboard-panel {
-  margin: 10% 10%;
-  display: flex;
+  position: relative;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  margin: 0% 15% 0% 15%;
 }
 
 
 .time {
-  font-size: 45px;
+  font-size: 55px;
 }
 
-
-.day-date-year-container{
-  position: relative;
-  top: 100%;
-  display: flex;
-  justify-content: center;
+.text-container {
   align-items: center;
-
-}
-
-.time-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 30px;
+  width: 50%;
+  text-align: center;
+  flex: 15 1 600px;
 }
 
 .day-date-year{
-  font-size: 20px;
+  font-size: 30px;
+  white-space: nowrap;
 }
 
-.scrollable-card {
-  /* Add your custom styles for the scrollable card element */
-  border-radius: 30px;
+
+
+@media screen and (min-width: 600px) {
+  .carousel-container {
+    margin: 10% 10%;
+    width: 60%;
+    flex: 0 0 400px;
+  }
+  .carousel-img {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
+  }
 
 }
 
@@ -192,39 +177,4 @@ export default defineComponent({
   border-radius: 30px;
 }
 
-
-@media screen and (min-width: 600px) {
-  .carousel-container {
-    margin: 10% 10%;
-    width: 20%;
-    padding: 40px;
-    overflow: visible;
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .carousel-img {
-    width: 100%;
-    height: auto;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
-}
-
-@media screen and (max-width: 600px) {
-  .carousel-container {
-    width: 400px;
-    height: 400px;
-    padding: 0;
-    /*padding-right: 10px;*/
-    overflow: visible;
-  }
-  .carousel-img {
-    width: 100%;
-    height: auto;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
-}
 </style>
