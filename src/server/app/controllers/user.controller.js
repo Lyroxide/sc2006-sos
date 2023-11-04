@@ -37,8 +37,10 @@ router.post('/users', [
 });
 
 // Get a user by id
-router.get('/users/:id', async (req, res) => {
-    const user = await User.findByPk(req.params.id);
+router.get('/users/:UserID', async (req, res) => {
+    const UserID = req.params.UserID;
+    const user = await User.findByPk(UserID);
+    console.log(user);
     if (user) {
         return res.send(user);
     } else {
