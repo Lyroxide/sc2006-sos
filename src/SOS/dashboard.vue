@@ -47,7 +47,7 @@
 import {defineComponent, ref, computed, onMounted} from "vue";
 import {useMessage} from "naive-ui";
 import store from "../store/index.js";
-import { generateDummyGroups, generateDummyMeetings } from "@/utils/dummyData";
+//import { generateDummyGroups, generateDummyMeetings } from "@/utils/dummyData";
 
 
 export default defineComponent({
