@@ -20,7 +20,7 @@
 import {defineComponent, ref, computed, onMounted} from "vue";
 import {useMessage} from "naive-ui";
 import store from "../store/index.js";
-import Group from "./Group.vue";
+import Group from "./group.vue";
 
 export default defineComponent({
   components: {
