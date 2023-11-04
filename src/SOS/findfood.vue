@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴"> 
+    <!-- show a red box with text to indicate error message -->
+    <div v-show="error" class="error-box">{{ error }}</div>
+    <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴" v-model="address"> 
     <!-- get current location button -->
     <n-button class="controls" id="get-current-location">Get Current Location📍</n-button>
     <div id="map-side-panel">
@@ -12,6 +14,9 @@
 </template>
 
 <script>
+import axios from 'axios';
+const apikey = 'AIzaSyCJEbankCC_fPBj9rycpHn_l1YKRtFnA6E';
+
 export default {
   name: 'GoogleMapSearch',
   mounted() {
@@ -19,19 +24,39 @@ export default {
   },
   data() {
     return {
-      markers: []
+      markers: [],
+      address: '',
+      error: ''
     }
   },
   methods: {
+    getAddressFrom(lat, long){
+        axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apikey}`)
+        .then(response => {
+          if(response.data.error_message) {
+            // console.log(response.data.error_message);
+            this.error = response.data.error_message;
+            // alert(response.data.error_message);
+          }
+          else {
+            // console.log(response.data.results[0].formatted_address);
+            if(this.address == ''){
+              this.address = response.data.results[0].formatted_address;
+            }
+          }
+        }).catch(error => {
+          this.error = error.message;
+          console.log(error);
+        });
+    },
+    
     clearMarkers() {
       for (const marker of this.markers) {
         console.log(marker);
         marker.setMap(null); // Remove the marker from the map
         marker.setVisible(false); // Hide the marker
       }
-      // console.log(this.markers.length);
       this.markers = []; // Clear the markers array
-      // console.log(this.markers.length);
     },
 
     initMap() {
@@ -40,6 +65,7 @@ export default {
         center: { lat: 1.3483, lng: 103.6831 },
         zoom: 16,
       });
+      // Create the search box and link it to the UI element.
       const searchBox = new google.maps.places.SearchBox(input);
 
       map.addListener('bounds_changed', () => {
@@ -83,6 +109,7 @@ export default {
               fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos']
             }, (place, status) => {
               if (status === google.maps.places.PlacesServiceStatus.OK) {
+                this.address = place.formatted_address;
                 this.displayPlaceDetails(place);
               }
             });
@@ -90,6 +117,37 @@ export default {
 
         });
         map.fitBounds(bounds);
+      });
+
+      // get current location button
+      const getCurrentLocationButton = document.getElementById('get-current-location');
+      getCurrentLocationButton.addEventListener("click", () => {
+        if (navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+              this.getAddressFrom(position.coords.latitude, position.coords.longitude);
+              map.setCenter(pos);
+              map.setZoom(16);
+              // create marker to indicate current location
+              const marker = new google.maps.Marker({
+                map: map,
+                position: pos,
+                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+              });
+              this.markers.push(marker); // Push the marker to the array
+            },
+            () => {
+              alert("Location permission denied");
+            }
+          )
+        }
+        else {
+          alert("Geolocation is not supported by this browser.");
+        }
       });
     }, //close initMap
 
@@ -144,24 +202,27 @@ export default {
 
       // add button for closing this element
       // center the button in the card
-      const closeButton = document.createElement('button');
-      closeButton.style.margin = '0 auto';
-      closeButton.style.borderRadius = '30px';
-      // change the button color to brown
-      closeButton.style.backgroundColor = '#342628';
-      closeButton.textContent = 'Close';
+      // create n button
       
+      const closeButton = document.createElement('button');
+      // closeButton.style.margin = '0 auto';
+      // remove click animation when clicked
+      closeButton.style.outline = 'none';
+      closeButton.style.border = '1px solid';
+      closeButton.style.borderRadius = '30px';
+      // set border color to same color as card
+      closeButton.style.borderColor = '#f7f3f0';
+      closeButton.textContent = '✖';
+      // position the button in the card at the top right corner
+      closeButton.style.position = 'absolute';
+      closeButton.style.top = '0';
+      closeButton.style.right = '0';
+      // add event listener to close the card when clicked
       closeButton.addEventListener('click', () => {
         sidePanel.style.display = 'none';
       });
       sidePanel.appendChild(closeButton);
 
-      // if (place.formatted_phone_number) {
-      //   const phoneNumberElement = document.createElement('a');
-      //   phoneNumberElement.href = `${place.formatted_phone_number}`;
-      //   phoneNumberElement.textContent = `\n ${place.formatted_phone_number}`; //phone no.
-      //   sidePanel.appendChild(phoneNumberElement);
-      // }
       // const reviewsHeader = document.createElement('h3');
       // reviewsHeader.textContent = 'Reviews:';
       // sidePanel.appendChild(reviewsHeader);
@@ -254,5 +315,15 @@ flex-direction: row;
 #side-panel p {
   margin: 0 0 10px;
 }
+
+.error-box {
+  background-color: #f9f9f9;
+  color: red;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid red;
+  border-radius: 5px;
+}
 </style>
+
 
