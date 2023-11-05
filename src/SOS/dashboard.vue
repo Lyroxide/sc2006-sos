@@ -108,7 +108,7 @@ export default defineComponent({
 </script>
 
 
-<style>
+<style scoped>
 .dashboard {
   position: relative;
   flex-direction: row;

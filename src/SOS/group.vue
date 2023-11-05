@@ -1,15 +1,15 @@
 <template>
-  <n-space vertical class="group" v-if="group.value">
-    <n-space class="header" justify="start">
-      <n-h1>{{ group.value.GroupName }}</n-h1>
-      <n-button>View Next Meeting</n-button>
-      <n-text>{{ group.value.Capacity }}</n-text>
-    </n-space>
-    <n-space class="group-image">
-      <n-image
-          src=""
-      />
-    </n-space>
+  <n-space class="group" v-if="group" item-style="display: flex;" justify="space-evenly">
+    <n-card :title="group.GroupName" size="huge" content-style="width: 1000px;">
+      <n-tabs default-value="oasis" justify-content="space-evenly" type="line">
+        <n-tab-pane name="chat" tab="Group Chat">
+          Wonderwall
+        </n-tab-pane>
+        <n-tab-pane name="meeting" tab="Next Meeting">
+          Hey Jude
+        </n-tab-pane>
+      </n-tabs>
+    </n-card>
   </n-space>
 </template>
 
@@ -30,10 +30,8 @@ export default {
 
     watch(() => props.groupId, async (newVal) => {
       if (newVal) {
-        console.log(newVal);
         group.value = await store.dispatch('group/getGroupDetails', newVal)
             .catch(error => console.error(error));
-        console.log(group.value);
       }
     }, {immediate: true});
 
@@ -46,7 +44,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 
 
 </style>

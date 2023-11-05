@@ -9,9 +9,8 @@ const actions = {
     async getGroupDetails({ commit }, GroupID) {
         try {
             const response = await GroupService.getGroupDetails(GroupID);
-            console.log(response.data);
-            commit('groupsSuccess', response.data); // commits to mutation – updates state with the received data.
-            return response.data; // returns the data to calling function
+            commit('groupsSuccess', response.data);
+            return response.data;
         } catch (error) {
             console.error(error);
         }

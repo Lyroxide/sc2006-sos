@@ -1,16 +1,27 @@
 <template>
-  <n-space class="group-page" item-style="display:flex;margin:10px;" justify="start" style="flex-wrap: nowrap;">
+  <n-space class="group-page" item-style="display:flex;margin:70px;" justify="center" style="flex-wrap: nowrap;">
     <n-space vertical class="group-listing">
-      <n-tabs
-          :key="type + placement"
-          :type="type"
-          animated
-          :placement="placement"
-      >
-        <n-tab-pane v-for="group in groups" :key="group.GroupID" :name="group.GroupName" :tab="group.GroupName">
-          <Group :group-id="group.GroupID"/>
-        </n-tab-pane>
-      </n-tabs>
+      <n-list hoverable clickable>
+        <n-list-item v-for="group in groups" @click="selectGroup(group.GroupID)" :key="group.GroupID" :class="{ 'active-item': active === group.GroupID }">
+          <n-thing :title="group.GroupName" content-style="margin-top: 10px;">
+            <template #description>
+              <n-space size="small" style="margin-top: 4px">
+                <n-tag :bordered="false" type="info" size="small">
+                  Tag A
+                </n-tag>
+                <n-tag :bordered="false" type="info" size="small">
+                  Tag B
+                </n-tag>
+              </n-space>
+            </template>
+            {{ group.GroupDesc }}
+          </n-thing>
+        </n-list-item>
+      </n-list>
+      <n-divider />
+    </n-space>
+    <n-space v-if="selectedGroupId">
+      <Group :group-id="selectedGroupId"/>
     </n-space>
   </n-space>
 </template>
@@ -29,29 +40,51 @@ export default defineComponent({
 
   setup() {
     const groups = ref([]);
+    const active = ref(null);
+    const selectedGroupId = ref(null);
     const placement = ref("left");
     const type = ref("card");
+
+    const selectGroup = (id) => {
+      selectedGroupId.value = id;
+      active.value = id;
+    }
+
     onMounted(async() => {
-      const groupsDB = await store.dispatch("group/getOwnGroups");
-      for (let g of groupsDB) {
-        groups.value.push(g);
+      groups.value = await store.dispatch("group/getOwnGroups");
+      for (let group of groups.value) {
+        const g = await store.dispatch('group/getGroupDetails', group.GroupID);
+        Object.assign(group, g);
       }
     })
 
-    console.log(groups);
-
     return {
+      active,
       groups,
+      selectedGroupId,
       placement,
       type,
+      selectGroup
     };
   },
 });
 </script>
 
+<style scoped>
 
+.n-list-item {
+  width: 300px;
+  background-color: #d1b5b9;
+}
 
-<style>
+.n-list-item:hover {
+  background-color: #d1b5b9 !important;
+  box-shadow: 0px 0px 20px 0px rgba(143, 52, 46, 0.3);
+}
 
+.active-item {
+  background-color: #d1b5b9 !important;
+  box-shadow: 0px 0px 20px 0px rgba(143, 52, 46, 0.3);
+}
 
 </style>

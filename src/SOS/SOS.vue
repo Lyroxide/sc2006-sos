@@ -17,23 +17,22 @@
 </template>
 
 <script>
-import { NConfigProvider } from 'naive-ui'
+import { NConfigProvider, lightTheme } from 'naive-ui'
 import headerVue from "./header.vue"
 import footerVue from "./footer.vue"
-
-
 
 
 export default {
   components: {
     "Header": headerVue,
-    "Footer": footerVue,
+    "Footer": footerVue
   },
   mounted() {
     fetch('http://www.letsmakantogether.com/api/connect')
       .then(response => response.json())
       .then(data => console.log(data));
   }
+
 };
 </script>
 
@@ -54,4 +53,6 @@ router-view {
   flex-grow: 1; /* consume all available free space */
   overflow:auto; /* add scroll to router-view content if needed instead of the whole page */
 }
+
+
 </style>
