@@ -18,23 +18,18 @@
         <n-text class="day-date-year">{{ date }}</n-text>
       </n-space>
 
-      <n-scrollbar style="max-height: 300px">
-        <n-space class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: wrap;">
-          <n-card hoverable v-for="(meeting, index) in meetings" :key="meeting.ID" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
+      <n-scrollbar style="max-height: 200px">
+        <n-space class="vertical-scroll-container" item-style="display:block;margin:0px;" align="center" justify="center" style="flex-wrap: wrap;">
+          <n-card hoverable v-for="(meeting, index) in meetings" :key="meeting.GroupID" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
             <n-space vertical align="center" justify="center" item-style="display: flex;">
-              <n-space class="card-top" justify="start">
-                <n-h1 class ="group-name"> {{ meeting.group.GroupName }} </n-h1>
-                <font-awesome-icon :icon="['fas', 'user']" class="shift-icon" />
-                <n-text class="group-mdate">{{ meeting.mDate }}</n-text>
-                <n-text class="group-mtime">{{ meeting.mTime }}</n-text>
-                <n-text class="group-mloc">{{ meeting.mLoc }}</n-text>
-              </n-space>
+              <n-h1 class ="group-name">{{ meeting.GroupName }}</n-h1>
+              <n-space><n-text class="group-mdate">Date: {{ meeting.mDate }}</n-text></n-space>
+              <n-space><n-text class="group-mtime">Time: {{ meeting.mTime }}</n-text></n-space>
+              <n-space><n-text class="group-mloc">Location: {{ meeting.mLoc }}</n-text></n-space>
             </n-space>
           </n-card>
         </n-space>
       </n-scrollbar>
-
-
     </n-space>
 
   </n-space>
@@ -43,41 +38,38 @@
 
 
 <script>
-
-import {defineComponent, ref, computed, onMounted} from "vue";
-import {useMessage} from "naive-ui";
+import { defineComponent, ref, computed, onMounted } from "vue";
+import { useMessage } from "naive-ui";
 import store from "../store/index.js";
-//import { generateDummyGroups, generateDummyMeetings } from "@/utils/dummyData";
-
 
 export default defineComponent({
   data() {
     return {
       interval: null,
       time: null,
-      date: null
-    }
+      date: null,
+    };
   },
-
 
   beforeDestroy() {
     // prevent memory leak
-    clearInterval(this.interval)
+    clearInterval(this.interval);
   },
+
   created() {
     this.interval = setInterval(() => {
       let currentDate = new Date();
       this.time = Intl.DateTimeFormat(navigator.language, {
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        hour12: false
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false,
       }).format(currentDate);
       this.date = Intl.DateTimeFormat(navigator.language, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       }).format(currentDate);
     }, 1000);
   },
@@ -101,11 +93,40 @@ export default defineComponent({
       meetings: meetings.value,
     }; */
 
+    onMounted(async () => {
+      // Generate dummy group data
+      meetings.value = [
+        {
+          GroupID: 1,
+          GroupName: "cinnamoroll",
+          mDate: "2022-01-01",
+          mTime: "10:00 AM",
+          mLoc: "258 South Bridge Rd, #01-01, Singapore 058807",
+        },
+        {
+          GroupID: 2,
+          GroupName: "pochacco",
+          mDate: "2022-01-02",
+          mTime: "11:00 AM",
+          mLoc: "52 Tanjong Pagar Rd, Singapore 088473",
+        },
+        {
+          GroupID: 3,
+          GroupName: "pompompurin",
+          mDate: "2022-01-03",
+          mTime: "12:00 PM",
+          mLoc: "89 Neil Rd, #01-01, Singapore 088849",
+        },
+      ];
+
+    });
+    return {
+      meetings
+    }
   },
-
 });
-
 </script>
+
 
 
 <style scoped>
@@ -117,7 +138,7 @@ export default defineComponent({
 
 
 .time {
-  font-size: 55px;
+  font-size: 65px;
 }
 
 .text-container {
@@ -128,7 +149,7 @@ export default defineComponent({
 }
 
 .day-date-year{
-  font-size: 30px;
+  font-size: 20px;
   white-space: nowrap;
 }
 
@@ -153,28 +174,43 @@ export default defineComponent({
 .custom-card-first {
   justify-content: center;
   align-items: center;
-  background-color: rgba(254,170,0,.60); /* Replace with your desired color for the top half */
+  background-color: rgba(254,170,0,.30); /* Replace with your desired color for the top half */
   width: 400px;
-  height: 400px;
+  height: 200px;
   border-radius: 30px;
 }
 
 .custom-card-second {
   justify-content: center;
   align-items: center;
-  background-color: rgba(120,132,2, .60); /* Replace with your desired color for the top half */
+  background-color: rgba(120,132,2, .30); /* Replace with your desired color for the top half */
   width: 400px;
-  height: 400px;
+  height: 200px;
   border-radius: 30px;
 }
 
 .custom-card-third {
   justify-content: center;
   align-items: center;
-  background-color: rgba(87, 40, 34, .60); /* Replace with your desired color for the top half */
+  background-color: rgba(87, 40, 34, .30); /* Replace with your desired color for the top half */
   width: 400px;
-  height: 400px;
+  height: 200px;
   border-radius: 30px;
+}
+
+.vertical-scroll-container{
+  gap: 0;
+}
+
+.group-name{
+  margin: 0 0 0 0;
+}
+
+.group-mdate, .group-mtime, .group-mloc{
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  gap: 0;
 }
 
 </style>
