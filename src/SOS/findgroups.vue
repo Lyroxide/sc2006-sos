@@ -40,8 +40,8 @@
             </n-space>
           </n-space>
           <n-space class="group-tags" justify="start">
-            <n-button class="tag">{{ group.regionPreference }}</n-button>
-            <n-button v-for="tag in group.foodPreferences" :key="tag" class="tag">{{ tag }}</n-button>
+            <n-tag class="tag" :bordered="false">{{ group.regionPreference }}</n-tag>
+            <n-tag v-for="tag in group.foodPreferences" :key="tag" class="tag" :bordered="false">{{ tag }}</n-tag>
           </n-space>
           <n-space class="group-footer" justify="center" align="center">
             <n-button circle @click="joinGroup(group)">
@@ -131,6 +131,10 @@ export default defineComponent({
 
 <style>
 
+.n-card {
+  border-color: #342628 !important;
+  border-width: 3px !important;
+}
 
 .custom-card-first {
   justify-content: center;
@@ -202,8 +206,9 @@ export default defineComponent({
 .tag {
   background-color: rgba(255, 255, 255, .40);
   border-radius: 30px;
+  color: #342628;
   padding: 15px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .select-component{
