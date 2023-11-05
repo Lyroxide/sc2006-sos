@@ -34,7 +34,6 @@
 </template>
 
 <script>
-
 import { defineComponent, ref, onMounted } from "vue";
 import { useMessage } from "naive-ui";
 import store from "../store/index.js";

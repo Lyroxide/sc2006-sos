@@ -10,6 +10,7 @@ import FindFood from '../SOS/findfood.vue'
 import Dashboard from '../SOS/dashboard.vue';
 import MyGroups from '../SOS/mygroups.vue';
 import EditProfile from '../SOS/editprofile.vue';
+import nextMeeting from '../SOS/nextmeeting.vue';
 
 const routes = [
     {
@@ -61,6 +62,11 @@ const routes = [
         path: "/editprofile",
         name: "editprofile",
         component: EditProfile,
+    },
+    {
+        path: "/nextmeeting",
+        name: "nextmeeting",
+        component: nextMeeting,
     },
 ];
 

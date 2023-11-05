@@ -7,6 +7,7 @@ const actions = {
         let UserID = rootState.auth.user.id;
         return UserService.getUserDetails(UserID).then(
             response => {
+                console.log(response.data);
                 return Promise.resolve(response.data);
             },
             error => {
@@ -62,6 +63,28 @@ const actions = {
     editUserRegionalPreferences({ rootState }, pref) {
         let UserID = rootState.auth.user.id;
         return UserService.editUserRegionalPreferences(UserID, pref).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        )
+    },
+    editMeetingDetails({ rootState }, user) {
+        let UserID = rootState.auth.user.id;
+        return UserService.editMeetingDetails(UserID, user).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        )
+    },
+    getMeetingDetails({ rootState }) {
+        let UserID = rootState.auth.user.id;
+        return UserService.getMeetingDetails(UserID).then(
             response => {
                 return Promise.resolve(response.data);
             },
