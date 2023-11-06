@@ -129,7 +129,7 @@ export default defineComponent({
 
 
 
-<style>
+<style scoped>
 
 .n-card {
   border-color: #342628 !important;
