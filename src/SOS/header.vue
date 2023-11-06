@@ -1,6 +1,6 @@
 <template>
   <n-layout-header >
-    <n-space item-style="display: flex; " justify="space-evenly" align="center" class="header">
+    <n-space item-style="display: flex;" justify="space-evenly" align="center" class="header">
 
       <template v-if="currentUser">
         <n-a @click="goTo('/dashboard')">
@@ -95,8 +95,12 @@ export default {
 <style scoped>
 
 .header {
-  padding: 10px 100px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 10px;
   background-color: #342628;
+  z-index: 10;
 }
 
 .main {

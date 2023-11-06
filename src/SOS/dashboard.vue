@@ -1,6 +1,6 @@
 <template>
 
-  <n-space class="dashboard" item-style="display:flex;" align="center" justify="space-evenly" style="flex-wrap: nowrap;">
+  <n-space class="dashboard" item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap; align-items: center; justify-content: center">
     <n-space class="carousel-container" justify="center">
       <n-carousel autoplay>
         <img class="carousel-img circle" src="../assets/Carou1.png">
@@ -133,19 +133,20 @@ export default defineComponent({
 .dashboard {
   position: relative;
   flex-direction: row;
-  margin: 0% 15% 0% 15%;
+  margin: 0 10% 0 10%;
+  height: 100vh;
 }
 
 
 .time {
-  font-size: 65px;
+  font-size: 70px;
 }
 
 .text-container {
   align-items: center;
   width: 50%;
   text-align: center;
-  flex: 15 1 600px;
+  flex: 0 1 600px;
 }
 
 .day-date-year{
@@ -153,11 +154,14 @@ export default defineComponent({
   white-space: nowrap;
 }
 
+.n-card {
+  border-color: #342628 !important;
+  border-width: 3px !important;
+}
 
 
 @media screen and (min-width: 600px) {
   .carousel-container {
-    margin: 10% 10%;
     width: 60%;
     flex: 0 0 400px;
   }
