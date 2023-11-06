@@ -47,6 +47,22 @@ router.get('/groups/:GroupID', async (req, res) => {
     try {
         const group = await Group.findOne({ where: { GroupID: req.params.GroupID } });
         if (group) {
+            group.setDataValue('memberCount', await GroupMember.findAndCountAll({ where: { GroupID: group.GroupID} }));
+            const groupFoodPreferences = await GroupFoodPreference.findAll({ where: { GroupID: group.GroupID } })
+            let foodPreferences = [];
+            for (let fp of groupFoodPreferences) {
+                const f = await FoodPreference.findAll({where : { FoodPreferenceID: fp.FoodPreferenceID}});
+                for (let x of f) {
+                    foodPreferences.push(x.FoodType);
+                }
+            }
+            group.setDataValue('foodPreferences', foodPreferences);
+
+            const groupRegionPreference = await GroupRegionPreference.findOne({ where: { GroupID: group.GroupID } });
+            const r = await RegionPreference.findAll({where: {RegionPreferenceID: groupRegionPreference.RegionPreferenceID}});
+            for (let x of r) {
+                group.setDataValue('regionPreference', x.RegionType);
+            }
             res.send(group);
         } else {
             res.status(404).send({ message: 'Group not found!' });
