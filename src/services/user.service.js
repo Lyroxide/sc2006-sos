@@ -41,13 +41,7 @@ class UserService {
     getOwnGroups(UserID) {
         return axios.get(API_URL + `group-members/user/${UserID}`,{ headers: authHeader() });
     }
-    getMeetingDetails(UserID, GroupID) {
-        return axios.get(API_URL + `meetings/groups/${GroupID}`,{ headers: authHeader() });
-    }
-    editMeetingDetails(UserID, id) {
-        let data = { UserID, id }
-        return axios.put(API_URL + `meetings/${id}`, data, { headers: authHeader() });
-    }
+
 
 }
 

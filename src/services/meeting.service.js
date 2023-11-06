@@ -11,8 +11,9 @@ class MeetingService {
         return axios.post(API_URL + 'meetings', Group, { headers: authHeader() });
     }
 
-    editMeeting(Group) {
-        return axios.put(API_URL + 'meetings', Group, { headers: authHeader() });
+    editMeeting(Meeting) {
+       // let data = { UserID, id }
+        return axios.put(API_URL + 'meetings', Meeting, { headers: authHeader() });
     }
 }
 
