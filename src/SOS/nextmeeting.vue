@@ -15,8 +15,8 @@
           <n-form-item label="Location">
             <n-input v-model:value="model.Location" :disabled="!isEditing" @keydown.enter.prevent/>
           </n-form-item>
-          <n-button v-show="isGroupOwner" round type="primary" @click="isEditing ? saveMeetingDetails() : isEditing = true">
-            {{ isEditing ? 'Save' : 'Edit' }}
+          <n-button v-show="isGroupOwner" round type="primary" @click="isEditing ? (isMeetingExists ? saveMeetingDetails : createMeetingDetails) : isEditing = true">
+            {{ isEditing ? 'Save' : (isMeetingExists ? 'Edit' : 'Create') }}
           </n-button>
         </n-form>
       </n-card>
@@ -42,14 +42,17 @@ export default defineComponent({
     setup() {
       const formRef = ref(null);
       const message = useMessage();
-      const isEditing = ref(false);
+      let isEditing = ref(false);
+      const groupDetails = ref({});
       const userDetails = ref({});
       const isGroupOwner = ref(false);
       const meetingDetails = ref({});
 
       async function getUserDetails() { //get userdetail from backend to check if user is owner
         try {
-            userDetails.value = await store.dispatch("user/getUserDetails");
+           userDetails.value = await store.dispatch("user/getUserDetails");
+          console.log(userDetails);
+          // const groupDetails.value = await store.dispatch('group/getGroupDetails', group.GroupID);
         } catch (error) {
           console.error(error);
         }
@@ -58,25 +61,32 @@ export default defineComponent({
       //check if current user is the owner
 
       watchEffect(() => {
-        if (userDetails.value.Username === 'Sanrio123') { //need to compare with group owner
+        if (userDetails.value.UserID === groupDetails.value.OwnerID) { //need to compare userDetails.UserID with group.ownerID to check if user is group owner
           isGroupOwner.value = true;
         }
       });
 
       //to auto-populate meeting details from database
+      let isMeetingExists = ref(false);
       async function getMeetingDetails() {
         try {
-          meetingDetails.value = await store.dispatch("user/getMeetingDetails");
+          meetingDetails.value = await store.dispatch("user/getMeeting", group.GroupID);
+          if (meetingDetails.value) {
+            isMeetingExists.value = true; //meeting exist, edit button shown
+          } else {
+            isMeetingExists.value = false; //meeting !exit, create button shown
+          }
         } catch (error) {
           console.error(error);
         }
       }
       onMounted(getMeetingDetails);
+
       // to save the meeting details to database
       async function saveMeetingDetails() {
         if(isEditing.value) {
           try {
-            await store.dispatch("user/editMeetingDetails", meetingDetails.value);
+            await store.dispatch("user/editMeeting", meetingDetails.value);
             message.info("Successfully Saved");
           } catch (error) {
             console.error(error);
@@ -84,15 +94,29 @@ export default defineComponent({
           }
         }
       }
+
+      async function createMeetingDetails() {
+        if(isEditing.value) {
+          try {
+            await store.dispatch("user/editMeeting", meetingDetails.value);
+            message.info("Successfully Saved");
+          } catch (error) {
+            console.error(error);
+            message.error("Failed to save");
+          }
+        }
+      }
+
       return {
         isGroupOwner,
         formRef,
         getUserDetails,
-        userDetails,
         saveMeetingDetails,
         getMeetingDetails,
+        createMeetingDetails,
         model: meetingDetails,
         isEditing,
+        isMeetingExists,
       };
     },
 
