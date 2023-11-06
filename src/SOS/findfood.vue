@@ -3,6 +3,7 @@
     <!-- show a red box with text to indicate error message -->
     <div v-show="error" class="error-box">{{ error }}</div>
     <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴" v-model="address"> 
+    <input id="tourism-input" class="controls" type="text" placeholder="Search Tourism🏖️🏝️" v-model="tourism_place">
     <!-- get current location button -->
     <n-button class="controls" id="get-current-location">Get Current Location📍</n-button>
     <div id="map-side-panel">
@@ -26,7 +27,9 @@ export default {
     return {
       markers: [],
       address: '',
-      error: ''
+      error: '',
+      tourism_data: [],
+      tourism_place: ''
     }
   },
   methods: {
@@ -49,6 +52,47 @@ export default {
           console.log(error);
         });
     },
+
+    getAddressUsingTourism(values){
+      axios.get(`https://api.stb.gov.sg/content/food-beverages/v2/search?searchType=keyword&searchValues=${values}&limit=50`, {
+        headers: {
+          "X-API-KEY": "pjPGEAntFihj9DBpu3HwP3iK4ANq1xX7",
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => {
+        if(response.data) {
+          // console.log(response.data.error_message);
+          console.log(response.data);
+          this.error = response.data.error_message;
+          // alert(response.data.error_message);
+        }
+        else {
+          console.log(response.data);
+          // console.log(response.data.results[0].formatted_address);
+          // if(this.address == ''){
+          //   this.address = response.data.results[0].formatted_address;
+          // }
+        }
+      }).catch(error => {
+        this.error = error.message;
+        console.log(error);
+      });
+
+      //   const config = {
+      //     headers: {
+      //       "X-API-KEY": "pjPGEAntFihj9DBpu3HwP3iK4ANq1xX7",
+      //       "Content-Type": "application/json"
+      //     },
+      //   };
+      //   const response = await fetch('https://api.stb.gov.sg/content/food-beverages/v2/search', config);
+      //   const res_json = await response.json();
+      //   console.log(res_json);
+      // } catch (error){
+      //   console.log("Error occured:", error);
+      // }
+
+    },
     
     clearMarkers() {
       for (const marker of this.markers) {
@@ -60,6 +104,11 @@ export default {
     },
 
     initMap() {
+      const testinput = document.getElementById('tourism-input');
+      testinput.dispatchEvent(new Event('change'));
+      testinput.addEventListener('change', () => {
+          this.getAddressUsingTourism(testinput.value);
+      });
       const input = document.getElementById('pac-input');
       const map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: 1.3483, lng: 103.6831 },
