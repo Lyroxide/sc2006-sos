@@ -83,40 +83,42 @@ export default {
         // For each place, get the icon, name and location.
         const bounds = new google.maps.LatLngBounds();
         places.forEach(place => {
-          if (!place.geometry) {
-            console.log("Returned place contains no geometry");
-            return;
-          }
+          if(place.types.includes("food")){
+            console.log(place);
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
 
-          if (place.geometry.viewport) {
-            // Only geocodes have viewport.
-            bounds.union(place.geometry.viewport);
-          } else {
-            bounds.extend(place.geometry.location);
-          }
-          // console.log(place.geometry.location);
-          const marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-            placeId: place.place_id  // Store the placeId in the marker
-          });
-          this.markers.push(marker); // Push the marker to the array
-          
-          marker.addListener('click', () => {    //only display details when pin is clicked :D
-            const service = new google.maps.places.PlacesService(map);
-            service.getDetails({
-              placeId: marker.placeId,  // Use the placeId from the marker
-              fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos']
-            }, (place, status) => {
-              if (status === google.maps.places.PlacesServiceStatus.OK) {
-                this.address = place.formatted_address;
-                this.displayPlaceDetails(place);
-              }
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+            // console.log(place.geometry.location);
+            const marker = new google.maps.Marker({
+              map: map,
+              position: place.geometry.location,
+              placeId: place.place_id  // Store the placeId in the marker
             });
+            this.markers.push(marker); // Push the marker to the array
+            
+            marker.addListener('click', () => {    //only display details when pin is clicked :D
+              const service = new google.maps.places.PlacesService(map);
+              service.getDetails({
+                placeId: marker.placeId,  // Use the placeId from the marker
+                fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos']
+              }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                  this.address = place.formatted_address;
+                  this.displayPlaceDetails(place);
+                }
+              });
+            });
+          }
           });
-
-        });
-        map.fitBounds(bounds);
+          map.fitBounds(bounds);
       });
 
       // get current location button
@@ -161,7 +163,7 @@ export default {
       nameElement.textContent = place.name; // Name
       sidePanel.appendChild(nameElement);
       const addressHeader = document.createElement('h3');
-      addressHeader.textContent = '🏠Address:';
+      addressHeader.textContent = '🏠 Address:';
       sidePanel.appendChild(addressHeader);''
       const addressElement = document.createElement('p');
       addressElement.textContent = place.formatted_address; //Address
@@ -170,7 +172,7 @@ export default {
       // if places rating is not undefined, display rating
       if(place.rating){
         const ratingElement = document.createElement('h3');
-        ratingElement.textContent = `⭐ Rating: ${place.rating}/5 ⭐`; //Rating
+        ratingElement.textContent = `⭐ Rating: ${place.rating}/5`; //Rating
         sidePanel.appendChild(ratingElement);
       }
 
@@ -189,11 +191,20 @@ export default {
       //   sidePanel.appendChild(websiteElement);
       // }
       // open website in new tab
-      const websiteElement = document.createElement('a');
-      websiteElement.target = '_blank';
-      websiteElement.href = `https://www.google.com/search?q=${place.name}`;
-      websiteElement.textContent = `Google 🔎: ${place.name}`;
-      sidePanel.appendChild(websiteElement);
+      if(place.website){
+        const websiteElement = document.createElement('a');
+        websiteElement.target = '_blank';
+        websiteElement.href = `${place.website}`;
+        websiteElement.textContent = `Website 🌐: ${place.name}`;
+        sidePanel.appendChild(websiteElement);
+      }
+      else{
+        const websiteElement = document.createElement('a');
+        websiteElement.target = '_blank';
+        websiteElement.href = `https://www.google.com/search?q=${place.name}`;
+        websiteElement.textContent = `Google 🔎: ${place.name}`;
+        sidePanel.appendChild(websiteElement);
+      }
 
 
       const newLine = document.createElement('h3');
