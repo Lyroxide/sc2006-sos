@@ -1,6 +1,6 @@
 <template>
 
-  <n-space class="dashboard" item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap; align-items: center; justify-content: center">
+  <n-space class="dashboard" item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap; align-items: center; justify-content: center;">
     <n-space class="carousel-container" justify="center">
       <n-carousel autoplay>
         <img class="carousel-img circle" src="../assets/Carou1.png">

@@ -49,6 +49,7 @@ export default defineComponent({
     async function getDetails() { //to populate fields automatically (from backend) after entering editProfile page
       try {
         userDetails.value = await store.dispatch("user/getUserDetails");
+        console.log(userDetails);
       } catch (error) {
         console.error(error);
       }
