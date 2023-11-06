@@ -82,9 +82,8 @@ CREATE TABLE `Groups` (
   OwnerID INT NOT NULL,
   GroupName VARCHAR(50) NOT NULL,
   GroupDesc VARCHAR(255) NOT NULL,
-  Capacity INT NOT NULL,
-  GroupDate DATETIME NOT NULL,
-  PRIMARY KEY (GroupID)
+  PRIMARY KEY (GroupID),
+  FOREIGN KEY (OwnerID) REFERENCES Users(UserID)
 );
 
 
@@ -163,9 +162,9 @@ CREATE TABLE Meeting (
   MeetingID INT AUTO_INCREMENT,
   GroupID INT NOT NULL,
   MeetingDate DATETIME NOT NULL,
-  MeetingDescription VARCHAR(255) NOT NULL,
-  FoodName VARCHAR(255) NOT NULL,
-  FoodDesc VARCHAR(255) NOT NULL,
+  MeetingAddress VARCHAR(255) NOT NULL,
+  MeetingDesc VARCHAR(255) NOT NULL,
+  MeetingPlace VARCHAR(255) NOT NULL,
   PRIMARY KEY (MeetingID),
   FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
 );
@@ -275,11 +274,11 @@ INSERT INTO UserRegionPreference (UserRegionPreferenceID, UserID, RegionPreferen
 (4, 3, 4);
 
 -- Groups
-INSERT INTO `Groups` (GroupID, OwnerID, GroupName, GroupDesc, Capacity, GroupDate) VALUES
-(1, 1, 'Grass', 'Join our weekend gatherings in Singapore as we, a community of vegetarians, embark on a journey to explore exciting vegetarian dining options. Come along and discover fresh plant-based delights with us each weekend!', 50, '2019-04-26'),
-(2, 2, 'Beer Kakis', 'We\'re a fun-loving bunch of pub enthusiasts! Come join us for Friday night experiences in Singapore as we explore the city\'s vibrant pub scene. Join our quest to discover all great pubs in town and unwind every week. NO SEH NO GO HOME!', 50, '2019-04-28'),
-(3, 3, 'Sushi lovers', 'Sushi is love. Sushi is life.', 40, '2019-04-30'),
-(4, 4, 'Caifan Gang', 'JIA FAN ZHE GE NA GE!!! Join us as we are on a hunt for cheap and nice caifan!', 40, '2019-05-02');
+INSERT INTO `Groups` (GroupID, OwnerID, GroupName, GroupDesc) VALUES
+(1, 1, 'Grass', 'Join our weekend gatherings in Singapore as we, a community of vegetarians, embark on a journey to explore exciting vegetarian dining options. Come along and discover fresh plant-based delights with us each weekend!'),
+(2, 2, 'Beer Kakis', 'We\'re a fun-loving bunch of pub enthusiasts! Come join us for Friday night experiences in Singapore as we explore the city\'s vibrant pub scene. Join our quest to discover all great pubs in town and unwind every week. NO SEH NO GO HOME!'),
+(3, 3, 'Sushi lovers', 'Sushi is love. Sushi is life.'),
+(4, 4, 'Caifan Gang', 'JIA FAN ZHE GE NA GE!!! Join us as we are on a hunt for cheap and nice caifan!');
 
 -- GroupChat
 INSERT INTO GroupChat (GroupChatID, GroupID, UserID) VALUES
@@ -290,10 +289,10 @@ INSERT INTO GroupChat (GroupChatID, GroupID, UserID) VALUES
 
 -- GroupChatMessages
 INSERT INTO GroupChatMessages (GroupChatMessagesID, GroupChatID, UserID, ChatDate, ChatMessage, Pinned) VALUES
-(1, 1, 1, '2019-04-26', 'Hi everyone!', 'N'),
-(2, 2, 2, '2019-04-28', 'Hii everyone!', 'N'),
-(3, 3, 3, '2019-04-30', 'Hello everyone!', 'N'),
-(4, 4, 4, '2019-05-02', 'Helloo everyone!', 'N');
+(1, 1, 1, '2023-10-22 10:17:52', 'Hi everyone!', 'N'),
+(2, 2, 2, '2023-10-22 10:17:52', 'Hii everyone!', 'N'),
+(3, 3, 3, '2023-10-22 10:17:52', 'Hello everyone!', 'N'),
+(4, 4, 4, '2023-10-22 10:17:52', 'Helloo everyone!', 'N');
 
 -- GroupMember
 INSERT INTO GroupMember (GroupMemberID, UserID, GroupID) VALUES
@@ -325,8 +324,8 @@ INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPrefe
 (4, 4, 4);
 
 -- Meeting
-INSERT INTO Meeting (MeetingID, GroupID, MeetingDate, MeetingDescription, FoodName, FoodDesc) VALUES
-(1, 1, '2019-05-03', 'Vegetarian food meetup', 'Vegetarian Bee Hoon', 'We shall consume all of the vegtarian beehoon'),
-(2, 2, '2019-05-05', 'Beer meetup', 'Tiger Beer', 'Drink all day! Happy Hour!'),
-(3, 3, '2019-05-07', 'Sushi Tuna Meetup', 'SushiExpress' ,'Eat all the cheap sushi!'),
-(4, 4, '2019-05-09', 'Caifan Meetup', 'Chang Cheng Caifan' ,'See who has the cheapest best selection!');
+INSERT INTO Meeting (MeetingID, GroupID, MeetingDate, MeetingAddress, MeetingDesc, MeetingPlace) VALUES
+(1, 1, '2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot'),
+(2, 2, '2023-10-11 22:00:00', '165 Tg Pagar Rd, Amara Hotel, Singapore 088539', 'I managed to book for 8 pax. Join us to unwind after work.', 'Jigger & Pony'),
+(3, 3, '2023-11-30 18:00:00', '78 Airport Boulevard B2-227/228 Jewel, Singapore Changi Airport, 819666', 'Legit best sushi here. We will go in pax of 6s. 20% discount available!' ,'Sushiro Jewel Changi'),
+(4, 4, '2023-11-01 11:30:00', '#01-180 Yuhua Market & Food Centre, 347 Jurong East Ave 1, S600347', 'Super budget friendly, tons of options, but might be sold out at 1pm. So don\'t be late and join us at 11.30!' ,'Lam Chan Mixed Veg Rice');
