@@ -21,7 +21,15 @@ const Meeting = sequelize.define('Meeting', {
         type: DataTypes.DATE,
         allowNull: false
     },
-    MeetingDescription: {
+    MeetingAddress: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    MeetingDesc: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    MeetingPlace: {
         type: DataTypes.STRING,
         allowNull: false
     }

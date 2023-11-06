@@ -8,6 +8,7 @@ const actions = {
     getMeeting({ commit }, GroupID) {
         return MeetingService.getMeeting(GroupID).then(
             response => {
+                console.log(response.data);
                 commit('meetingSuccess', response.data);
                 return Promise.resolve(response.data);
             },

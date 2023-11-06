@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
+import User from './User.js';
 
 const Group = sequelize.define('Group', {
     GroupID: {
@@ -7,20 +8,20 @@ const Group = sequelize.define('Group', {
         autoIncrement: true,
         primaryKey: true
     },
+    OwnerID: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: User,
+            key: 'id'
+        }
+    },
     GroupName: {
         type: DataTypes.STRING,
         allowNull: false,
     },
     GroupDesc: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    Capacity: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    GroupDate: {
-        type: DataTypes.DATE,
         allowNull: false,
     }
 },{

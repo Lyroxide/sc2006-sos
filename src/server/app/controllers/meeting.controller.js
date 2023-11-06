@@ -27,7 +27,9 @@ router.post('/meetings', async (req, res) => {
     const newMeeting = {
         GroupID: req.body.GroupID,
         MeetingDate: req.body.MeetingDate,
-        MeetingDescription: req.body.MeetingDescription,
+        MeetingAddress: req.body.MeetingAddress,
+        MeetingDesc: req.body.MeetingDesc,
+        MeetingPlace: req.body.MeetingPlace,
     };
 
     try {
@@ -42,7 +44,9 @@ router.put('/meetings/:id', async (req, res) => {
     const updatedMeeting = {
         GroupID: req.body.GroupID,
         MeetingDate: req.body.MeetingDate,
-        MeetingDescription: req.body.MeetingDescription,
+        MeetingAddress: req.body.MeetingAddress,
+        MeetingDesc: req.body.MeetingDesc,
+        MeetingPlace: req.body.MeetingPlace,
     };
 
     try {

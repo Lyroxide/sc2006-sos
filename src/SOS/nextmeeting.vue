@@ -1,19 +1,19 @@
 <template>
 <div class="container">
     <div id="meeting-panel">
-      <n-card title="Meeting detail" size="huge">
+      <n-card title="Next Meeting Details" size="huge" content-style="justify-content: center; align-items: center;">
         <n-form ref="formRef" :model="model" style="width:300px">
           <n-form-item label="Date">
-            <n-input v-model:value="model.Date" :disabled="!isEditing" @keydown.enter.prevent/>
+            <n-input v-model:value="model.MeetingDate" :disabled="!isEditing" @keydown.enter.prevent/>
           </n-form-item>
           <n-form-item label="Time">
-          <n-input v-model:value="model.Time" :disabled="!isEditing" @keydown.enter.prevent/>
+          <n-input v-model:value="model.time" :disabled="!isEditing" @keydown.enter.prevent/>
         </n-form-item>
           <n-form-item label="Place">
-            <n-input v-model:value="model.place" :disabled="!isEditing" @keydown.enter.prevent/>
+            <n-input v-model:value="model.MeetingPlace" :disabled="!isEditing" @keydown.enter.prevent/>
           </n-form-item>
           <n-form-item label="Location">
-            <n-input v-model:value="model.Location" :disabled="!isEditing" @keydown.enter.prevent/>
+            <n-input v-model:value="model.MeetingAddress" :disabled="!isEditing" @keydown.enter.prevent/>
           </n-form-item>
           <n-button v-show="isGroupOwner" round type="primary" @click="isEditing ? (isMeetingExists ? saveMeetingDetails : createMeetingDetails) : isEditing = true">
             {{ isEditing ? 'Save' : (isMeetingExists ? 'Edit' : 'Create') }}
@@ -34,53 +34,63 @@
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, watchEffect} from "vue";
-  import { useMessage } from "naive-ui";
-  import store from "../store/index.js";
+import { defineComponent, ref, onMounted, watch, watchEffect } from "vue";
+import { useMessage } from "naive-ui";
+import store from "../store/index.js";
 
 export default defineComponent({
-    setup() {
-      const formRef = ref(null);
-      const message = useMessage();
-      let isEditing = ref(false);
-      const groupDetails = ref({});
-      const userDetails = ref({});
-      const isGroupOwner = ref(false);
-      const meetingDetails = ref({});
+  props: {
+    groupId: {
+      type: Number,
+      required: true,
+    },
+  },
+  setup(props) {
+    const formRef = ref(null);
+    const message = useMessage();
+    const isEditing = ref(false);
+    const group = ref({});
+    const userDetails = ref({});
+    const isGroupOwner = ref(false);
+    const meetingDetails = ref({
+      place: null,
+      location: null,
+    });
+    const isMeetingExists = ref(false);
 
-      async function getUserDetails() { //get userdetail from backend to check if user is owner
-        try {
-           userDetails.value = await store.dispatch("user/getUserDetails");
-          console.log(userDetails);
-          // const groupDetails.value = await store.dispatch('group/getGroupDetails', group.GroupID);
-        } catch (error) {
-          console.error(error);
-        }
+    const getGroupDetails = async (groupId) => {
+      if (groupId) {
+        group.value = await store.dispatch('group/getGroupDetails', groupId)
+            .catch(error => console.error(error));
+        return group.value;
       }
-      onMounted(getUserDetails);
-      //check if current user is the owner
+    };
 
-      watchEffect(() => {
-        if (userDetails.value.UserID === groupDetails.value.OwnerID) { //need to compare userDetails.UserID with group.ownerID to check if user is group owner
-          isGroupOwner.value = true;
-        }
-      });
+    watch(() => props.groupId, async (newVal) => {
+      await getGroupDetails(newVal);
+      console.log(group.value);
+    }, {immediate: true});
 
-      //to auto-populate meeting details from database
-      let isMeetingExists = ref(false);
-      async function getMeetingDetails() {
+    onMounted(async() => {
+      await getGroupDetails(props.groupId);
+      console.log(group.value);
+      if (group.value) {
         try {
-          meetingDetails.value = await store.dispatch("user/getMeeting", group.GroupID);
-          if (meetingDetails.value) {
-            isMeetingExists.value = true; //meeting exist, edit button shown
-          } else {
-            isMeetingExists.value = false; //meeting !exit, create button shown
+          userDetails.value = await store.dispatch("user/getUserDetails");
+
+          if (userDetails.value.UserID === group.value.OwnerID) {
+            isGroupOwner.value = true;
           }
+          meetingDetails.value = await store.dispatch("meeting/getMeeting", group.value.GroupID);
+          isMeetingExists.value = Boolean(meetingDetails.value);
+          console.log(userDetails.value.UserID);
+          console.log(group.value.OwnerID);
         } catch (error) {
           console.error(error);
         }
       }
-      onMounted(getMeetingDetails);
+
+    })
 
       // to save the meeting details to database
       async function saveMeetingDetails() {
@@ -110,9 +120,7 @@ export default defineComponent({
       return {
         isGroupOwner,
         formRef,
-        getUserDetails,
         saveMeetingDetails,
-        getMeetingDetails,
         createMeetingDetails,
         model: meetingDetails,
         isEditing,
@@ -128,7 +136,11 @@ export default defineComponent({
   },
   data() {
     return {
-      markers: []
+      markers: [],
+      meetingDetails: {
+        place: '',
+        location: ''
+      }
     }
   },
   methods: {
@@ -193,8 +205,6 @@ export default defineComponent({
             }, (place, status) => {
               if (status === google.maps.places.PlacesServiceStatus.OK) {
                 this.displayPlaceDetails(place);
-                //this.meetingDetails.place = place.name;
-                //this.meetingDetails.Location = place.formatted_address;
               }
             });
           });
@@ -258,6 +268,19 @@ export default defineComponent({
       });
       sidePanel.appendChild(closeButton);
 
+      const confirmButton = document.createElement('button');
+      confirmButton.textContent = 'Confirm';
+      confirmButton.addEventListener('click', () => {
+        //sidePanel.style.display = 'none';
+
+          this.meetingDetails.value.place = place.name;
+          this.meetingDetails.value.location = place.formatted_address;
+          console.log(this.meetingDetails.place)
+
+
+      });
+      sidePanel.appendChild(confirmButton);
+
       /*
       const photoElement = document.createElement('img');
       if (place.photos && place.photos.length > 0) {
@@ -284,6 +307,15 @@ height: 80vh;
  display: flex;
 flex-direction: row;
 }  */
+
+.n-card {
+  border-color: #342628 !important;
+  border-width: 3px !important;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(254,170,0,.60); /* Replace with your desired color for the top half */
+  border-radius: 30px;
+}
 
 
 #map {

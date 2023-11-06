@@ -71,28 +71,6 @@ const actions = {
             }
         )
     },
-    editMeetingDetails({ rootState }, user) {
-        let UserID = rootState.auth.user.id;
-        return UserService.editMeetingDetails(UserID, user).then(
-            response => {
-                return Promise.resolve(response.data);
-            },
-            error => {
-                return Promise.reject(error);
-            }
-        )
-    },
-    getMeetingDetails({ rootState }) {
-        let UserID = rootState.auth.user.id;
-        return UserService.getMeetingDetails(UserID).then(
-            response => {
-                return Promise.resolve(response.data);
-            },
-            error => {
-                return Promise.reject(error);
-            }
-        )
-    },
 };
 
 const mutations = {

@@ -78,9 +78,7 @@ router.get('/groups/:GroupID', async (req, res) => {
 router.post('/groups', async (req, res) => {
     const newGroup = {
         GroupName: req.body.GroupName,
-        GroupDesc: req.body.GroupDesc,
-        Capacity: req.body.Capacity,
-        GroupDate: req.body.GroupDate
+        GroupDesc: req.body.GroupDesc
     };
 
     try {
@@ -113,9 +111,7 @@ router.delete('/groups/:id', async (req, res) => {
 router.put('/groups/:id', async (req, res) => {
     const updateGroup = {
         GroupName: req.body.GroupName,
-        GroupDesc: req.body.GroupDesc,
-        Capacity: req.body.Capacity,
-        GroupDate: req.body.GroupDate
+        GroupDesc: req.body.GroupDesc
     };
 
     try {
