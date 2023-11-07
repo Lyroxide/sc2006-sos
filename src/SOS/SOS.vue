@@ -26,11 +26,6 @@ export default {
   components: {
     "Header": headerVue,
     "Footer": footerVue
-  },
-  mounted() {
-    fetch('http://www.letsmakantogether.com/api/connect')
-      .then(response => response.json())
-      .then(data => console.log(data));
   }
 
 };

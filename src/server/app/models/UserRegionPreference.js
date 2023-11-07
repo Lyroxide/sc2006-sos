@@ -11,13 +11,11 @@ const UserRegionPreference = sequelize.define('UserRegionPreference', {
     },
     UserID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: User, key: 'UserID' },
+        allowNull: false
     },
     RegionPreferenceID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: RegionPreference, key: 'RegionPreferenceID' },
+        allowNull: false
     }
 }, {
     tableName: 'UserRegionPreference',

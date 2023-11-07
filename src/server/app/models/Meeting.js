@@ -11,11 +11,7 @@ const Meeting = sequelize.define('Meeting', {
     },
     GroupID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Group,
-            key: 'id'
-        }
+        allowNull: false
     },
     MeetingDate: {
         type: DataTypes.DATE,
@@ -37,5 +33,6 @@ const Meeting = sequelize.define('Meeting', {
     tableName: 'Meeting',
     timestamps: false,
 });
+
 
 export default Meeting;

@@ -1,6 +1,6 @@
 <template>
-<div class="container">
-    <div id="meeting-panel">
+  <n-space class="container" justify="center">
+    <n-space class="meeting-panel">
       <n-card title="Next Meeting Details" size="huge" content-style="justify-content: center; align-items: center;">
         <n-form ref="formRef" :model="model" style="width:300px">
           <n-form-item label="Date">
@@ -20,7 +20,7 @@
           </n-button>
         </n-form>
       </n-card>
-    </div>
+    </n-space>
     <div v-show="isGroupOwner">
       <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴">
       <n-button class="controls" id="get-current-location">Get Current Location📍</n-button>
@@ -29,7 +29,7 @@
       <div id="map"></div>
       <div id="side-panel"></div>
     </div>
-  </div>
+  </n-space>
 
 </template>
 

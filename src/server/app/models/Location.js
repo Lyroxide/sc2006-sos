@@ -10,11 +10,7 @@ const Location = sequelize.define('Location', {
     },
     MeetingID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Meeting,
-            key: 'id'
-        }
+        allowNull: false
     },
     LocationName: {
         type: DataTypes.STRING,

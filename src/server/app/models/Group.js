@@ -10,11 +10,7 @@ const Group = sequelize.define('Group', {
     },
     OwnerID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: User,
-            key: 'id'
-        }
+        allowNull: false
     },
     GroupName: {
         type: DataTypes.STRING,

@@ -1,0 +1,20 @@
+{
+  "name": "sos",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "core-js": "^3.6.5",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jquery": "^3.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.2",
+    "sequelize": "^6.33.0",
+    "nodemailer": "^6.9.7",
+    "dotenv": "^16.3.1"
+  }
+}

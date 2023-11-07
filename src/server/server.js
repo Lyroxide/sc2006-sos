@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { setupAssociations } from './app/models/associations.js';
 import authRoutes from './app/controllers/auth.controller.js';
 import foodPreferenceRoutes from './app/controllers/foodpreference.controller.js';
 import groupFoodPreferenceRoutes from './app/controllers/foodpreference.controller.js';
@@ -39,6 +40,7 @@ app.use('/api', userRegionPreferenceRoutes);
 app.use('/api', groupRoutes);
 app.use('/api', locationRoutes);
 
+setupAssociations();
 
 app.get('/', (req, res) => {
     res.json({message: "Welcome to the application."});
