@@ -11,17 +11,16 @@ const UserFoodPreference = sequelize.define('UserFoodPreference', {
     },
     UserID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: User, key: 'UserID' },
+        allowNull: false
     },
     FoodPreferenceID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: FoodPreference, key: 'FoodPreferenceID' },
+        allowNull: false
     }
 }, {
     tableName: 'UserFoodPreference',
     timestamps: false,
 });
+
 
 export default UserFoodPreference;

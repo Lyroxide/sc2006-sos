@@ -10,11 +10,7 @@ const GroupPicture = sequelize.define('GroupPicture', {
     },
     GroupID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Group,
-            key: 'id'
-        }
+        allowNull: false
     },
     FilePath: {
         type: DataTypes.STRING,

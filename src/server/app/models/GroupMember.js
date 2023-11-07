@@ -11,13 +11,11 @@ const GroupMember = sequelize.define('GroupMember', {
     },
     UserID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: User, key: 'UserID' }
+        allowNull: false
     },
     GroupID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: Group, key: 'GroupID' }
+        allowNull: false
     }
 }, {
     tableName: 'GroupMember',

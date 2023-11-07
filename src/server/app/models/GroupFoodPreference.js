@@ -11,19 +11,11 @@ const GroupFoodPreference = sequelize.define('GroupFoodPreference', {
     },
     GroupID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Group,
-            key: 'id'
-        }
+        allowNull: false
     },
     FoodPreferenceID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: FoodPreference,
-            key: 'id'
-        }
+        allowNull: false
     }
 }, {
     tableName: 'GroupFoodPreference',

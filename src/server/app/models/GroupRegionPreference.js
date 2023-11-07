@@ -11,19 +11,11 @@ const GroupRegionPreference = sequelize.define('GroupRegionPreference', {
     },
     GroupID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Group,
-            key: 'id'
-        }
+        allowNull: false
     },
     RegionPreferenceID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: RegionPreference,
-            key: 'id'
-        }
+        allowNull: false
     }
 }, {
     tableName: 'GroupRegionPreference',
