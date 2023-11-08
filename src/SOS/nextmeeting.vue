@@ -1,24 +1,91 @@
 <template>
-  <n-space class="container" justify="center">
-    <n-space class="meeting-panel">
+  <div class="container">
+    <n-space class="meeting-panel" style="justify-content: center">
       <n-card title="Next Meeting Details" size="huge" content-style="justify-content: center; align-items: center;">
-        <n-form ref="formRef" :model="model" style="width:300px">
-          <n-form-item label="Date">
-            <n-input v-model:value="model.MeetingDate" :disabled="!isEditing" @keydown.enter.prevent/>
-          </n-form-item>
-          <n-form-item label="Time">
-          <n-input v-model:value="model.time" :disabled="!isEditing" @keydown.enter.prevent/>
-        </n-form-item>
-          <n-form-item label="Place">
-            <n-input v-model:value="model.MeetingPlace" :disabled="!isEditing" @keydown.enter.prevent/>
-          </n-form-item>
-          <n-form-item label="Location">
-            <n-input v-model:value="model.MeetingAddress" :disabled="!isEditing" @keydown.enter.prevent/>
-          </n-form-item>
-          <n-button v-show="isGroupOwner" round type="primary" @click="isEditing ? (isMeetingExists ? saveMeetingDetails : createMeetingDetails) : isEditing = true">
-            {{ isEditing ? 'Save' : (isMeetingExists ? 'Edit' : 'Create') }}
-          </n-button>
-        </n-form>
+        <n-thing>
+          <template v-if="!isMeetingExists">
+            <n-h1>There are no upcoming meetings.</n-h1>
+            <n-button
+                round type="primary"
+                v-show="isGroupOwner"
+                @click="editMeeting"
+                color="#D9D9D9"
+                style="margin-top: 15px; color: #342628"
+            >
+              Create Meeting
+            </n-button>
+          </template>
+          <template v-else-if="isEditing">
+            <n-form ref="formRef" :model="model" style="width:300px">
+              <n-text>Date and Time</n-text>
+              <n-date-picker
+                  type="datetime"
+                  :default-value="Date.now()"
+                  :is-date-disabled="disablePreviousDate"
+                  v-model:value="model.DateTime"
+              />
+              <n-form-item label="Place">
+                <n-input v-model:value="model.MeetingPlace" :disabled="!isEditing" @keydown.enter.prevent/>
+              </n-form-item>
+              <n-form-item label="Location">
+                <n-input v-model:value="model.MeetingAddress" :disabled="!isEditing" @keydown.enter.prevent/>
+              </n-form-item>
+              <n-form-item label="Description">
+                <n-input v-model:value="model.MeetingDesc" :disabled="!isEditing" @keydown.enter.prevent/>
+              </n-form-item>
+              <n-space align="center" justify="end">
+                <n-button
+                    round type="primary"
+                    @click="handleMeetingAction"
+                    color="#D9D9D9"
+                    style="margin-top: 15px;"
+                >
+                  <n-icon :component="Check" color="#342628"/>
+                </n-button>
+                <n-button
+                    round
+                    @click="cancelEditing"
+                    color="#D9D9D9"
+                    style="margin-top: 15px;"
+                >
+                  <n-icon :component="Times" color="#342628"/>
+                </n-button>
+              </n-space>
+            </n-form>
+          </template>
+          <template v-else>
+            <n-space item-style="flex-direction: row;" align="center" justify="center">
+              <n-text style="font-size: 20px; text-align: center;">Date: {{ model.Date }}</n-text>
+              <n-text style="font-size: 20px; text-align: center;">Time: {{ model.Time }}</n-text>
+            </n-space>
+            <n-space item-style="flex-direction: row;" align="center" justify="center">
+              <n-text style="text-align: center;">Place Name: {{ model.MeetingPlace }}</n-text>
+            </n-space>
+            <n-space item-style="flex-direction: row;" align="center" justify="center">
+              <n-text style="text-align: center;">Location: {{ model.MeetingAddress }}</n-text>
+            </n-space>
+            <n-space item-style="flex-direction: row;" align="center" justify="center">
+              <n-text style="text-align: center;">{{ model.MeetingDesc }}</n-text>
+            </n-space>
+
+            <n-button round type="primary" @click="openGoogleMapsDirections">
+              Directions
+            </n-button>
+
+            <n-space align="center" justify="end">
+              <n-button
+                  round type="primary"
+                  v-show="isGroupOwner"
+                  @click="editMeeting"
+                  color="#D9D9D9"
+                  style="margin-top: 15px; color: #342628"
+              >
+                <n-icon :component="Pen" color="#342628"/>
+              </n-button>
+            </n-space>
+          </template>
+        </n-thing>
+
       </n-card>
     </n-space>
     <div v-show="isGroupOwner">
@@ -27,15 +94,40 @@
     </div>
     <div id="map-side-panel">
       <div id="map"></div>
-      <div id="side-panel"></div>
+      <div id="side-panel" v-if="showSidePanel">
+        <h2>{{ selectedPlace.name }}</h2>
+        <h3>🏠Address:</h3>
+        <p>{{ selectedPlace.formatted_address }}</p>
+
+        <h3 v-if="selectedPlace.rating">
+          ⭐ Rating: {{ selectedPlace.rating }}/5 ⭐
+        </h3>
+        <h3 v-if="selectedPlace.phone_number">
+          📞 Contact: {{ selectedPlace.phone_number }}
+        </h3>
+
+        <a
+            v-if="selectedPlace.google_url"
+            :href="selectedPlace.google_url"
+            target="_blank"
+        >
+          Google 🔎: {{ selectedPlace.name }}
+        </a>
+
+        <n-button @click="showSidePanel = false">Close</n-button>
+        <n-button @click="confirmPlaceSelection">Confirm</n-button>
+        <!-- Add other details and buttons as needed -->
+      </div>
     </div>
-  </n-space>
+  </div>
 
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, watch, watchEffect } from "vue";
+import {defineComponent, ref, onMounted, watch, reactive, toRefs} from "vue";
+import {Check, Pen, Times, UserRegular} from "@vicons/fa";
 import { useMessage } from "naive-ui";
+import { DateTime } from 'luxon';
 import store from "../store/index.js";
 
 export default defineComponent({
@@ -52,11 +144,20 @@ export default defineComponent({
     const group = ref({});
     const userDetails = ref({});
     const isGroupOwner = ref(false);
-    const meetingDetails = ref({
-      place: null,
-      location: null,
-    });
+    //const meetingDetails = ref({});
     const isMeetingExists = ref(false);
+    const originalMeetingDetails = reactive({});
+    const selectedPlace = ref(null);
+    const showSidePanel = ref(false);
+    const meetingDetails = ref({
+      // Initialize your object structure here
+      MeetingPlace: '',
+      MeetingAddress: '',
+      PlaceID: '',
+      DateTime: '',
+      MeetingDesc: ''
+    });
+
 
     const getGroupDetails = async (groupId) => {
       if (groupId) {
@@ -81,10 +182,12 @@ export default defineComponent({
           if (userDetails.value.UserID === group.value.OwnerID) {
             isGroupOwner.value = true;
           }
-          meetingDetails.value = await store.dispatch("meeting/getMeeting", group.value.GroupID);
+          let meetings = await store.dispatch("meeting/getMeeting", group.value.GroupID);
+          meetingDetails.value = await getLatestMeeting(meetings);
+          console.log(meetings);
+          //console.log(meetingDetails);
           isMeetingExists.value = Boolean(meetingDetails.value);
-          console.log(userDetails.value.UserID);
-          console.log(group.value.OwnerID);
+
         } catch (error) {
           console.error(error);
         }
@@ -92,41 +195,102 @@ export default defineComponent({
 
     })
 
-      // to save the meeting details to database
-      async function saveMeetingDetails() {
-        if(isEditing.value) {
-          try {
-            await store.dispatch("user/editMeeting", meetingDetails.value);
-            message.info("Successfully Saved");
-          } catch (error) {
-            console.error(error);
-            message.error("Failed to save");
-          }
+    async function getLatestMeeting(meetings) {
+      for (let meeting of meetings) {
+        let date = DateTime.fromISO(meeting.MeetingDate).toFormat('dd LLL yyyy');
+        let time = DateTime.fromISO(meeting.MeetingDate).toFormat('t');
+        let meetingX = DateTime.fromISO(meeting.MeetingDate).toFormat('x');
+        let currentX = DateTime.now().toFormat('x');
+        console.log(date, time, meetingX, currentX);
+        if (meetingX > currentX) {
+          meeting.Date = date;
+          meeting.Time = time;
+          meeting.DateTime =  Number(meetingX);
+          return meeting;
         }
       }
+      return null;
+    }
 
-      async function createMeetingDetails() {
-        if(isEditing.value) {
-          try {
-            await store.dispatch("user/editMeeting", meetingDetails.value);
-            message.info("Successfully Saved");
-          } catch (error) {
-            console.error(error);
-            message.error("Failed to save");
-          }
+    const cancelEditing = () => {
+      Object.assign(meetingDetails.value, originalMeetingDetails);
+      isEditing.value = false; // Exit editing mode.
+    };
+
+    const editMeeting = () => {
+      Object.assign(originalMeetingDetails, meetingDetails.value);
+      isEditing.value = true;
+    };
+
+    const saveMeetingDetails = async () => {
+      if(isEditing.value) {
+        try {
+          meetingDetails.value.MeetingDate = DateTime.fromMillis(meetingDetails.value.DateTime).toISO();
+          await store.dispatch("meeting/editMeeting", meetingDetails.value);
+          message.info("Successfully Saved");
+          isEditing.value = false;
+        } catch (error) {
+          console.error(error);
+          message.error("Failed to save");
         }
       }
+    }
 
-      return {
-        isGroupOwner,
-        formRef,
-        saveMeetingDetails,
-        createMeetingDetails,
-        model: meetingDetails,
-        isEditing,
-        isMeetingExists,
-      };
-    },
+    const createMeetingDetails = async () => {
+      if(isEditing.value) {
+        try {
+          await store.dispatch("user/editMeeting", meetingDetails.value);
+          message.info("Successfully Saved");
+          isEditing.value = false;
+        } catch (error) {
+          console.error(error);
+          message.error("Failed to save");
+        }
+      }
+    }
+
+    const handleMeetingAction = () => {
+      if(isMeetingExists.value) {
+        saveMeetingDetails();
+      } else {
+        createMeetingDetails();
+      }
+    };
+
+    const confirmPlaceSelection = () => {
+      if (selectedPlace.value) {
+        meetingDetails.value.MeetingPlace = selectedPlace.value.name;
+        meetingDetails.value.MeetingAddress = selectedPlace.value.formatted_address;
+        meetingDetails.value.PlaceID = selectedPlace.value.place_id;
+        // No need to log meetingDetails as it is now a reactive reference
+        showSidePanel.value = false; // Hides the side panel after confirmation
+      } else {
+        console.error('No place has been selected.');
+      }
+    };
+    return {
+      Times,
+      Pen,
+      Check,
+      isGroupOwner,
+      formRef,
+      cancelEditing,
+      editMeeting,
+      saveMeetingDetails,
+      createMeetingDetails,
+      handleMeetingAction,
+      model: meetingDetails,
+      isEditing,
+      isMeetingExists,
+      disablePreviousDate(ts) {
+        return ts < Date.now()
+      },
+      ...toRefs(meetingDetails), // Convert the reactive `meetingDetails` to refs
+      selectedPlace,
+      showSidePanel,
+      confirmPlaceSelection,
+    };
+  },
 
 
   /////google maps api/////
@@ -137,13 +301,37 @@ export default defineComponent({
   data() {
     return {
       markers: [],
-      meetingDetails: {
-        place: '',
-        location: ''
-      }
+      selectedPlace: null,
+      showSidePanel: false,
+      // Define the meetingDetails here properly
+      /*meetingDetails: {
+        MeetingPlace: '',
+        MeetingLocation: '',
+        PlaceID: '',
+        DateTime: '',
+        MeetingDesc: ''
+      }*/
     }
   },
   methods: {
+    // Method to update meetingDetails and hide the side panel
+    displayPlaceDetails(place) {
+      console.log(place);
+      // Set the selected place details to the reactive property
+      this.selectedPlace = {
+        name: place.name,
+        formatted_address: place.formatted_address,
+        rating: place.rating,
+        phone_number: place.formatted_phone_number,
+        google_url: `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
+        place_id: place.place_id,
+      };
+
+      // Show the side panel by setting the flag to true
+      this.showSidePanel = true;
+    },
+
+
     clearMarkers() {
       for (const marker of this.markers) {
         console.log(marker);
@@ -154,6 +342,52 @@ export default defineComponent({
       this.markers = []; // Clear the markers array
       // console.log(this.markers.length);
     },
+    // Method to open Google Maps with directions to the address
+    openGoogleMapsDirections() {
+      // Replace `your-address-goes-here` with the actual address from `meetingDetails`
+      const address = encodeURIComponent(this.meetingDetails.MeetingAddress);
+      const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${address}`;
+      window.open(googleMapsURL, '_blank');
+    },
+
+    //display marker on maps for group members to see
+    initializeMap() {
+      if (window.google && this.meetingDetails.placeId) {
+        const mapOptions = {
+          center: new google.maps.LatLng(0, 0),
+          zoom: 15,
+        };
+
+        // Initialize the map
+        this.map = new google.maps.Map(document.getElementById('map', mapOptions));
+
+        // Use the Place ID to set a marker on the map
+        const request = {
+          placeId: this.meetingDetails.placeId,
+          fields: ['name', 'geometry'],
+        };
+
+        // Create a PlacesService instance
+        const service = new google.maps.places.PlacesService(this.map);
+
+        service.getDetails(request, (place, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            this.map.setCenter(place.geometry.location);
+            new google.maps.Marker({
+              map: this.map,
+              position: place.geometry.location,
+            });
+          } else {
+            console.error("Place details request failed due to", status);
+          }
+        });
+      } else {
+        console.error("Google Maps API is not loaded or placeId is missing");
+      }
+    },
+
+
+
 
     initMap() {
       const input = document.getElementById('pac-input');
@@ -214,7 +448,7 @@ export default defineComponent({
       });
     }, //close initMap
 
-    displayPlaceDetails(place) {
+   /* displayPlaceDetails(place) {
       console.log(place);
       const sidePanel = document.getElementById('side-panel');
       sidePanel.style.display = 'block';
@@ -272,23 +506,20 @@ export default defineComponent({
       confirmButton.textContent = 'Confirm';
       confirmButton.addEventListener('click', () => {
         //sidePanel.style.display = 'none';
-
-          this.meetingDetails.value.place = place.name;
-          this.meetingDetails.value.location = place.formatted_address;
-          console.log(this.meetingDetails.place)
-
-
+      if (this.meetingDetails.value) {
+        this.meetingDetails.placeID = placeID;
+        this.meetingDetails.value.MeetingPlace = place.name;
+        this.meetingDetails.value.Meetinglocation = place.formatted_address;}
       });
       sidePanel.appendChild(confirmButton);
 
-      /*
       const photoElement = document.createElement('img');
       if (place.photos && place.photos.length > 0) {
         const photoReference = place.photos[1].photo_reference; //DISPLAY PHOTO OF PLACE
         photoElement.src = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=AIzaSyCJEbankCC_fPBj9rycpHn_l1YKRtFnA6E`;
       }
-      sidePanel.appendChild(photoElement); */
-    }, //close displayplacedetails
+      sidePanel.appendChild(photoElement);
+    }, //close displayplacedetails */
   } //close methods
   //////google maps api///////
 
@@ -297,16 +528,11 @@ export default defineComponent({
 
 <style scoped>
 
-/*.container{
-display: flex;
-flex-direction: column;
-height: 80vh;
+.container{
+  position:relative;
+  height: 1450px;
 }
 
-#map-side-panel {
- display: flex;
-flex-direction: row;
-}  */
 
 .n-card {
   border-color: #342628 !important;
@@ -346,20 +572,20 @@ flex-direction: row;
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 400px;
-  margin-left: 680px;
-  margin-top: 90px;
+  margin-left: 170px;
+  margin-top: 50px;
 
 }
 
 
 
 #side-panel {
-  display: none;
-  position: fixed;
-  top:23.3%;
+
+  position: absolute;
+  top: 29.9%;
   right: 10%;
-  width: 300px;
-  height: 60%;
+  width: 250px;
+  height: 42.1%;
   background-color: #f9f9f9;
   overflow-y: auto;
   padding: 20px;

@@ -40,9 +40,18 @@ router.post('/meetings', async (req, res) => {
     }
 });
 
-router.put('/meetings/:id', async (req, res) => {
+/*router.put('/meetings/:id', async (req, res) => {
     const updatedMeeting = {
-        GroupID: req.body.GroupID,
+        GroupID: req.params.GroupID,
+        MeetingDate: req.body.MeetingDate,
+        MeetingAddress: req.body.MeetingAddress,
+        MeetingDesc: req.body.MeetingDesc,
+        MeetingPlace: req.body.MeetingPlace,
+    };*/
+router.put('/meetings/:MeetingID', async (req, res) => {
+    const updatedMeeting = {
+        //GroupID: req.params.GroupID, // GPT4: GroupID` seems to be unnecessarily pulled from `req.params.GroupID`. Clarify if this is required as you already possess `GroupID` from your VueX state. Remove this line if it is not needed.an
+        PlaceID: req.body.PlaceID,
         MeetingDate: req.body.MeetingDate,
         MeetingAddress: req.body.MeetingAddress,
         MeetingDesc: req.body.MeetingDesc,
@@ -50,7 +59,7 @@ router.put('/meetings/:id', async (req, res) => {
     };
 
     try {
-        const meeting = await Meeting.update(updatedMeeting, { where: { MeetingID: req.params.id } });
+        const meeting = await Meeting.update(updatedMeeting, { where: { MeetingID: req.params.MeetingID } });
         res.send(meeting);
     } catch (error) {
         res.status(500).send({ message: error.message || "Error updating meeting." });

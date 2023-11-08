@@ -8,6 +8,7 @@ import './style.css'
 import 'bootstrap'
 import { FontAwesomeIcon } from './plugins/font-awesome.js';
 
+
 const metaManager = createMetaManager();
 
 const app = createApp(SOS);
@@ -17,5 +18,6 @@ app.use(metaManager);
 app.use(metaPlugin);
 app.use(store);
 app.component("font-awesome-icon", FontAwesomeIcon)
+
 app.mount('#app');
 

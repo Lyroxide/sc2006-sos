@@ -13,6 +13,10 @@ const Meeting = sequelize.define('Meeting', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    PlaceID: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     MeetingDate: {
         type: DataTypes.DATE,
         allowNull: false

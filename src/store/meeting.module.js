@@ -27,7 +27,7 @@ const actions = {
             }
         );
     },
-    editMeeting({ rootState }, Meeting) {
+   /* editMeeting({ rootState }, Meeting) {
         let GroupID = rootState.group.groups.GroupID;
         return MeetingService.editMeeting(GroupID, Meeting).then(
             response => {
@@ -37,9 +37,17 @@ const actions = {
                 return Promise.reject(error);
             }
         );
-    },
-    checkOwner(){
-
+    },*/
+    editMeeting({ rootState }, Meeting) {
+        let GroupID = rootState.group.groups.GroupID;
+        return MeetingService.editMeeting(GroupID, Meeting.MeetingID, Meeting).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
     }
 };
 
