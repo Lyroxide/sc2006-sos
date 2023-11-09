@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, watch, reactive, toRefs} from "vue";
+import {defineComponent, ref, onMounted, watch, reactive, toRefs, nextTick} from "vue";
 import {Check, Pen, Times, UserRegular} from "@vicons/fa";
 import { useMessage } from "naive-ui";
 import { DateTime } from 'luxon';
@@ -157,6 +157,8 @@ export default defineComponent({
       DateTime: '',
       MeetingDesc: ''
     });
+    const map = ref(null);
+    const markers = ref([]); // Array to keep track of all markers
 
 
     const getGroupDetails = async (groupId) => {
@@ -169,12 +171,10 @@ export default defineComponent({
 
     watch(() => props.groupId, async (newVal) => {
       await getGroupDetails(newVal);
-      console.log(group.value);
     }, {immediate: true});
 
     onMounted(async() => {
       await getGroupDetails(props.groupId);
-      console.log(group.value);
       if (group.value) {
         try {
           userDetails.value = await store.dispatch("user/getUserDetails");
@@ -184,9 +184,10 @@ export default defineComponent({
           }
           let meetings = await store.dispatch("meeting/getMeeting", group.value.GroupID);
           meetingDetails.value = await getLatestMeeting(meetings);
-          console.log(meetings);
-          //console.log(meetingDetails);
           isMeetingExists.value = Boolean(meetingDetails.value);
+          if (meetingDetails.value.PlaceID) {
+            initializeMap();
+          }
         } catch (error) {
           console.error(error);
         }
@@ -200,7 +201,6 @@ export default defineComponent({
         let time = DateTime.fromISO(meeting.MeetingDate).toFormat('t');
         let meetingX = DateTime.fromISO(meeting.MeetingDate).toFormat('x');
         let currentX = DateTime.now().toFormat('x');
-        console.log(date, time, meetingX, currentX);
         if (meetingX > currentX) {
           meeting.Date = date;
           meeting.Time = time;
@@ -268,43 +268,110 @@ export default defineComponent({
         console.error('No place has been selected.');
       }
     };
+    ////TO DISPLAY MARKER FOR GROUP MEMBERS FROM EXISTING MEETING UPON LOADING PAGE////
+    const createMarkerFromPlaceId = (placeId) => {
+      const service = new google.maps.places.PlacesService(map.value);
 
+      service.getDetails({ placeId, fields: ['name', 'geometry'] }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          const marker = new google.maps.Marker({
+            map: map.value,
+            position: place.geometry.location,
+            title: place.name,
+          });
+
+          // If you want to clear existing markers before adding a new one
+          // clearMarkers();
+
+          markers.value.push(marker); // Add marker to tracking array
+          map.value.setCenter(place.geometry.location);
+        }
+      });
+    };
+
+    const clearMarkers = () => {
+      markers.value.forEach(marker => marker.setMap(null));
+      markers.value = [];
+    };
+
+    // Initializes the map
     const initializeMap = () => {
-      if (window.google && meetingDetails.value.placeID) {
+      // Ensure DOM is ready before interacting with it
+      nextTick(() => {
         const mapOptions = {
-          center: new google.maps.LatLng(0, 0),
+          center: new google.maps.LatLng(1.3483, 103.6831),
           zoom: 15,
         };
 
-        // Initialize the map
-        this.map = new google.maps.Map(document.getElementById('map', mapOptions));
+        map.value = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-        // Use the Place ID to set a marker on the map
-        const request = {
-          placeId: this.meetingDetails.placeId,
-          fields: ['name', 'geometry'],
-        };
+        if (meetingDetails.value.PlaceID) {
+          // If PlaceID exists, we use it to create a marker
+          createMarkerFromPlaceId(meetingDetails.value.PlaceID);
+        }
 
-        // Create a PlacesService instance
-        const service = new google.maps.places.PlacesService(this.map);
+        const input = document.getElementById('pac-input'); // Ensure you have this input element in your template
+        const searchBox = new google.maps.places.SearchBox(input);
 
-        service.getDetails(request, (place, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            this.map.setCenter(place.geometry.location);
-            new google.maps.Marker({
-              map: this.map,
-              position: place.geometry.location,
-            });
-          } else {
-            console.error("Place details request failed due to", status);
-          }
+        // Bias the searchBox results towards current map bounds
+        map.value.addListener("bounds_changed", () => {
+          searchBox.setBounds(map.value.getBounds());
         });
-      } else {
-        console.error("Google Maps API is not loaded or placeId is missing");
-      }
 
+        searchBox.addListener('places_changed', () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length === 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          clearMarkers();
+
+          // Go through each place and create a marker for it
+          places.forEach(place => {
+            if (!place.geometry || !place.geometry.location) return;
+
+            const marker = new google.maps.Marker({
+              map: map.value,
+              title: place.name,
+              position: place.geometry.location
+            });
+
+            markers.value.push(marker);
+
+            // For only one place, just set the marker as center
+            if (places.length === 1) {
+              map.value.setCenter(marker.getPosition());
+            }
+
+            // For multiple places, fit the map around the markers.
+            if (places.length > 1) {
+              const bounds = new google.maps.LatLngBounds();
+              places.forEach(place => {
+                if (place.geometry.viewport) {
+                  bounds.union(place.geometry.viewport);
+                } else {
+                  bounds.extend(place.geometry.location);
+                }
+              });
+              map.value.fitBounds(bounds);
+            }
+          });
+        });
+      });
     };
-    onMounted(initializeMap);
+
+    onMounted(() => {
+      // If the Google Maps library is already loaded, initialize the map
+      if (window.google) {
+        initializeMap();
+      } else {
+        // If the library is not loaded yet, attach the init function to a global callback
+        window.initMap = initializeMap;
+      }
+    });
+    ////TO DISPLAY MARKER FOR GROUP MEMBERS FROM EXISTING MEETING UPON LOADING PAGE////
 
     return {
       Times,
@@ -328,6 +395,8 @@ export default defineComponent({
       showSidePanel,
       confirmPlaceSelection,
       initializeMap,
+      map,
+      markers,
     };
   },
 
@@ -363,7 +432,6 @@ export default defineComponent({
 
     clearMarkers() {
       for (const marker of this.markers) {
-        console.log(marker);
         marker.setMap(null); // Remove the marker from the map
         marker.setVisible(false); // Hide the marker
       }
@@ -434,7 +502,6 @@ export default defineComponent({
               if (status === google.maps.places.PlacesServiceStatus.OK) {
                 place.place_id = marker.placeId;
                 this.displayPlaceDetails(place);
-                console.log(place);
               }
             });
           });

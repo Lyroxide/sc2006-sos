@@ -87,27 +87,15 @@ CREATE TABLE `Groups` (
 );
 
 
--- Table: GroupChat
-CREATE TABLE GroupChat (
-  GroupChatID INT AUTO_INCREMENT,
+-- Table: GroupChatMessage
+CREATE TABLE GroupChatMessage (
+  GroupChatMessageID INT AUTO_INCREMENT,
   GroupID INT NOT NULL,
   UserID INT NOT NULL,
-  PRIMARY KEY (GroupChatID),
+  MessageDate DATETIME NOT NULL,
+  Message VARCHAR(255) NOT NULL,
+  PRIMARY KEY (GroupChatMessageID),
   FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
-  FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
-
-
--- Table: GroupChatMessages
-CREATE TABLE GroupChatMessages (
-  GroupChatMessagesID INT AUTO_INCREMENT,
-  GroupChatID INT NOT NULL,
-  UserID INT NOT NULL,
-  ChatDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  ChatMessage VARCHAR(255) NOT NULL,
-  Pinned CHAR(1) NOT NULL DEFAULT 'N',
-  PRIMARY KEY (GroupChatMessagesID),
-  FOREIGN KEY (GroupChatID) REFERENCES GroupChat(GroupChatID),
   FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
@@ -281,19 +269,14 @@ INSERT INTO `Groups` (GroupID, OwnerID, GroupName, GroupDesc) VALUES
 (3, 3, 'Sushi lovers', 'Sushi is love. Sushi is life.'),
 (4, 4, 'Caifan Gang', 'JIA FAN ZHE GE NA GE!!! Join us as we are on a hunt for cheap and nice caifan!');
 
--- GroupChat
-INSERT INTO GroupChat (GroupChatID, GroupID, UserID) VALUES
-(1, 1, 1),
-(2, 2, 2),
-(3, 3, 3),
-(4, 4, 4);
 
 -- GroupChatMessages
-INSERT INTO GroupChatMessages (GroupChatMessagesID, GroupChatID, UserID, ChatDate, ChatMessage, Pinned) VALUES
-(1, 1, 1, '2023-10-22 10:17:52', 'Hi everyone!', 'N'),
-(2, 2, 2, '2023-10-22 10:17:52', 'Hii everyone!', 'N'),
-(3, 3, 3, '2023-10-22 10:17:52', 'Hello everyone!', 'N'),
-(4, 4, 4, '2023-10-22 10:17:52', 'Helloo everyone!', 'N');
+INSERT INTO GroupChatMessage (GroupChatMessageID, GroupID, UserID, MessageDate, Message) VALUES
+(1, 1, 1, '2023-10-22 10:17:52', 'Hi everyone!'),
+(2, 2, 2, '2023-10-22 10:17:52', 'Hii everyone!'),
+(3, 3, 3, '2023-10-22 10:17:52', 'Hello everyone!'),
+(4, 4, 4, '2023-10-22 10:17:52', 'Helloo everyone!'),
+(5, 1, 2, '2023-10-22 10:27:52', 'wassup');
 
 -- GroupMember
 INSERT INTO GroupMember (GroupMemberID, UserID, GroupID) VALUES
@@ -326,7 +309,7 @@ INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPrefe
 
 -- Meeting
 INSERT INTO Meeting (MeetingID, GroupID, PlaceID, MeetingDate, MeetingAddress, MeetingDesc, MeetingPlace) VALUES
-(1, 1, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot'),
+(1, 1, 'ChIJu3BeHTcZ2jERh81CchrSSgw','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot'),
 (2, 2, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-10-11 22:00:00', '165 Tg Pagar Rd, Amara Hotel, Singapore 088539', 'I managed to book for 8 pax. Join us to unwind after work.', 'Jigger & Pony'),
 (3, 3, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-11-30 18:00:00', '78 Airport Boulevard B2-227/228 Jewel, Singapore Changi Airport, 819666', 'Legit best sushi here. We will go in pax of 6s. 20% discount available!' ,'Sushiro Jewel Changi'),
 (4, 4, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-11-01 11:30:00', '#01-180 Yuhua Market & Food Centre, 347 Jurong East Ave 1, S600347', 'Super budget friendly, tons of options, but might be sold out at 1pm. So don\'t be late and join us at 11.30!' ,'Lam Chan Mixed Veg Rice');

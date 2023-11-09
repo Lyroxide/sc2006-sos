@@ -15,6 +15,7 @@ import userRoutes from "./app/controllers/user.controller.js";
 import userFoodPreferenceRoutes from "./app/controllers/userfoodpreference.controller.js";
 import userRegionPreferenceRoutes from "./app/controllers/userregionpreference.controller.js";
 import locationRoutes from "./app/controllers/location.controller.js";
+import groupChatMessageRoutes from "./app/controllers/groupchatmessage.controller.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api', userFoodPreferenceRoutes);
 app.use('/api', userRegionPreferenceRoutes);
 app.use('/api', groupRoutes);
 app.use('/api', locationRoutes);
+app.use('/api', groupChatMessageRoutes);
 
 setupAssociations();
 

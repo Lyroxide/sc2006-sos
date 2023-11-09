@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
 
-const Meeting = sequelize.define('Meeting', {
-    MeetingID: {
+const GroupChatMessage = sequelize.define('GroupChat', {
+    GroupChatMessageID: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
@@ -11,30 +11,21 @@ const Meeting = sequelize.define('Meeting', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    PlaceID: {
-        type: DataTypes.STRING,
+    UserID: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
-    MeetingDate: {
+    MessageDate: {
         type: DataTypes.DATE,
         allowNull: false
     },
-    MeetingAddress: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    MeetingDesc: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    MeetingPlace: {
+    Message: {
         type: DataTypes.STRING,
         allowNull: false
     }
-}, {
-    tableName: 'Meeting',
-    timestamps: false,
+},{
+    tableName: 'GroupChatMessage',
+    timestamps: false
 });
 
-
-export default Meeting;
+export default GroupChatMessage;

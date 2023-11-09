@@ -30,6 +30,45 @@
         </n-list-item>
       </n-list>
       <n-divider />
+      <!-- create group model + form here -->
+      <n-button circle @click="showModal=true" color="#F7F4EF"><n-icon :component="Plus" color="#342628" size="20px"/></n-button>
+      <n-modal v-model:show="showModal" :mask-closable="false">
+        <n-space class="createGroup" item-style="display:flex; height: 1000%; width: 200%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
+          <n-card size="huge" style="border-radius: 40px;">
+            <n-h3> Create your Group! </n-h3>
+            <n-form ref="formRef" :model="model" style="width:100%; flex-wrap: nowrap;">
+              <!-- enter group name (100), food preference, regional preference, choose photo, description (5000)-->
+              <n-space item-style="display: flex; margin-bottom: 30px; border-radius: 20px; font-size: 70px;" justify="center">
+                <n-button square @click="addGroupPhoto()" color="#F7F4EF"><n-icon :component="AddPhotoAlternateRound" color="#342628" size="100%"/></n-button>
+              </n-space>
+
+              <n-form-item path="groupName" label="Enter Group Name">
+                <n-input v-model:value="model.groupName" @keydown.enter.prevent placeholder ="Maximum 100 Characters"/>
+              </n-form-item>
+
+              <n-form-item path="groupDesc" label="Enter Group Description">
+                <n-input v-model:value="model.groupDesc" @keydown.enter.prevent placeholder ="Maximum 5000 Characters" item-style="height: 150%"/>
+              </n-form-item>
+
+              <n-form-item path="foodPref" label="Choose Food Preferences (maximum 3)">
+                <n-select v-model:value="model.foodPref" placeholder="Maximum 3 Preferences" multiple :max-tag-count="3" :options="FPoptions" @update:value="handleFPselection"/>
+              </n-form-item>
+
+              <n-form-item path="regionPref" label="Choose Regional Preference (only 1)">
+                <n-select v-model:value="model.regionPref" placeholder="Only 1 Preferences" :max-tag-count="1" :options="RPoptions" @update:value="handleRPselection"/>
+              </n-form-item>
+
+              <n-space align="center" justify="end">
+                <n-button circle @click="createGroup()" color="#F7F4EF"><n-icon :component="Check" color="#342628" size="110%"/></n-button>
+                <n-button circle @click="cancelCreation()" color="#F7F4EF"><n-icon :component="Times" color="#342628" size="110%"/></n-button>
+              </n-space>
+            </n-form>
+          </n-card>
+        </n-space>
+      </n-modal>
+
+
+
     </n-space>
     <n-space v-if="selectedGroupId">
       <Group :group-id="selectedGroupId"/>
@@ -40,7 +79,9 @@
 
 <script>
 import { LocationOutline } from "@vicons/ionicons5";
-import {defineComponent, ref, computed, onMounted} from "vue";
+import { Check, Plus, Times } from "@vicons/fa";
+import { AddPhotoAlternateRound } from "@vicons/material";
+import { defineComponent, ref, computed, onMounted, reactive } from "vue";
 import {useMessage} from "naive-ui";
 import store from "../store/index.js";
 import Group from "./group.vue";
@@ -57,9 +98,45 @@ export default defineComponent({
     const placement = ref("left");
     const type = ref("card");
 
+    const message = useMessage()
+    const showModal = ref(false)
+    const formRef = ref(null);
+
     const selectGroup = (id) => {
       selectedGroupId.value = id;
       active.value = id;
+    }
+
+    const model = ref({
+      groupName: null,
+      groupDesc: null,
+      foodPref: [],
+      regionPref: null,
+    });
+
+    const RPoptions = ref([]);
+    const FPoptions = ref([]);
+
+    // store group details after group has been created
+    async function createGroup() {
+      try {
+        await store.dispatch("group/createGroup", model);
+        message.success("Group successfully created!");
+        showModal.value = false;
+      } catch (error) {
+        console.error(error);
+        message.error("Failed to create group :(");
+      }
+    }
+
+    const cancelCreation = () => {
+      showModal.value = false;
+    }
+    const handleFPselection = (selectedFoodPrefs) => {
+      model.foodPref = selectedFoodPrefs;
+    }
+    const handleRPselection = (selectedRegionPref) => {
+      model.regionPref = selectedRegionPref;
     }
 
     onMounted(async() => {
@@ -69,16 +146,39 @@ export default defineComponent({
         console.log(g);
         Object.assign(group, g);
       }
+      const foodPref = await store.dispatch("preference/getAllFoodPreferences");
+      for (let p of foodPref) {
+        FPoptions.value.push({
+          label: p.FoodType,
+          value: `${p.FoodPreferenceID}`
+        });
+      }
+      const regionPref = await store.dispatch("preference/getAllRegionalPreferences");
+      for (let q of regionPref) {
+        RPoptions.value.push({
+          label: q.RegionType,
+          value: `${q.RegionPreferenceID}`
+        });
+      }
     })
 
     return {
       LocationOutline,
+      Check, Plus, Times,
+      AddPhotoAlternateRound,
       active,
       groups,
       selectedGroupId,
       placement,
       type,
-      selectGroup
+      selectGroup,
+
+      model,
+      showModal: showModal,
+      createGroup,
+      cancelCreation,
+      FPoptions, RPoptions, handleFPselection, handleRPselection
+
     };
   },
 });

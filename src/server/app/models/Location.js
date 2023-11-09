@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import Meeting from "./Meeting.js";
 
 const Location = sequelize.define('Location', {
     LocationID: {

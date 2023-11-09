@@ -1,9 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import UserFoodPreference from "./UserFoodPreference.js";
-import UserRegionPreference from "./UserRegionPreference.js";
-import GroupMember from "./GroupMember.js";
-import Group from "./Group.js";
 
 const User = sequelize.define('User', {
     UserID: {

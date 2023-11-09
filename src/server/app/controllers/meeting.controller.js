@@ -26,6 +26,7 @@ router.get('/meetings/groups/:GroupID', async (req, res) => {
 router.post('/meetings', async (req, res) => {
     const newMeeting = {
         GroupID: req.body.GroupID,
+        PlaceID: req.body.PlaceID,
         MeetingDate: req.body.MeetingDate,
         MeetingAddress: req.body.MeetingAddress,
         MeetingDesc: req.body.MeetingDesc,

@@ -4,8 +4,7 @@ import RegionPreference from './RegionPreference.js';
 import FoodPreference from './FoodPreference.js';
 import UserFoodPreference from './UserFoodPreference.js';
 import UserRegionPreference from './UserRegionPreference.js';
-//import GroupChat from './GroupChat.js';
-//import GroupChatMessages from './GroupChatMessages.js';
+import GroupChatMessage from './GroupChatMessage.js';
 import GroupMember from './GroupMember.js';
 import GroupPicture from './GroupPicture.js';
 import GroupFoodPreference from './GroupFoodPreference.js';
@@ -20,15 +19,11 @@ export const setupAssociations = () => {
     User.hasMany(UserRegionPreference, { foreignKey: 'UserID' });
     UserRegionPreference.belongsTo(User, { foreignKey: 'UserID' });
 
-
     User.hasMany(GroupMember, { foreignKey: 'UserID' });
     GroupMember.belongsTo(User, { foreignKey: 'UserID' });
 
-    //User.hasMany(GroupChat, { foreignKey: 'UserID' });
-    //GroupChat.belongsTo(User, { foreignKey: 'UserID' });
-
-    //User.hasMany(GroupChatMessages, { foreignKey: 'UserID' });
-    //GroupChatMessages.belongsTo(User, { foreignKey: 'UserID' });
+    User.hasMany(GroupChatMessage, { foreignKey: 'UserID' });
+    GroupChatMessage.belongsTo(User, { foreignKey: 'UserID' });
 
     Group.hasMany(GroupMember, { foreignKey: 'GroupID' });
     GroupMember.belongsTo(Group, { foreignKey: 'GroupID' });
@@ -41,9 +36,6 @@ export const setupAssociations = () => {
 
     Group.hasMany(GroupRegionPreference, { foreignKey: 'GroupID' });
     GroupRegionPreference.belongsTo(Group, { foreignKey: 'GroupID' });
-
-    //Group.hasMany(GroupChat, { foreignKey: 'GroupID' });
-    //GroupChat.belongsTo(Group, { foreignKey: 'GroupID' });
 
     Group.hasMany(Meeting, { foreignKey: 'GroupID' });
     Meeting.belongsTo(Group, { foreignKey: 'GroupID' });
@@ -63,6 +55,6 @@ export const setupAssociations = () => {
     RegionPreference.hasMany(GroupRegionPreference, { foreignKey: 'RegionPreferenceID' });
     GroupRegionPreference.belongsTo(RegionPreference, { foreignKey: 'RegionPreferenceID' });
 
-    //GroupChat.hasMany(GroupChatMessages, { foreignKey: 'GroupChatID' });
-    //GroupChatMessages.belongsTo(GroupChat, { foreignKey: 'GroupChatID' });
+    Group.hasMany(GroupChatMessage, { foreignKey: 'GroupID' });
+    GroupChatMessage.belongsTo(Group, { foreignKey: 'GroupID' });
 };

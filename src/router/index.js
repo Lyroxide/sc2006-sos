@@ -11,6 +11,8 @@ import Dashboard from '../SOS/dashboard.vue';
 import MyGroups from '../SOS/mygroups.vue';
 import EditProfile from '../SOS/editprofile.vue';
 import nextMeeting from '../SOS/nextmeeting.vue';
+import changePassword from '../SOS/changepassword.vue';
+
 
 const routes = [
     {
@@ -67,6 +69,11 @@ const routes = [
         path: "/nextmeeting",
         name: "nextmeeting",
         component: nextMeeting,
+    },
+    {
+        path: "/changepassword",
+        name: "changepassword",
+        component: changePassword,
     },
 ];
 
