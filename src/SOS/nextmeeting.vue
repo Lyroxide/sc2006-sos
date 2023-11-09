@@ -89,8 +89,8 @@
       </n-card>
     </n-space>
     <div v-show="isGroupOwner">
-      <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴">
-      <n-button class="controls" id="get-current-location">Get Current Location📍</n-button>
+      <input v-if="isEditing" id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴">
+      <n-button v-if="isEditing" class="controls" id="get-current-location">Get Current Location📍</n-button>
     </div>
     <div id="map-side-panel">
       <div id="map"></div>
@@ -187,7 +187,6 @@ export default defineComponent({
           console.log(meetings);
           //console.log(meetingDetails);
           isMeetingExists.value = Boolean(meetingDetails.value);
-
         } catch (error) {
           console.error(error);
         }
@@ -262,97 +261,16 @@ export default defineComponent({
         meetingDetails.value.MeetingPlace = selectedPlace.value.name;
         meetingDetails.value.MeetingAddress = selectedPlace.value.formatted_address;
         meetingDetails.value.PlaceID = selectedPlace.value.place_id;
+        console.log(meetingDetails.value.PlaceID);
         // No need to log meetingDetails as it is now a reactive reference
         showSidePanel.value = false; // Hides the side panel after confirmation
       } else {
         console.error('No place has been selected.');
       }
     };
-    return {
-      Times,
-      Pen,
-      Check,
-      isGroupOwner,
-      formRef,
-      cancelEditing,
-      editMeeting,
-      saveMeetingDetails,
-      createMeetingDetails,
-      handleMeetingAction,
-      model: meetingDetails,
-      isEditing,
-      isMeetingExists,
-      disablePreviousDate(ts) {
-        return ts < Date.now()
-      },
-      ...toRefs(meetingDetails), // Convert the reactive `meetingDetails` to refs
-      selectedPlace,
-      showSidePanel,
-      confirmPlaceSelection,
-    };
-  },
 
-
-  /////google maps api/////
-  name: 'GoogleMapSearch',
-  mounted() {
-    this.initMap();
-  },
-  data() {
-    return {
-      markers: [],
-      selectedPlace: null,
-      showSidePanel: false,
-      // Define the meetingDetails here properly
-      /*meetingDetails: {
-        MeetingPlace: '',
-        MeetingLocation: '',
-        PlaceID: '',
-        DateTime: '',
-        MeetingDesc: ''
-      }*/
-    }
-  },
-  methods: {
-    // Method to update meetingDetails and hide the side panel
-    displayPlaceDetails(place) {
-      console.log(place);
-      // Set the selected place details to the reactive property
-      this.selectedPlace = {
-        name: place.name,
-        formatted_address: place.formatted_address,
-        rating: place.rating,
-        phone_number: place.formatted_phone_number,
-        google_url: `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
-        place_id: place.place_id,
-      };
-
-      // Show the side panel by setting the flag to true
-      this.showSidePanel = true;
-    },
-
-
-    clearMarkers() {
-      for (const marker of this.markers) {
-        console.log(marker);
-        marker.setMap(null); // Remove the marker from the map
-        marker.setVisible(false); // Hide the marker
-      }
-      // console.log(this.markers.length);
-      this.markers = []; // Clear the markers array
-      // console.log(this.markers.length);
-    },
-    // Method to open Google Maps with directions to the address
-    openGoogleMapsDirections() {
-      // Replace `your-address-goes-here` with the actual address from `meetingDetails`
-      const address = encodeURIComponent(this.meetingDetails.MeetingAddress);
-      const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${address}`;
-      window.open(googleMapsURL, '_blank');
-    },
-
-    //display marker on maps for group members to see
-    initializeMap() {
-      if (window.google && this.meetingDetails.placeId) {
+    const initializeMap = () => {
+      if (window.google && meetingDetails.value.placeID) {
         const mapOptions = {
           center: new google.maps.LatLng(0, 0),
           zoom: 15,
@@ -384,6 +302,81 @@ export default defineComponent({
       } else {
         console.error("Google Maps API is not loaded or placeId is missing");
       }
+
+    };
+    onMounted(initializeMap);
+
+    return {
+      Times,
+      Pen,
+      Check,
+      isGroupOwner,
+      formRef,
+      cancelEditing,
+      editMeeting,
+      saveMeetingDetails,
+      createMeetingDetails,
+      handleMeetingAction,
+      model: meetingDetails,
+      isEditing,
+      isMeetingExists,
+      disablePreviousDate(ts) {
+        return ts < Date.now()
+      },
+      ...toRefs(meetingDetails), // Convert the reactive `meetingDetails` to refs
+      selectedPlace,
+      showSidePanel,
+      confirmPlaceSelection,
+      initializeMap,
+    };
+  },
+
+
+  /////google maps api/////
+  name: 'GoogleMapSearch',
+  mounted() {
+    this.initMap();
+  },
+  data() {
+    return {
+      markers: [],
+      selectedPlace: null,
+      showSidePanel: false,
+    }
+  },
+  methods: {
+    // Method to update meetingDetails and hide the side panel
+    displayPlaceDetails(place) {
+      // Set the selected place details to the reactive property
+      this.selectedPlace = {
+        name: place.name,
+        formatted_address: place.formatted_address,
+        rating: place.rating,
+        phone_number: place.formatted_phone_number,
+        google_url: `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
+        place_id: place.place_id,
+      };
+      // Show the side panel by setting the flag to true
+      this.showSidePanel = true;
+    },
+
+
+    clearMarkers() {
+      for (const marker of this.markers) {
+        console.log(marker);
+        marker.setMap(null); // Remove the marker from the map
+        marker.setVisible(false); // Hide the marker
+      }
+      // console.log(this.markers.length);
+      this.markers = []; // Clear the markers array
+      // console.log(this.markers.length);
+    },
+    // Method to open Google Maps with directions to the address
+    openGoogleMapsDirections() {
+      // Replace `your-address-goes-here` with the actual address from `meetingDetails`
+      const address = encodeURIComponent(this.meetingDetails.MeetingAddress);
+      const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${address}`;
+      window.open(googleMapsURL, '_blank');
     },
 
 
@@ -431,6 +424,7 @@ export default defineComponent({
           });
           this.markers.push(marker); // Push the marker to the array
 
+
           marker.addListener('click', () => {    //only display details when pin is clicked :D
             const service = new google.maps.places.PlacesService(map);
             service.getDetails({
@@ -438,7 +432,9 @@ export default defineComponent({
               fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos']
             }, (place, status) => {
               if (status === google.maps.places.PlacesServiceStatus.OK) {
+                place.place_id = marker.placeId;
                 this.displayPlaceDetails(place);
+                console.log(place);
               }
             });
           });
@@ -447,79 +443,6 @@ export default defineComponent({
         map.fitBounds(bounds);
       });
     }, //close initMap
-
-   /* displayPlaceDetails(place) {
-      console.log(place);
-      const sidePanel = document.getElementById('side-panel');
-      sidePanel.style.display = 'block';
-      sidePanel.innerHTML = '';
-
-      const nameElement = document.createElement('h2');
-      nameElement.textContent = place.name; // Name
-      sidePanel.appendChild(nameElement);
-      const addressHeader = document.createElement('h3');
-      addressHeader.textContent = '🏠Address:';
-      sidePanel.appendChild(addressHeader);''
-      const addressElement = document.createElement('p');
-      addressElement.textContent = place.formatted_address; //Address
-      sidePanel.appendChild(addressElement);
-
-      // if places rating is not undefined, display rating
-      if(place.rating){
-        const ratingElement = document.createElement('h3');
-        ratingElement.textContent = `⭐ Rating: ${place.rating}/5 ⭐`; //Rating
-        sidePanel.appendChild(ratingElement);
-      }
-
-      if(place.formatted_phone_number){
-        const contactHeader = document.createElement('h3');
-        contactHeader.textContent = `📞 Contact: ${place.formatted_phone_number}`;
-        sidePanel.appendChild(contactHeader);
-      }
-
-      const websiteElement = document.createElement('a');
-      websiteElement.target = '_blank';
-      websiteElement.href = `https://www.google.com/search?q=${place.name}`;
-      websiteElement.textContent = `Google 🔎: ${place.name}`;
-      sidePanel.appendChild(websiteElement);
-
-
-      const newLine = document.createElement('h3');
-      newLine.textContent = '';
-      sidePanel.appendChild(newLine);
-
-      // add button for closing this element
-      // center the button in the card
-      const closeButton = document.createElement('button');
-      closeButton.style.margin = '0 auto';
-      closeButton.style.borderRadius = '30px';
-      // change the button color to brown
-      closeButton.style.backgroundColor = '#342628';
-      closeButton.textContent = 'Close';
-
-      closeButton.addEventListener('click', () => {
-        sidePanel.style.display = 'none';
-      });
-      sidePanel.appendChild(closeButton);
-
-      const confirmButton = document.createElement('button');
-      confirmButton.textContent = 'Confirm';
-      confirmButton.addEventListener('click', () => {
-        //sidePanel.style.display = 'none';
-      if (this.meetingDetails.value) {
-        this.meetingDetails.placeID = placeID;
-        this.meetingDetails.value.MeetingPlace = place.name;
-        this.meetingDetails.value.Meetinglocation = place.formatted_address;}
-      });
-      sidePanel.appendChild(confirmButton);
-
-      const photoElement = document.createElement('img');
-      if (place.photos && place.photos.length > 0) {
-        const photoReference = place.photos[1].photo_reference; //DISPLAY PHOTO OF PLACE
-        photoElement.src = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=AIzaSyCJEbankCC_fPBj9rycpHn_l1YKRtFnA6E`;
-      }
-      sidePanel.appendChild(photoElement);
-    }, //close displayplacedetails */
   } //close methods
   //////google maps api///////
 
