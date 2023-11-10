@@ -185,6 +185,13 @@ CREATE TABLE Location (
     FOREIGN KEY (MeetingID) REFERENCES Meeting (MeetingID)
 );
 
+-- Table: ResetPasswordToken
+CREATE TABLE ResetPasswordToken (
+    Email VARCHAR(255) NOT NULL,
+    ResetToken VARCHAR(255) NOT NULL,
+    PRIMARY KEY (Email)
+);
+
 
 /* Start of generation of sample data */
 -- Users
