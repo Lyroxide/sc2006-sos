@@ -1,20 +1,19 @@
 <template>
   <n-layout-header >
-    <n-space item-style="display: flex; " justify="space-evenly" align="center" class="header">
-
-      <n-a @click="goTo('/')">
-        <n-space item-style="display: flex;" align="center">
-          <font-awesome-icon :icon="['fas', 'bowl-food']" style="color:#F7F4E4; font-size: 3em;"/>
-          <n-text class="main">Let's Makan <br> Together</n-text>
-        </n-space>
-      </n-a>
+    <n-space item-style="display: flex;" justify="space-evenly" align="center" class="header">
 
       <template v-if="currentUser">
+        <n-a @click="goTo('/dashboard')">
+          <n-space item-style="display: flex;" align="center">
+            <font-awesome-icon :icon="['fas', 'bowl-food']" style="color:#F7F4E4; font-size: 3em;"/>
+            <n-text class="main">Let's Makan <br> Together</n-text>
+          </n-space>
+        </n-a>
         <n-space class="nav-menu" justify= "start" item-style="display: flex;" align="start">
 
           <n-space>
-            <n-a @click="goTo('/groups')">
-              <n-text class="nav-text" :class="{ 'selected': $route.path === '/groups' }">My Groups</n-text>
+            <n-a @click="goTo('/mygroups')">
+              <n-text class="nav-text" :class="{ 'selected': $route.path === '/mygroups' }">My Groups</n-text>
             </n-a>
           </n-space>
 
@@ -32,8 +31,8 @@
         </n-space>
 
         <n-space justify="end" align="center" class="nav-end">
-          <n-a @click="goTo('/profile')">
-            <n-text class="nav-text" :class="{ 'selected': $route.path === '/profile' }">My Profile</n-text>
+          <n-a @click="goTo('/editprofile')">
+            <n-text class="nav-text" :class="{ 'selected': $route.path === '/editprofile' }">My Profile</n-text>
           </n-a>
           <n-button strong round type="error" @click="signOut">Sign Out</n-button>
         </n-space>
@@ -43,6 +42,12 @@
 
       </template>
       <template v-else>
+        <n-a @click="goTo('/')">
+          <n-space item-style="display: flex;" align="center">
+            <font-awesome-icon :icon="['fas', 'bowl-food']" style="color:#F7F4E4; font-size: 3em;"/>
+            <n-text class="main">Let's Makan <br> Together</n-text>
+          </n-space>
+        </n-a>
         <n-space class="login" justify="end" item-style="display: flex;" align="center">
           <n-a @click="goTo('/login')">
             <n-button round strong color='#FEAA00' style="color: #F7F4E4;">Sign In</n-button>
@@ -87,11 +92,15 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 
 .header {
-  padding: 10px 100px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 10px;
   background-color: #342628;
+  z-index: 10;
 }
 
 .main {

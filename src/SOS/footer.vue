@@ -31,13 +31,14 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .footer {
   position: fixed;
   bottom: 0;
   width: 100%;
   padding: 20px;
   background-color: #f8f9fa;
+  z-index: 10;
 }
 
 </style>

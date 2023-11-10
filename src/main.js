@@ -6,12 +6,8 @@ import store from './store'
 import SOS from './SOS/SOS.vue'
 import './style.css'
 import 'bootstrap'
+import { FontAwesomeIcon } from './plugins/font-awesome.js';
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faBowlFood } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-library.add(faBowlFood)
 
 const metaManager = createMetaManager();
 
@@ -22,5 +18,6 @@ app.use(metaManager);
 app.use(metaPlugin);
 app.use(store);
 app.component("font-awesome-icon", FontAwesomeIcon)
+
 app.mount('#app');
 

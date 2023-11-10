@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import User from './User.js';
-import RegionPreference from './RegionPreference.js';
 
 const UserRegionPreference = sequelize.define('UserRegionPreference', {
     UserRegionPreferenceID: {
@@ -11,13 +9,11 @@ const UserRegionPreference = sequelize.define('UserRegionPreference', {
     },
     UserID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: User, key: 'UserID' },
+        allowNull: false
     },
     RegionPreferenceID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: RegionPreference, key: 'RegionPreferenceID' },
+        allowNull: false
     }
 }, {
     tableName: 'UserRegionPreference',

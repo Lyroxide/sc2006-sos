@@ -18,7 +18,7 @@
                 type="password"
                 @input="handlePasswordInput"
                 @keydown.enter.prevent
-                placeholder =""
+                placeholder ="Min 8 Characters"
             />
           </n-form-item>
           <n-form-item ref="rPasswordFormItemRef" first path="confirmPassword" label="Confirm Password">
@@ -27,7 +27,7 @@
                 :disabled="!model.password"
                 type="password"
                 @keydown.enter.prevent
-                placeholder =""
+                placeholder ="Min 8 Characters"
             />
             </n-form-item>
 
@@ -70,10 +70,10 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
 import { useMessage } from "naive-ui";
-import { useStore } from 'vuex'
+import { defineComponent, ref } from "vue";
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   setup() {
@@ -224,3 +224,7 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+
+</style>

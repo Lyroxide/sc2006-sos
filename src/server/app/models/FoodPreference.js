@@ -16,4 +16,5 @@ const FoodPreference = sequelize.define('FoodPreference', {
     timestamps: false,
 });
 
+
 export default FoodPreference;

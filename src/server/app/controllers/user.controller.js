@@ -1,7 +1,11 @@
+import bcrypt from 'bcryptjs';
 import express from 'express';
 import { check, validationResult } from 'express-validator';
-import bcrypt from 'bcryptjs';
+import FoodPreference from "../models/FoodPreference.js";
+import RegionPreference from "../models/RegionPreference.js";
 import User from '../models/User.js';
+import UserFoodPreference from "../models/UserFoodPreference.js";
+import UserRegionPreference from "../models/UserRegionPreference.js";
 
 const router = express.Router();
 const saltRounds = 10;
@@ -22,7 +26,7 @@ router.post('/users', [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-  
+
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
     const user = {
         Username: req.body.username,
@@ -37,13 +41,42 @@ router.post('/users', [
 });
 
 // Get a user by id
-router.get('/users/:id', async (req, res) => {
-    const user = await User.findByPk(req.params.id);
+router.get('/users/:UserID', async (req, res) => {
+    try {
+        const UserID = req.params.UserID;
+        const user = await User.findByPk(UserID);
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
 
-    if (user) {
+        // Assuming FoodPreference model has an association with UserFoodPreference
+        // through a foreign key that is named as in the original provided code.
+        const foodPreferences = await FoodPreference.findAll({
+            include: [{
+                model: UserFoodPreference,
+                where: { UserID },
+                attributes: [],
+            }]
+        });
+
+        // Assuming RegionPreference model has an association with UserRegionPreference
+        // through a foreign key that is named as in the original provided code.
+        const regionPreferences = await RegionPreference.findAll({
+            include: [{
+                model: UserRegionPreference,
+                where: { UserID },
+                attributes: [],
+            }]
+        });
+
+        // Map the results to get the desired preference types.
+        user.setDataValue('foodPreferences', foodPreferences.map(fp => fp.FoodType));
+        user.setDataValue('regionPreferences', regionPreferences.map(rp => rp.RegionType));
+
         return res.send(user);
-    } else {
-        return res.status(404).send({ message: 'User not found' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: 'Internal Server Error' });
     }
 });
 
