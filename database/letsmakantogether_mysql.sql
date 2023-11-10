@@ -14,8 +14,8 @@ USE LetsMakanTogether;
 -- Table: Users
 CREATE TABLE Users (
   UserID INT AUTO_INCREMENT,
-  Username VARCHAR(50) NOT NULL,
-  `Name` VARCHAR(50) NOT NULL,
+  Username VARCHAR(39) NOT NULL,
+  `Name` VARCHAR(100) NOT NULL,
   Email VARCHAR(255) NOT NULL,
   Age INT NOT NULL,
   Gender VARCHAR(50) NOT NULL,
@@ -80,8 +80,8 @@ CREATE TABLE UserRegionPreference (
 CREATE TABLE `Groups` (
   GroupID INT AUTO_INCREMENT,
   OwnerID INT NOT NULL,
-  GroupName VARCHAR(50) NOT NULL,
-  GroupDesc VARCHAR(255) NOT NULL,
+  GroupName VARCHAR(100) NOT NULL,
+  GroupDesc VARCHAR(3000) NOT NULL,
   PRIMARY KEY (GroupID),
   FOREIGN KEY (OwnerID) REFERENCES Users(UserID)
 );
@@ -92,7 +92,9 @@ CREATE TABLE GroupChat (
   GroupChatID INT AUTO_INCREMENT,
   GroupID INT NOT NULL,
   UserID INT NOT NULL,
-  PRIMARY KEY (GroupChatID),
+  MessageDate DATETIME NOT NULL,
+  Message VARCHAR(3000) NOT NULL,
+  PRIMARY KEY (GroupChatMessageID),
   FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
   FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
@@ -161,10 +163,10 @@ CREATE TABLE GroupRegionPreference (
 CREATE TABLE Meeting (
   MeetingID INT AUTO_INCREMENT,
   GroupID INT NOT NULL,
-  PlaceID VARCHAR(255) NOT NULL,
+  PlaceID VARCHAR(27) NOT NULL,
   MeetingDate DATETIME NOT NULL,
   MeetingAddress VARCHAR(255) NOT NULL,
-  MeetingDesc VARCHAR(255) NOT NULL,
+  MeetingDesc VARCHAR(3000) NOT NULL,
   MeetingPlace VARCHAR(255) NOT NULL,
   PRIMARY KEY (MeetingID),
   FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
@@ -183,17 +185,10 @@ CREATE TABLE Location (
     FOREIGN KEY (MeetingID) REFERENCES Meeting (MeetingID)
 );
 
--- Table: ResetPasswordToken
-CREATE TABLE ResetPasswordToken (
-    Email VARCHAR(255) NOT NULL,
-    ResetToken VARCHAR(255) NOT NULL,
-    PRIMARY KEY (Email)
-);
-
 
 /* Start of generation of sample data */
 -- Users
-INSERT INTO Users (UserID, UserName, `Name`, Email, Age, Gender, `Password`) VALUES
+INSERT INTO Users (UserID, Username, `Name`, Email, Age, Gender, `Password`) VALUES
 (1, 'Sanrio123', 'Cinnamon', 'sanrio_cinnamon@gmail.com', 18, 'Female', '$2y$10$y1B/5ZA3xKVpXM2rDt.ho.PHR2eRDL7fRAeWCn7N9HONFiB0TcYgu'),
 (2, 'Tanny23', 'Tom Tan', 'tantom@gmail.com', 24, 'Male', '$2y$10$ftvAzhHjM10IeIhyaRB1tOcX3O3h1aRgTryXhmBJ.l1ikgpJva8dq'),
 (3, 'Pancake77', 'Best Pancake', 'pancakemaybe@gmail.com', 22, 'Male', '$2y$10$hBTKGexS/gA0pLnoRJrkGemr9mO9uHPE7kVtuLvt96H26825vhLlC'),
@@ -309,14 +304,15 @@ INSERT INTO GroupMember (GroupMemberID, UserID, GroupID) VALUES
 (1, 1, 1),
 (2, 2, 2),
 (3, 3, 3),
-(4, 4, 4);
+(4, 4, 4),
+(5, 2, 1);
 
 -- GroupPicture
 INSERT INTO GroupPicture (PictureID, GroupID, PictureFile) VALUES
-(1, 1, 'Chrysanthemum.jpg'),
-(2, 2, 'Desert.jpg'),
-(3, 3, 'Hydrangeas.jpg'),
-(4, 4, 'Jellyfish.jpg');
+(1, 1, 'Grass.jpg'),
+(2, 2, 'Beer.jpg'),
+(3, 3, 'Sushi.jpg'),
+(4, 4, 'Cai.png');
 
 -- GroupFoodPreference
 INSERT INTO GroupFoodPreference (GroupFoodPreferenceID, GroupID, FoodPreferenceID) VALUES
@@ -335,7 +331,7 @@ INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPrefe
 
 -- Meeting
 INSERT INTO Meeting (MeetingID, GroupID, PlaceID, MeetingDate, MeetingAddress, MeetingDesc, MeetingPlace) VALUES
-(1, 1, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot'),
+(1, 1, 'ChIJu3BeHTcZ2jERh81CchrSSgw','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot'),
 (2, 2, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-10-11 22:00:00', '165 Tg Pagar Rd, Amara Hotel, Singapore 088539', 'I managed to book for 8 pax. Join us to unwind after work.', 'Jigger & Pony'),
 (3, 3, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-11-30 18:00:00', '78 Airport Boulevard B2-227/228 Jewel, Singapore Changi Airport, 819666', 'Legit best sushi here. We will go in pax of 6s. 20% discount available!' ,'Sushiro Jewel Changi'),
 (4, 4, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-11-01 11:30:00', '#01-180 Yuhua Market & Food Centre, 347 Jurong East Ave 1, S600347', 'Super budget friendly, tons of options, but might be sold out at 1pm. So don\'t be late and join us at 11.30!' ,'Lam Chan Mixed Veg Rice');
