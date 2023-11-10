@@ -1,6 +1,5 @@
 import { createTransport } from "nodemailer";
 
-
 const transporter = createTransport({
     host: "smtp-relay.brevo.com",
     port: 587,
@@ -11,11 +10,12 @@ const transporter = createTransport({
 });
 
 const sendResetPasswordEmail = (to, resetToken) => {
+    const resetPasswordUrl = `http://localhost:8081/resetpassword?token=${resetToken}`;
     const mailOptions = {
         from: 'no-reply@letsmakantogether.com',
         to: to,
         subject: `Your Account Password Reset Request`,
-        text: `Click here to reset your password ${resetToken}`
+        text: `Click here to reset your password ${resetPasswordUrl}`
     };
 
     transporter.sendMail(mailOptions, function(error, info){

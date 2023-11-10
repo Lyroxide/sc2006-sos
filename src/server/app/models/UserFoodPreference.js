@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import User from './User.js';
-import FoodPreference from './FoodPreference.js';
 
 const UserFoodPreference = sequelize.define('UserFoodPreference', {
     UserFoodPreferenceID: {

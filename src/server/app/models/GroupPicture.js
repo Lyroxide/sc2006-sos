@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import Group from "./Group.js";
 
 const GroupPicture = sequelize.define('GroupPicture', {
     PictureID: {

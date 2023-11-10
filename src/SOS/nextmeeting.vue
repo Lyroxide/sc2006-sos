@@ -28,10 +28,10 @@
                 <n-input v-model:value="model.MeetingPlace" :disabled="!isEditing" @keydown.enter.prevent/>
               </n-form-item>
               <n-form-item label="Location">
-                <n-input v-model:value="model.MeetingAddress" :disabled="!isEditing" @keydown.enter.prevent/>
+                <n-input type="textarea" v-model:value="model.MeetingAddress" :disabled="!isEditing" @keydown.enter.prevent/>
               </n-form-item>
               <n-form-item label="Description">
-                <n-input v-model:value="model.MeetingDesc" :disabled="!isEditing" @keydown.enter.prevent/>
+                <n-input type="textarea" v-model:value="model.MeetingDesc" :disabled="!isEditing" @keydown.enter.prevent/>
               </n-form-item>
               <n-space align="center" justify="end">
                 <n-button
@@ -64,13 +64,11 @@
             <n-space item-style="flex-direction: row;" align="center" justify="center">
               <n-text style="text-align: center;">Location: {{ model.MeetingAddress }}</n-text>
             </n-space>
-            <n-space item-style="flex-direction: row;" align="center" justify="center">
-              <n-text style="text-align: center;">{{ model.MeetingDesc }}</n-text>
+            <n-space align="center" justify="center">
+              <n-text >{{ model.MeetingDesc }}</n-text>
             </n-space>
 
-            <n-button round type="primary" @click="openGoogleMapsDirections">
-              Directions
-            </n-button>
+
 
             <n-space align="center" justify="end">
               <n-button
@@ -89,11 +87,11 @@
       </n-card>
     </n-space>
     <div v-show="isGroupOwner">
-      <input v-if="isEditing" id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴">
-      <n-button v-if="isEditing" class="controls" id="get-current-location">Get Current Location📍</n-button>
+      <input v-show="isEditing" ref="searchInputElement" id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴">
+      <n-button v-show="isEditing" class="controls" id="get-current-location">Get Current Location📍</n-button>
     </div>
     <div id="map-side-panel">
-      <div id="map"></div>
+      <div id="map" ref="mapElement"></div>
       <div id="side-panel" v-if="showSidePanel">
         <h2>{{ selectedPlace.name }}</h2>
         <h3>🏠Address:</h3>
@@ -114,8 +112,8 @@
           Google 🔎: {{ selectedPlace.name }}
         </a>
 
-        <n-button @click="showSidePanel = false">Close</n-button>
-        <n-button @click="confirmPlaceSelection">Confirm</n-button>
+        <n-button v-show="isEditing" @click="showSidePanel = false">Close</n-button>
+        <n-button v-show="isEditing" @click="confirmPlaceSelection">Confirm</n-button>
         <!-- Add other details and buttons as needed -->
       </div>
     </div>
@@ -124,7 +122,7 @@
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, watch, reactive, toRefs} from "vue";
+import {defineComponent, ref, onMounted, watch, reactive, toRefs, nextTick} from "vue";
 import {Check, Pen, Times, UserRegular} from "@vicons/fa";
 import { useMessage } from "naive-ui";
 import { DateTime } from 'luxon';
@@ -147,6 +145,7 @@ export default defineComponent({
     //const meetingDetails = ref({});
     const isMeetingExists = ref(false);
     const originalMeetingDetails = reactive({});
+
     const selectedPlace = ref(null);
     const showSidePanel = ref(false);
     const meetingDetails = ref({
@@ -157,6 +156,12 @@ export default defineComponent({
       DateTime: '',
       MeetingDesc: ''
     });
+    let map = ref(null); // Google Maps 'Map'
+    const markers = ref([]); // Array to keep track of all markers
+
+    const mapElement = ref(null); // Create a ref for the map container
+    const searchInputElement = ref(null); // Create a ref for the search input
+    const isComponentLoaded = ref(false);
 
 
     const getGroupDetails = async (groupId) => {
@@ -169,12 +174,10 @@ export default defineComponent({
 
     watch(() => props.groupId, async (newVal) => {
       await getGroupDetails(newVal);
-      console.log(group.value);
     }, {immediate: true});
 
     onMounted(async() => {
       await getGroupDetails(props.groupId);
-      console.log(group.value);
       if (group.value) {
         try {
           userDetails.value = await store.dispatch("user/getUserDetails");
@@ -184,9 +187,10 @@ export default defineComponent({
           }
           let meetings = await store.dispatch("meeting/getMeeting", group.value.GroupID);
           meetingDetails.value = await getLatestMeeting(meetings);
-          console.log(meetings);
-          //console.log(meetingDetails);
           isMeetingExists.value = Boolean(meetingDetails.value);
+          if (meetingDetails.value.PlaceID) {
+            initializeMap();
+          }
         } catch (error) {
           console.error(error);
         }
@@ -200,7 +204,6 @@ export default defineComponent({
         let time = DateTime.fromISO(meeting.MeetingDate).toFormat('t');
         let meetingX = DateTime.fromISO(meeting.MeetingDate).toFormat('x');
         let currentX = DateTime.now().toFormat('x');
-        console.log(date, time, meetingX, currentX);
         if (meetingX > currentX) {
           meeting.Date = date;
           meeting.Time = time;
@@ -256,55 +259,182 @@ export default defineComponent({
       }
     };
 
+    const displayPlaceDetails = (place) => {
+      // Assuming `selectedPlace` and `showSidePanel` are reactive properties defined in the `setup` function.
+      selectedPlace.value = {
+        name: place.name,
+        formatted_address: place.formatted_address,
+        rating: place.rating ? place.rating : null,
+        phone_number: place.formatted_phone_number ? place.formatted_phone_number : null,
+        google_url: place.url ? place.url : `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
+        place_id: place.place_id,
+      };
+      // Show the side panel by setting the flag to true.
+      showSidePanel.value = true;
+    }
+
+
     const confirmPlaceSelection = () => {
       if (selectedPlace.value) {
         meetingDetails.value.MeetingPlace = selectedPlace.value.name;
         meetingDetails.value.MeetingAddress = selectedPlace.value.formatted_address;
         meetingDetails.value.PlaceID = selectedPlace.value.place_id;
-        console.log(meetingDetails.value.PlaceID);
-        // No need to log meetingDetails as it is now a reactive reference
-        showSidePanel.value = false; // Hides the side panel after confirmation
+        showSidePanel.value = false;
       } else {
         console.error('No place has been selected.');
       }
     };
 
+    ////TO DISPLAY MARKER FOR GROUP MEMBERS FROM EXISTING MEETING UPON LOADING PAGE////
+    const createMarkerFromPlaceId = (placeId) => {
+      const service = new google.maps.places.PlacesService(map.value);
+
+      service.getDetails({
+        placeId,
+        fields: ['name', 'formatted_address', 'rating', 'formatted_phone_number', 'geometry', 'url', 'place_id', 'reviews', 'website', 'photos'] // request all necessary fields
+      }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          const marker = new google.maps.Marker({
+            map: map.value,
+            position: place.geometry.location,
+            title: place.name
+            // placeId is not needed here as a property since we get it in the service.getDetails
+          });
+
+          // If you want to clear existing markers before adding a new one
+          // clearMarkers();
+
+          google.maps.event.addListener(marker, 'click', () => {
+            displayPlaceDetails(place);
+          });
+
+          markers.value.push(marker); // Add marker to tracking array
+          map.value.setCenter(place.geometry.location);
+        }
+      });
+    };
+
+    const clearMarkers = () => {
+      markers.value.forEach(marker => marker.setMap(null));
+      markers.value = [];
+    };
+
+    // Initializes the map
     const initializeMap = () => {
-      if (window.google && meetingDetails.value.placeID) {
+      if (!mapElement.value  || !searchInputElement.value) {
+        // Elements are not ready
+        return;
+      }
+      nextTick(() => {
         const mapOptions = {
-          center: new google.maps.LatLng(0, 0),
+          center: new google.maps.LatLng(1.3483, 103.6831),
           zoom: 15,
         };
 
-        // Initialize the map
-        this.map = new google.maps.Map(document.getElementById('map', mapOptions));
+        map.value = new google.maps.Map(mapElement.value, mapOptions);
 
-        // Use the Place ID to set a marker on the map
-        const request = {
-          placeId: this.meetingDetails.placeId,
-          fields: ['name', 'geometry'],
-        };
+        if (meetingDetails.value.PlaceID) {
+          // If PlaceID exists, we use it to create a marker
+          createMarkerFromPlaceId(meetingDetails.value.PlaceID);
+        }
 
-        // Create a PlacesService instance
-        const service = new google.maps.places.PlacesService(this.map);
+        const searchBox = new google.maps.places.SearchBox(searchInputElement.value);
 
-        service.getDetails(request, (place, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            this.map.setCenter(place.geometry.location);
-            new google.maps.Marker({
-              map: this.map,
-              position: place.geometry.location,
-            });
-          } else {
-            console.error("Place details request failed due to", status);
+        // Bias the searchBox results towards current map bounds
+        map.value.addListener("bounds_changed", () => {
+          searchBox.setBounds(map.value.getBounds());
+        });
+
+        searchBox.addListener('places_changed', () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length === 0) {
+            return;
           }
+
+          // Clear out the old markers.
+          clearMarkers();
+
+          // Go through each place and create a marker for it
+          places.forEach(place => {
+            if (!place.geometry || !place.geometry.location) return;
+
+            const marker = new google.maps.Marker({
+              map: map.value,
+              title: place.name,
+              position: place.geometry.location,
+              placeId: place.place_id
+            });
+
+            markers.value.push(marker);
+
+            // For only one place, just set the marker as center
+            if (places.length === 1) {
+              map.value.setCenter(marker.getPosition());
+            }
+
+            // For multiple places, fit the map around the markers.
+            if (places.length > 1) {
+              const bounds = new google.maps.LatLngBounds();
+              places.forEach(place => {
+                if (place.geometry.viewport) {
+                  bounds.union(place.geometry.viewport);
+                } else {
+                  bounds.extend(place.geometry.location);
+                }
+              });
+              map.value.fitBounds(bounds);
+            }
+
+            marker.addListener('click', () => {    //only display details when pin is clicked :D
+              const service = new google.maps.places.PlacesService(marker.map);
+              service.getDetails({
+                placeId: marker.placeId,  // Use the placeId from the marker
+                fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos', 'place_id']
+              }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                  displayPlaceDetails(place);
+                }
+              });
+            });
+          });
+        });
+      });
+    };
+
+    onMounted(() => {
+      if (!window.google) {
+        loadGoogleMapsScript().then(() => {
+          isComponentLoaded.value = true;
         });
       } else {
-        console.error("Google Maps API is not loaded or placeId is missing");
+        isComponentLoaded.value = true;
       }
+    });
 
-    };
-    onMounted(initializeMap);
+    watch(isComponentLoaded, (newValue) => {
+      if (newValue) {
+        initializeMap();
+      }
+    });
+
+    function loadGoogleMapsScript() {
+      return new Promise((resolve) => {
+        window.initMap = () => {
+          resolve();
+          if (mapElement.value && searchInputElement.value) {
+            initializeMap();
+          }
+        };
+
+        const script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCJEbankCC_fPBj9rycpHn_l1YKRtFnA6E&libraries=places&callback=initMap';
+        script.defer = true;
+        script.async = true;
+        window.initMap = resolve;
+        document.head.appendChild(script);
+      });
+    }
 
     return {
       Times,
@@ -321,131 +451,17 @@ export default defineComponent({
       isEditing,
       isMeetingExists,
       disablePreviousDate(ts) {
-        return ts < Date.now()
+        return ts < Date.now();
       },
       ...toRefs(meetingDetails), // Convert the reactive `meetingDetails` to refs
       selectedPlace,
       showSidePanel,
       confirmPlaceSelection,
       initializeMap,
+      mapElement,
+      searchInputElement
     };
-  },
-
-
-  /////google maps api/////
-  name: 'GoogleMapSearch',
-  mounted() {
-    this.initMap();
-  },
-  data() {
-    return {
-      markers: [],
-      selectedPlace: null,
-      showSidePanel: false,
-    }
-  },
-  methods: {
-    // Method to update meetingDetails and hide the side panel
-    displayPlaceDetails(place) {
-      // Set the selected place details to the reactive property
-      this.selectedPlace = {
-        name: place.name,
-        formatted_address: place.formatted_address,
-        rating: place.rating,
-        phone_number: place.formatted_phone_number,
-        google_url: `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
-        place_id: place.place_id,
-      };
-      // Show the side panel by setting the flag to true
-      this.showSidePanel = true;
-    },
-
-
-    clearMarkers() {
-      for (const marker of this.markers) {
-        console.log(marker);
-        marker.setMap(null); // Remove the marker from the map
-        marker.setVisible(false); // Hide the marker
-      }
-      // console.log(this.markers.length);
-      this.markers = []; // Clear the markers array
-      // console.log(this.markers.length);
-    },
-    // Method to open Google Maps with directions to the address
-    openGoogleMapsDirections() {
-      // Replace `your-address-goes-here` with the actual address from `meetingDetails`
-      const address = encodeURIComponent(this.meetingDetails.MeetingAddress);
-      const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${address}`;
-      window.open(googleMapsURL, '_blank');
-    },
-
-
-
-
-    initMap() {
-      const input = document.getElementById('pac-input');
-      const map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 1.3483, lng: 103.6831 },
-        zoom: 16,
-      });
-      const searchBox = new google.maps.places.SearchBox(input);
-
-      map.addListener('bounds_changed', () => {
-        searchBox.setBounds(map.getBounds());
-      });
-
-      searchBox.addListener('places_changed', () => {
-        this.clearMarkers();
-        const places = searchBox.getPlaces();
-
-        if (places.length === 0) { //sanity check
-          return;
-        }
-
-        // For each place, get the icon, name and location.
-        const bounds = new google.maps.LatLngBounds();
-        places.forEach(place => {
-          if (!place.geometry) {
-            console.log("Returned place contains no geometry");
-            return;
-          }
-
-          if (place.geometry.viewport) {
-            // Only geocodes have viewport.
-            bounds.union(place.geometry.viewport);
-          } else {
-            bounds.extend(place.geometry.location);
-          }
-          // console.log(place.geometry.location);
-          const marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location,
-            placeId: place.place_id  // Store the placeId in the marker
-          });
-          this.markers.push(marker); // Push the marker to the array
-
-
-          marker.addListener('click', () => {    //only display details when pin is clicked :D
-            const service = new google.maps.places.PlacesService(map);
-            service.getDetails({
-              placeId: marker.placeId,  // Use the placeId from the marker
-              fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos']
-            }, (place, status) => {
-              if (status === google.maps.places.PlacesServiceStatus.OK) {
-                place.place_id = marker.placeId;
-                this.displayPlaceDetails(place);
-                console.log(place);
-              }
-            });
-          });
-
-        });
-        map.fitBounds(bounds);
-      });
-    }, //close initMap
-  } //close methods
-  //////google maps api///////
-
+  }
 });
 </script>
 
@@ -462,7 +478,7 @@ export default defineComponent({
   border-width: 3px !important;
   justify-content: center;
   align-items: center;
-  background-color: rgba(254,170,0,.60); /* Replace with your desired color for the top half */
+  background-color: rgba(254,170,0,.60);
   border-radius: 30px;
 }
 
@@ -489,7 +505,6 @@ export default defineComponent({
 #pac-input {
 
   background-color: #fff;
-  font-family: Roboto;
   font-size: 15px;
   font-weight: 300;
   padding: 0 11px 0 13px;

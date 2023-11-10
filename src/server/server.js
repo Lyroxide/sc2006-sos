@@ -4,6 +4,7 @@ import express from 'express';
 import authRoutes from './app/controllers/auth.controller.js';
 import { default as foodPreferenceRoutes, default as groupFoodPreferenceRoutes } from './app/controllers/foodpreference.controller.js';
 import groupRoutes from './app/controllers/group.controller.js';
+import groupChatMessageRoutes from "./app/controllers/groupchatmessage.controller.js";
 import groupMemberRoutes from "./app/controllers/groupmember.controller.js";
 import groupPictureRoutes from "./app/controllers/grouppicture.controller.js";
 import groupRegionPreferenceRoutes from "./app/controllers/groupregionpreference.controller.js";
@@ -40,6 +41,7 @@ app.use('/api', userRegionPreferenceRoutes);
 app.use('/api', groupRoutes);
 app.use('/api', locationRoutes);
 app.use('/api', resetPasswordRoutes);
+app.use('/api', groupChatMessageRoutes);
 
 setupAssociations();
 

@@ -33,6 +33,11 @@
               <n-p style="color: #342628;">Register!</n-p>
             </n-a>
           </n-space>
+          <n-space horizontal item-style="display: flex; front-size:0px" align="center" justify="center">
+            <n-a @click="goTo('/forgetpassword')">
+              <n-p style="color: #342628;">Forget Password?</n-p>
+            </n-a>
+          </n-space>
         </n-form>
       </n-card>
     </n-space>

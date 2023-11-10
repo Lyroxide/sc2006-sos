@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import GroupRegionPreference from "./GroupRegionPreference.js";
-import UserRegionPreference from "./UserRegionPreference.js";
 
 const RegionPreference = sequelize.define('RegionPreference', {
     RegionPreferenceID: {

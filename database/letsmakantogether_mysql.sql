@@ -183,10 +183,11 @@ CREATE TABLE Location (
     FOREIGN KEY (MeetingID) REFERENCES Meeting (MeetingID)
 );
 
---Table: ResetPasswordToken
+-- Table: ResetPasswordToken
 CREATE TABLE ResetPasswordToken (
-    Email VARCHAR(50) PRIMARY KEY,
-    ResetToken VARCHAR(100)
+    Email VARCHAR(255) NOT NULL,
+    ResetToken VARCHAR(255) NOT NULL,
+    PRIMARY KEY (Email)
 );
 
 
@@ -196,7 +197,9 @@ INSERT INTO Users (UserID, UserName, `Name`, Email, Age, Gender, `Password`) VAL
 (1, 'Sanrio123', 'Cinnamon', 'sanrio_cinnamon@gmail.com', 18, 'Female', '$2y$10$y1B/5ZA3xKVpXM2rDt.ho.PHR2eRDL7fRAeWCn7N9HONFiB0TcYgu'),
 (2, 'Tanny23', 'Tom Tan', 'tantom@gmail.com', 24, 'Male', '$2y$10$ftvAzhHjM10IeIhyaRB1tOcX3O3h1aRgTryXhmBJ.l1ikgpJva8dq'),
 (3, 'Pancake77', 'Best Pancake', 'pancakemaybe@gmail.com', 22, 'Male', '$2y$10$hBTKGexS/gA0pLnoRJrkGemr9mO9uHPE7kVtuLvt96H26825vhLlC'),
-(4, 'Waffle12', 'Best Waffle', 'wafflechoco@gmail.com', 25, 'Male', '$2y$10$sh4MZ0SkKEqD4tjoxWukyuFXSruMIZkMyxBuGq9AUIu0nMX3BK9KG');
+(4, 'Waffle12', 'Best Waffle', 'wafflechoco@gmail.com', 25, 'Male', '$2y$10$sh4MZ0SkKEqD4tjoxWukyuFXSruMIZkMyxBuGq9AUIu0nMX3BK9KG'),
+(5, 'kevin', 'Kevin', 'kevintanyonghow@gmail.com', 23, 'Animal', '$2y$10$y1B/5ZA3xKVpXM2rDt.ho.PHR2eRDL7fRAeWCn7N9HONFiB0TcYgu');
+
 
 -- FoodPreferenceRegionPreference
 INSERT INTO FoodPreference (FoodPreferenceID, FoodType) VALUES

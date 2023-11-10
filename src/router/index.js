@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Home from '../SOS/about.vue';
-import ChangePassword from '../SOS/changepassword.vue';
+import { default as ChangePassword } from '../SOS/changepassword.vue';
 import Dashboard from '../SOS/dashboard.vue';
 import EditProfile from '../SOS/editprofile.vue';
 import FindFood from '../SOS/findfood.vue';
@@ -13,6 +13,8 @@ import Login from '../SOS/login.vue';
 import MyGroups from '../SOS/mygroups.vue';
 import nextMeeting from '../SOS/nextmeeting.vue';
 import Register from '../SOS/register.vue';
+import ResetPassword from '../SOS/resetpassword.vue';
+
 
 const routes = [
     {
@@ -79,6 +81,11 @@ const routes = [
         path: "/forgetpassword",
         name: "forgetpassword",
         component: ForgetPassword,
+    },
+    {
+        path: "/resetpassword",
+        name: "resetpassword",
+        component: ResetPassword,
     },
 ];
 

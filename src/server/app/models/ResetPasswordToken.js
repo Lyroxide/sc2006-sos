@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
 
-const ResetList = sequelize.define('ResetPasswordToken', {
+const ResetPasswordToken = sequelize.define('ResetPasswordToken', {
 Email: {
     type: DataTypes.STRING(50),
     primaryKey: true,

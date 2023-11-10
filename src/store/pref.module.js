@@ -11,8 +11,8 @@ const actions = {
             }
         );
     },
-    getAllRegionalPreferences() {
-        return PreferenceService.getAllRegionalPreferences().then(
+    getAllRegionPreferences() {
+        return PreferenceService.getAllRegionPreferences().then(
             response => {
                 return Promise.resolve(response.data);
             },
