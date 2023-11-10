@@ -86,6 +86,13 @@ export default defineComponent({
     }
     async function joinGroup(group) {
       try {
+        let ownGroups = await store.dispatch("group/getOwnGroups");
+        for (let g of ownGroups) {
+          if (g.GroupID === group.GroupID) {
+            message.error("You are already in this group");
+            return;
+          }
+        }
         await store.dispatch("group/joinGroup", group.GroupID);
         message.info("Successfully joined the group");
       } catch (error) {

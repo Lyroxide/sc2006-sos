@@ -7,8 +7,8 @@ class PreferenceService {
         return axios.get(API_URL + 'food-preferences', { headers: authHeader() });
     }
 
-    getAllRegionalPreferences() {
-        return axios.get(API_URL + 'regional-preferences', { headers: authHeader() })
+    getAllRegionPreferences() {
+        return axios.get(API_URL + 'region-preferences', { headers: authHeader() })
     }
 }
 

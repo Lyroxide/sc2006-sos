@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import {defineComponent, ref, onMounted, watch, reactive, toRefs, computed} from "vue";
+import {defineComponent, ref, onMounted, watch, reactive, toRefs} from "vue";
 import { Send28Filled } from "@vicons/fluent";
 import { useMessage } from "naive-ui";
 import { DateTime } from 'luxon';
@@ -70,68 +70,37 @@ export default defineComponent({
       }
     };
 
-    // Watch the groupId prop
+    const fetchChatMessages = async () => {
+      const allChatMessages = await store.dispatch("chatMessage/getAllChatMessages");
+      for (let m of allChatMessages) {
+        let date = DateTime.fromISO(m.MessageDate).toFormat('dd LLL yyyy');
+        let time = DateTime.fromISO(m.MessageDate).toFormat('t');
+        let data = await store.dispatch("user/getUserDetails");
+        m.Date = date;
+        m.Time = time;
+        m.ByCurrentUser = m.UserID === data.UserID;
+      }
+      watchedMessages.value = allChatMessages;
+    }
+
     watch(() => props.groupId, async (newGroupId) => {
       await getGroupDetails(newGroupId);
-
       if(group.value){
         try {
-          const allChatMessages = await store.dispatch("chatMessage/getAllChatMessages");
-          for (let m of allChatMessages) {
-            let date = DateTime.fromISO(m.MessageDate).toFormat('dd LLL yyyy');
-            let time = DateTime.fromISO(m.MessageDate).toFormat('t');
-
-            let data = await store.dispatch("user/getUserDetails");
-            let currentUserID = data.UserID;
-            let messageByCurrentUser = m.UserID === data.UserID;
-
-            m.Date = date;
-            m.Time = time;
-            m.ByCurrentUser = messageByCurrentUser;
-            console.log(m);
-          }
-          watchedMessages.value = allChatMessages;
+          await fetchChatMessages();
         } catch (error) {
           console.error(error);
         }
       }
     }, { immediate: true });
 
-    // Watch the messages
+
     watch(() => watchedMessages.value, (newMessages) => {
       messagesByDate.value = newMessages.reduce((acc, message) => {
         (acc[message.Date] = acc[message.Date] || []).push(message);
         return acc;
       }, {});
     });
-    /*
-    onMounted(async() => {
-      await getGroupDetails(props.groupId);
-      if (group.value) {
-        try {
-          let allChatMessages = await store.dispatch("chatMessage/getAllChatMessages");
-          for (let m of allChatMessages) {
-            let date = DateTime.fromISO(m.MessageDate).toFormat('dd LLL yyyy');
-            let time = DateTime.fromISO(m.MessageDate).toFormat('t');
-
-            let data = await store.dispatch("user/getUserDetails");
-            let currentUserID = data.UserID;
-            let messageByCurrentUser = Boolean(currentUserID === data.UserID);
-
-            m.Date = date;
-            m.Time = time;
-            m.ByCurrentUser = messageByCurrentUser;
-          }
-          messages.value = allChatMessages;
-          console.log(messages.value);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    })
-
-     */
-
 
     const sendChatMessage = async (event) => {
       let textareaElement = inputArea.value.wrapperElRef.children[0].children[0].children[0];
@@ -150,6 +119,7 @@ export default defineComponent({
         }
         await store.dispatch("chatMessage/sendChatMessage", data);
         userMessage.value = "";
+        await fetchChatMessages();
       } catch (error) {
         console.error(error);
         message.error("Failed to send");

@@ -43,11 +43,24 @@
               </n-space>
 
               <n-form-item path="groupName" label="Enter Group Name">
-                <n-input v-model:value="model.groupName" @keydown.enter.prevent placeholder ="Maximum 100 Characters"/>
+                <n-input
+                    v-model:value="model.groupName"
+                    maxlength="100"
+                    @keydown.enter.prevent
+                    placeholder="Maximum 100 Characters"
+                    show-count
+                />
               </n-form-item>
 
               <n-form-item path="groupDesc" label="Enter Group Description">
-                <n-input v-model:value="model.groupDesc" @keydown.enter.prevent placeholder ="Maximum 5000 Characters" item-style="height: 150%"/>
+                <n-input type="textarea"
+                         maxlength="5000"
+                         v-model:value="model.groupDesc"
+                         @keydown.enter.prevent
+                         placeholder="Maximum 5000 Characters"
+                         item-style="height: 150%"
+                         show-count
+                />
               </n-form-item>
 
               <n-form-item path="foodPref" label="Choose Food Preferences (maximum 3)">
@@ -133,6 +146,10 @@ export default defineComponent({
       showModal.value = false;
     }
     const handleFPselection = (selectedFoodPrefs) => {
+      if (selectedFoodPrefs.length > 3) {
+        message.warning('You can only choose up to 3 food preferences.');
+        selectedFoodPrefs.pop();
+      }
       model.foodPref = selectedFoodPrefs;
     }
     const handleRPselection = (selectedRegionPref) => {
@@ -153,7 +170,7 @@ export default defineComponent({
           value: `${p.FoodPreferenceID}`
         });
       }
-      const regionPref = await store.dispatch("preference/getAllRegionalPreferences");
+      const regionPref = await store.dispatch("preference/getAllRegionPreferences");
       for (let q of regionPref) {
         RPoptions.value.push({
           label: q.RegionType,
