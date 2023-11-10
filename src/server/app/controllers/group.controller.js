@@ -1,12 +1,39 @@
 import express from 'express';
 import Group from '../models/Group.js';
+import GroupMember from '../models/GroupMember.js';
+import GroupFoodPreference from '../models/GroupFoodPreference.js';
+import GroupRegionPreference from '../models/GroupRegionPreference.js';
+import FoodPreference from '../models/FoodPreference.js';
+import RegionPreference from '../models/RegionPreference.js';
 
 const router = express.Router();
 
+
 // route to get all groups
 router.get('/groups', async (req, res) => {
+
     try {
         const groups = await Group.findAll();
+
+        for (let group of groups) {
+            group.setDataValue('memberCount', await GroupMember.findAndCountAll({ where: { GroupID: group.GroupID} }));
+            const groupFoodPreferences = await GroupFoodPreference.findAll({ where: { GroupID: group.GroupID } })
+            let foodPreferences = [];
+            for (let fp of groupFoodPreferences) {
+                const f = await FoodPreference.findAll({where : { FoodPreferenceID: fp.FoodPreferenceID}});
+                for (let x of f) {
+                    foodPreferences.push(x.FoodType);
+                }
+            }
+            group.setDataValue('foodPreferences', foodPreferences);
+
+            const groupRegionPreference = await GroupRegionPreference.findOne({ where: { GroupID: group.GroupID } });
+            const r = await RegionPreference.findAll({where: {RegionPreferenceID: groupRegionPreference.RegionPreferenceID}});
+            for (let x of r) {
+                group.setDataValue('regionPreference', x.RegionType);
+            }
+
+        }
         res.send(groups);
     } catch (error) {
         res.status(500).send({
@@ -16,10 +43,26 @@ router.get('/groups', async (req, res) => {
 });
 
 // route to get one group
-router.get('/groups/:id', async (req, res) => {
+router.get('/groups/:GroupID', async (req, res) => {
     try {
-        const group = await Group.findOne({ where: { GroupID: req.params.id } });
-        if(group) {
+        const group = await Group.findOne({ where: { GroupID: req.params.GroupID } });
+        if (group) {
+            group.setDataValue('memberCount', await GroupMember.findAndCountAll({ where: { GroupID: group.GroupID} }));
+            const groupFoodPreferences = await GroupFoodPreference.findAll({ where: { GroupID: group.GroupID } })
+            let foodPreferences = [];
+            for (let fp of groupFoodPreferences) {
+                const f = await FoodPreference.findAll({where : { FoodPreferenceID: fp.FoodPreferenceID}});
+                for (let x of f) {
+                    foodPreferences.push(x.FoodType);
+                }
+            }
+            group.setDataValue('foodPreferences', foodPreferences);
+
+            const groupRegionPreference = await GroupRegionPreference.findOne({ where: { GroupID: group.GroupID } });
+            const r = await RegionPreference.findAll({where: {RegionPreferenceID: groupRegionPreference.RegionPreferenceID}});
+            for (let x of r) {
+                group.setDataValue('regionPreference', x.RegionType);
+            }
             res.send(group);
         } else {
             res.status(404).send({ message: 'Group not found!' });
@@ -35,9 +78,7 @@ router.get('/groups/:id', async (req, res) => {
 router.post('/groups', async (req, res) => {
     const newGroup = {
         GroupName: req.body.GroupName,
-        GroupDesc: req.body.GroupDesc,
-        Capacity: req.body.Capacity,
-        GroupDate: req.body.GroupDate
+        GroupDesc: req.body.GroupDesc
     };
 
     try {
@@ -70,9 +111,7 @@ router.delete('/groups/:id', async (req, res) => {
 router.put('/groups/:id', async (req, res) => {
     const updateGroup = {
         GroupName: req.body.GroupName,
-        GroupDesc: req.body.GroupDesc,
-        Capacity: req.body.Capacity,
-        GroupDate: req.body.GroupDate
+        GroupDesc: req.body.GroupDesc
     };
 
     try {

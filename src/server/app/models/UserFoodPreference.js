@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import User from './User.js';
-import FoodPreference from './FoodPreference.js';
 
 const UserFoodPreference = sequelize.define('UserFoodPreference', {
     UserFoodPreferenceID: {
@@ -11,17 +9,16 @@ const UserFoodPreference = sequelize.define('UserFoodPreference', {
     },
     UserID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: User, key: 'UserID' },
+        allowNull: false
     },
     FoodPreferenceID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: { model: FoodPreference, key: 'FoodPreferenceID' },
+        allowNull: false
     }
 }, {
     tableName: 'UserFoodPreference',
     timestamps: false,
 });
+
 
 export default UserFoodPreference;

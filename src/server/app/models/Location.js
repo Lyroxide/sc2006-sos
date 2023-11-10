@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.config.js';
-import Meeting from "./Meeting.js";
 
 const Location = sequelize.define('Location', {
     LocationID: {
@@ -10,11 +9,7 @@ const Location = sequelize.define('Location', {
     },
     MeetingID: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Meeting,
-            key: 'id'
-        }
+        allowNull: false
     },
     LocationName: {
         type: DataTypes.STRING,

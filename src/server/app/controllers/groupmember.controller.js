@@ -1,5 +1,6 @@
 import express from 'express';
 import GroupMember from '../models/GroupMember.js';
+import Group from '../models/Group.js';
 
 const router = express.Router();
 
@@ -13,6 +14,23 @@ router.get('/group-members', async (req, res) => {
     }
 });
 
+router.get('/group-members/user/:UserID', async (req, res) => {
+    try {
+        const UserID = req.params.UserID;
+        const userGroups = await GroupMember.findAll({ where: { UserID } });
+        for (let u of userGroups) {
+            const gs = await Group.findAll({ where: { GroupID: u.GroupID }});
+            for (let g of gs) {
+                u.setDataValue('GroupName', g.GroupName);
+            }
+
+        }
+        res.send(userGroups);
+    } catch(error) {
+        res.status(500).json({ message: error.message || `An error occurred while retrieving group members for user ${UserID}` });
+    }
+});
+
 // POST new group member
 router.post('/group-members', async (req, res) => {
     try {
@@ -21,7 +39,7 @@ router.post('/group-members', async (req, res) => {
             UserID,
             GroupID
         });
-        res.status(201).json(newGroupMember);
+        res.send(newGroupMember);
     } catch(error) {
         res.status(500).json({ message: error.message || "An error occurred while creating a new group member." });
     }

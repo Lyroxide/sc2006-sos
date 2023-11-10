@@ -7,6 +7,10 @@ const Group = sequelize.define('Group', {
         autoIncrement: true,
         primaryKey: true
     },
+    OwnerID: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     GroupName: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -14,18 +18,10 @@ const Group = sequelize.define('Group', {
     GroupDesc: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
-    Capacity: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    GroupDate: {
-        type: DataTypes.DATE,
-        allowNull: false,
     }
-    },{
+},{
     tableName: 'Groups',
-    timestamps: false,
+    timestamps: false
 });
 
 export default Group;

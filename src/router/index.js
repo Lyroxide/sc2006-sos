@@ -1,12 +1,20 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
-import Home from '../SOS/about.vue'
-import Login from '../SOS/login.vue'
-import Footer from '../SOS/footer.vue'
-import Header from '../SOS/header.vue'
-import FindGroups from '../SOS/findgroups.vue'
-import Register from '../SOS/register.vue'
-import FindFood from '../SOS/findfood.vue'
+import Home from '../SOS/about.vue';
+import { default as ChangePassword } from '../SOS/changepassword.vue';
+import Dashboard from '../SOS/dashboard.vue';
+import EditProfile from '../SOS/editprofile.vue';
+import FindFood from '../SOS/findfood.vue';
+import FindGroups from '../SOS/findgroups.vue';
+import Footer from '../SOS/footer.vue';
+import ForgetPassword from '../SOS/forgetpassword.vue';
+import Header from '../SOS/header.vue';
+import Login from '../SOS/login.vue';
+import MyGroups from '../SOS/mygroups.vue';
+import nextMeeting from '../SOS/nextmeeting.vue';
+import Register from '../SOS/register.vue';
+import ResetPassword from '../SOS/resetpassword.vue';
+
 
 const routes = [
     {
@@ -43,8 +51,44 @@ const routes = [
         path: "/findfood",
         name: "findfood",
         component: FindFood,
-    }
+    },
+    {
+        path: "/dashboard",
+        name: "dashboard",
+        component: Dashboard,
+    },
+    {
+        path: "/mygroups",
+        name: "mygroups",
+        component: MyGroups,
+    },
+    {
+        path: "/editprofile",
+        name: "editprofile",
+        component: EditProfile,
+    },
+    {
+        path: "/nextmeeting",
+        name: "nextmeeting",
+        component: nextMeeting,
+    },
+    {
+        path: "/changepassword",
+        name: "changepassword",
+        component: ChangePassword,
+    },
+    {
+        path: "/forgetpassword",
+        name: "forgetpassword",
+        component: ForgetPassword,
+    },
+    {
+        path: "/resetpassword",
+        name: "resetpassword",
+        component: ResetPassword,
+    },
 ];
+
 
 const router = createRouter({
     history: createWebHistory(),
