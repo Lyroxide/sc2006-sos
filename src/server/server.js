@@ -1,20 +1,20 @@
-import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { setupAssociations } from './app/models/associations.js';
+import express from 'express';
 import authRoutes from './app/controllers/auth.controller.js';
-import foodPreferenceRoutes from './app/controllers/foodpreference.controller.js';
-import groupFoodPreferenceRoutes from './app/controllers/foodpreference.controller.js';
+import { default as foodPreferenceRoutes, default as groupFoodPreferenceRoutes } from './app/controllers/foodpreference.controller.js';
+import groupRoutes from './app/controllers/group.controller.js';
 import groupMemberRoutes from "./app/controllers/groupmember.controller.js";
 import groupPictureRoutes from "./app/controllers/grouppicture.controller.js";
 import groupRegionPreferenceRoutes from "./app/controllers/groupregionpreference.controller.js";
-import groupRoutes from './app/controllers/group.controller.js';
+import locationRoutes from "./app/controllers/location.controller.js";
 import meetingRoutes from "./app/controllers/meeting.controller.js";
 import regionPreferenceRoutes from "./app/controllers/regionpreference.controller.js";
+import resetPasswordRoutes from './app/controllers/resetPasswordRoutes.controller.js';
 import userRoutes from "./app/controllers/user.controller.js";
 import userFoodPreferenceRoutes from "./app/controllers/userfoodpreference.controller.js";
 import userRegionPreferenceRoutes from "./app/controllers/userregionpreference.controller.js";
-import locationRoutes from "./app/controllers/location.controller.js";
+import { setupAssociations } from './app/models/associations.js';
 
 const app = express();
 
@@ -39,6 +39,7 @@ app.use('/api', userFoodPreferenceRoutes);
 app.use('/api', userRegionPreferenceRoutes);
 app.use('/api', groupRoutes);
 app.use('/api', locationRoutes);
+app.use('/api', resetPasswordRoutes);
 
 setupAssociations();
 

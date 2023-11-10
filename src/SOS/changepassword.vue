@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { Check, Pen, Times, UserRegular } from "@vicons/fa";
+import { Check, Times, UserRegular } from "@vicons/fa";
 import { useMessage } from "naive-ui";
 import { defineComponent, onMounted, reactive, ref } from "vue";
 import store from "../store/index.js";

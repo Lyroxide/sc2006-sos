@@ -41,10 +41,10 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
 import { useMessage } from "naive-ui";
+import { defineComponent, ref } from "vue";
 import { useRouter } from 'vue-router';
-import { useStore } from 'vuex'
+import { useStore } from 'vuex';
 
 export default defineComponent({
   setup() {

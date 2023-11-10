@@ -1,16 +1,18 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
-import Home from '../SOS/about.vue'
-import Login from '../SOS/login.vue'
-import Footer from '../SOS/footer.vue'
-import Header from '../SOS/header.vue'
-import FindGroups from '../SOS/findgroups.vue'
-import Register from '../SOS/register.vue'
-import FindFood from '../SOS/findfood.vue'
+import Home from '../SOS/about.vue';
+import ChangePassword from '../SOS/changepassword.vue';
 import Dashboard from '../SOS/dashboard.vue';
-import MyGroups from '../SOS/mygroups.vue';
 import EditProfile from '../SOS/editprofile.vue';
+import FindFood from '../SOS/findfood.vue';
+import FindGroups from '../SOS/findgroups.vue';
+import Footer from '../SOS/footer.vue';
+import ForgetPassword from '../SOS/forgetpassword.vue';
+import Header from '../SOS/header.vue';
+import Login from '../SOS/login.vue';
+import MyGroups from '../SOS/mygroups.vue';
 import nextMeeting from '../SOS/nextmeeting.vue';
+import Register from '../SOS/register.vue';
 
 const routes = [
     {
@@ -67,6 +69,16 @@ const routes = [
         path: "/nextmeeting",
         name: "nextmeeting",
         component: nextMeeting,
+    },
+    {
+        path: "/changepassword",
+        name: "changepassword",
+        component: ChangePassword,
+    },
+    {
+        path: "/forgetpassword",
+        name: "forgetpassword",
+        component: ForgetPassword,
     },
 ];
 

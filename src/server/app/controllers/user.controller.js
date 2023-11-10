@@ -1,11 +1,11 @@
+import bcrypt from 'bcryptjs';
 import express from 'express';
 import { check, validationResult } from 'express-validator';
-import bcrypt from 'bcryptjs';
+import FoodPreference from "../models/FoodPreference.js";
+import RegionPreference from "../models/RegionPreference.js";
 import User from '../models/User.js';
 import UserFoodPreference from "../models/UserFoodPreference.js";
-import FoodPreference from "../models/FoodPreference.js";
 import UserRegionPreference from "../models/UserRegionPreference.js";
-import RegionPreference from "../models/RegionPreference.js";
 
 const router = express.Router();
 const saltRounds = 10;
@@ -26,7 +26,7 @@ router.post('/users', [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-  
+
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
     const user = {
         Username: req.body.username,
