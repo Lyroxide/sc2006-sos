@@ -3,10 +3,6 @@ import authHeader from './auth-header';
 import { API_URL } from './docker.ip.js';
 
 class UserService {
-    getPublicContent() {
-        return axios.get(API_URL + 'all');
-    }
-
     getUserDetails(UserID) {
         return axios.get(API_URL + `users/${UserID}`, { headers: authHeader() });
     }
@@ -21,7 +17,7 @@ class UserService {
 
     editUserFoodPreferences(UserID, pref) {
         let data = { UserID, pref }
-        return axios.put(API_URL + 'user-food-preferences', data, { headers: authHeader() });
+        return axios.post(API_URL + 'user-food-preferences', data, { headers: authHeader() });
     }
 
     getUserRegionPreferences(UserID) {
@@ -30,7 +26,7 @@ class UserService {
 
     editUserRegionPreferences(UserID, pref) {
         let data = { UserID, pref }
-        return axios.put(API_URL + 'user-region-preferences', data, { headers: authHeader() });
+        return axios.post(API_URL + 'user-region-preferences', data, { headers: authHeader() });
     }
 
     joinGroup(GroupID, UserID) {

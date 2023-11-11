@@ -95,23 +95,18 @@ router.get('/users/:UserID', async (req, res) => {
 });
 
 // Update a user by id
-router.put('/users/:id', [
-    check('email').isEmail(),
-    check('password').isLength({ min: 8 }).optional()
+router.put('/users/:UserID', [
+    check('Username').notEmpty(),
+    check('Email').isEmail(),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors);
         return res.status(400).json({ errors: errors.array() });
     }
-
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findByPk(req.params.UserID);
     if (user) {
-        if (req.body.password) {
-            req.body.password = bcrypt.hashSync(req.body.password, saltRounds);
-        }
-
         const updatedUser = await user.update(req.body);
-
         return res.send(updatedUser);
     } else {
         return res.status(404).send({ message: 'User not found' });

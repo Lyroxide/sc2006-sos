@@ -22,17 +22,14 @@ router.get('/user-region-preferences/:UserID', async (req, res) => {
 
 // Add a Preference
 router.post('/user-region-preferences', async (req, res) => {
-    const newPreference = {
-        UserID: req.body.UserID,
-        RegionPreferenceID: req.body.RegionPreferenceID
-    };
+    const { UserID, pref } = req.body;
     try {
-        const preference = await UserRegionPreference.create(newPreference);
-        res.send(preference);
+        await UserRegionPreference.destroy({ where: { UserID } });
+        const preferencesToAdd = pref.map(RegionPreferenceID => ({ UserID, RegionPreferenceID }));
+        const batchPreferences = await UserRegionPreference.bulkCreate(preferencesToAdd);
+        res.send(batchPreferences);
     } catch (error) {
-        res.status(500).send({
-            message: error.message || "An error occurred while creating the preference."
-        });
+        res.status(500).send({ message: error.message || "An error occurred while updating preferences." });
     }
 });
 
