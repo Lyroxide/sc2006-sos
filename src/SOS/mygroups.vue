@@ -26,6 +26,7 @@
               </n-space>
             </template>
             {{ group.GroupDesc }}
+            <!-- Leave Group button -->
           </n-thing>
         </n-list-item>
       </n-list>

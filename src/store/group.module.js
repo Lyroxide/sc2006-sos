@@ -68,8 +68,9 @@ const actions = {
             }
         );
     },
-    deleteGroup(Group) {
-        return GroupService.deleteGroup(Group).then(
+    deleteGroup(GroupID) {
+        console.log(GroupID);
+        return GroupService.deleteGroup(GroupID).then(
             response => {
                 return Promise.resolve(response.data);
             },
@@ -78,9 +79,9 @@ const actions = {
             }
         );
     },
-    leaveGroup({ rootState }, Group) {
+    leaveGroup({ rootState }, GroupID) {
         let UserID = rootState.auth.user.id;
-        return GroupService.leaveGroup(UserID, Group).then(
+        return GroupService.leaveGroup(UserID, GroupID).then(
             response => {
                 return Promise.resolve(response.data);
             },

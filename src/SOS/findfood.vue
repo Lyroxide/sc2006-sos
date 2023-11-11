@@ -2,12 +2,13 @@
   <div class="container">
     <!-- show a red box with text to indicate error message -->
     <div v-show="error" class="error-box">{{ error }}</div>
-    <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴" v-model="address"> 
-    <!-- <input id="tourism-input" class="controls" type="text" placeholder="Search Tourism🏖️🏝️" v-model="tourism_place"> -->
-    <!-- get current location button -->
-    <n-button class="controls" id="get-current-location">Get Current Location📍</n-button>
+    <div class="container2">
+      <n-select @update:value="getAddressUsingTourism" :options="options" placeholder="Recommend Food 🍔" class="select-component"/>
+      <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴" v-model="address">
+      <n-button class="controls" id="get-current-location" style="margin-top:100px">Get Current Location📍</n-button>
+    </div>
 
-    <n-select @update:value="getAddressUsingTourism" :options="options" placeholder="Recommend Food 🍔" class="select-component"/>
+
 
     <div id="map-side-panel">
       <div id="map"></div>
@@ -484,20 +485,26 @@ export default {
 
 <style scoped>
 
-/*.container{
-display: flex;
-flex-direction: column;
-height: 80vh;
+.container{
+  margin: 40px;
+  height: 80vh;
 }
+.container2 {
+   display: flex;
+   flex-direction: row;
+ }
 
-#map-side-panel {
- display: flex;
-flex-direction: row;
-}  */
+ .select-component {
+   z-index: 1000;
+   margin-top: 99px;
+   margin-left: 310px;
+ }
+
+
 
 
 #map {
-  width: 80%;
+  width: 70%;
   height: 650px;
   margin: 30px auto auto;
   flex-grow:1;
@@ -512,7 +519,7 @@ flex-direction: row;
   height: 32px;
   outline: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  border-radius: 10px ;
+  //border-radius: 10px ;
 }
 
 #pac-input {
@@ -524,8 +531,8 @@ flex-direction: row;
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 400px;
-  margin-left: 680px;
-  margin-top: 90px;
+  margin-left: 0px;
+  margin-top: 100px;
 
 }
 

@@ -8,6 +8,7 @@ class GroupService {
     }
 
     getGroupDetails(GroupID) {
+
         return axios.get(API_URL + `groups/${GroupID}`, { headers: authHeader() });
     }
 
@@ -20,12 +21,14 @@ class GroupService {
         return axios.put(API_URL + 'groups', Group, { headers: authHeader() });
     }
 
-    deleteGroup(Group) {
-        return axios.delete(API_URL + 'groups', Group, { headers: authHeader()});
+    deleteGroup(GroupID) {
+        console.log(GroupID);
+        return axios.delete(API_URL + `groups/${GroupID}`, { headers: authHeader()});
     }
 
-    leaveGroup(UserID, Group) {
-        return axios.delete(API_URL + 'group-members', Group, { headers: authHeader() });
+    leaveGroup(UserID, GroupID) {
+        console.log(UserID, GroupID)
+        return axios.delete(API_URL + 'group-members', GroupID, { headers: authHeader() });
     }
 
 

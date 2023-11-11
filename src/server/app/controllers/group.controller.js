@@ -92,9 +92,9 @@ router.post('/groups', async (req, res) => {
 });
 
 // route to delete a group
-router.delete('/groups/:id', async (req, res) => {
+router.delete('/groups/:GroupID', async (req, res) => {
     try {
-        const group = await Group.destroy({ where: { GroupID: req.params.id } });
+        const group = await Group.destroy({ where: { GroupID: req.params.GroupID } });
         if(group) {
             res.send({ message: 'Group deleted successfully!' });
         } else {
