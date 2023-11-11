@@ -28,7 +28,9 @@
                 ref="inputArea" class="input-text" type="textarea" :autosize="{ minRows: 1, maxRows: 6 }"
         >
           <template #suffix>
-            <n-icon :size="16" :component="Send28Filled"/>
+            <n-button>
+              <n-icon :size="16" :component="Send28Filled"/>
+            </n-button>
           </template>
         </n-input>
       </n-input-group>

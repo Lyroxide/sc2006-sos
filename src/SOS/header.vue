@@ -50,7 +50,7 @@
         </n-a>
         <n-space class="login" justify="end" item-style="display: flex;" align="center">
           <n-a @click="goTo('/login')">
-            <n-button round strong color='#FEAA00' style="color: #F7F4E4;">Sign In</n-button>
+            <n-button round strong color='#FEAA00' style="color: #F7F4E4;">Log In</n-button>
           </n-a>
         </n-space>
       </template>
