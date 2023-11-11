@@ -24,13 +24,13 @@ class UserService {
         return axios.put(API_URL + 'user-food-preferences', data, { headers: authHeader() });
     }
 
-    getUserRegionalPreferences(UserID) {
-        return axios.get(API_URL + `user-regional-preferences/${UserID}`, { headers: authHeader() });
+    getUserRegionPreferences(UserID) {
+        return axios.get(API_URL + `user-region-preferences/${UserID}`, { headers: authHeader() });
     }
 
-    editUserRegionalPreferences(UserID, pref) {
+    editUserRegionPreferences(UserID, pref) {
         let data = { UserID, pref }
-        return axios.put(API_URL + 'user-regional-preferences', data, { headers: authHeader() });
+        return axios.put(API_URL + 'user-region-preferences', data, { headers: authHeader() });
     }
 
     joinGroup(GroupID, UserID) {

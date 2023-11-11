@@ -72,8 +72,8 @@
               </n-form-item>
 
               <n-space align="center" justify="end">
-                <n-button circle @click="createGroup()" color="#F7F4EF"><n-icon :component="Check" color="#342628" size="110%"/></n-button>
-                <n-button circle @click="cancelCreation()" color="#F7F4EF"><n-icon :component="Times" color="#342628" size="110%"/></n-button>
+                <n-button circle @click="createGroup" color="#F7F4EF"><n-icon :component="Check" color="#342628" size="110%"/></n-button>
+                <n-button circle @click="cancelCreation" color="#F7F4EF"><n-icon :component="Times" color="#342628" size="110%"/></n-button>
               </n-space>
             </n-form>
           </n-card>

@@ -1,24 +1,42 @@
 <template>
-  <n-space vertical class="register">
+  <n-space vertical class="register" style="margin-top: 130px;">
     <n-space item-style="display:flex; margin:12px;" align="center" justify="center" style="flex-wrap: nowrap;">
-      <n-card title="Create Account" size="huge">
+      <n-card size="huge">
+        <n-h1 style="text-align: center;">Create Account</n-h1>
         <n-form ref="formRef" :model="model" :rules="rules" style="width:300px">
-          <n-form-item path="displayName" label="Display Name">
-            <n-input v-model:value="model.displayName" @keydown.enter.prevent placeholder =""/>
+          <n-form-item path="username" label="Username">
+            <n-input
+                v-model:value="model.username"
+                maxlength="39"
+                show-count
+                @keydown.enter.prevent
+                placeholder=""
+            />
           </n-form-item>
           <n-form-item path="email" label="Email">
-            <n-input v-model:value="model.email" @keydown.enter.prevent placeholder =""/>
+            <n-input
+                v-model:value="model.email"
+                @keydown.enter.prevent
+                placeholder=""
+            />
           </n-form-item>
-          <n-form-item path="username" label="Username">
-            <n-input v-model:value="model.username" @keydown.enter.prevent placeholder ="" />
+          <n-form-item path="displayName" label="Display Name">
+            <n-input
+                v-model:value="model.displayName"
+                maxlength="100"
+                show-count
+                @keydown.enter.prevent
+                placeholder=""
+            />
           </n-form-item>
           <n-form-item path="password" label="Password">
             <n-input
                 v-model:value="model.password"
                 type="password"
+                show-password-on="mousedown"
                 @input="handlePasswordInput"
                 @keydown.enter.prevent
-                placeholder ="Min 8 Characters"
+                placeholder="Min 12 Characters"
             />
           </n-form-item>
           <n-form-item ref="rPasswordFormItemRef" first path="confirmPassword" label="Confirm Password">
@@ -26,8 +44,9 @@
                 v-model:value="model.confirmPassword"
                 :disabled="!model.password"
                 type="password"
+                show-password-on="mousedown"
                 @keydown.enter.prevent
-                placeholder ="Min 8 Characters"
+                placeholder="Min 12 Characters"
             />
             </n-form-item>
 
@@ -47,20 +66,29 @@
             <n-col :span="16">
               <div style="display: flex; justify-content: flex-end">
                 <n-button
-                    :disabled="!model.username || !model.email || !model.password || model.password !== model.confirmPassword || !model.age"
+                    :disabled="!model.username || !model.email || !model.password || model.password !== model.confirmPassword || !model.age || !model.gender"
                     round
                     type="primary"
+                    color="rgba(120,132,2,0.6)"
+                    text-color="rgba(52,38,40,0.8)"
                     @click="handleRegisterButtonClick">
                   Register
                 </n-button>
               </div>
             </n-col>
           </n-row>
-          <n-space item-style="display: flex; font-size:10px" align="center" justify="center">
-            <br>
+          <n-divider/>
+          <n-space item-style="display: flex;" align="center" justify="center">
             <n-p>Already have an account?</n-p>
             <n-a @click="goTo('/login')">
-              <n-p style="color: #342628;">Login</n-p>
+              <n-button
+                  round
+                  type="primary"
+                  color="rgba(120,132,2,0.6)"
+                  text-color="rgba(52,38,40,0.8)"
+              >
+                Log In
+              </n-button>
             </n-a>
           </n-space>
         </n-form>
@@ -159,6 +187,11 @@ export default defineComponent({
             return true;
           },
           trigger: ["input", "blur"]
+        }
+      ],
+      gender: [
+        {
+          required: true,
         }
       ]
     };

@@ -6,6 +6,7 @@ import RegionPreference from "../models/RegionPreference.js";
 import User from '../models/User.js';
 import UserFoodPreference from "../models/UserFoodPreference.js";
 import UserRegionPreference from "../models/UserRegionPreference.js";
+import { Op } from "sequelize";
 
 const router = express.Router();
 const saltRounds = 10;
@@ -20,11 +21,26 @@ router.get('/users', async (req, res) => {
 router.post('/users', [
     check('username').notEmpty(),
     check('email').isEmail(),
-    check('password').isLength({ min: 8 })
+    check('password').isLength({ min: 12 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
+    }
+
+    let existingUser = await User.findOne({
+        where: {
+            [Op.or]: [
+                { username: req.body.username },
+                { email: req.body.email }
+            ]
+        }
+    });
+
+    if (existingUser) {
+        return res.status(400).json({
+            message: "A user with the given username or email already exists."
+        });
     }
 
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
@@ -48,7 +64,7 @@ router.get('/users/:UserID', async (req, res) => {
         if (!user) {
             return res.status(404).send({ message: 'User not found' });
         }
-
+        /*
         // Assuming FoodPreference model has an association with UserFoodPreference
         // through a foreign key that is named as in the original provided code.
         const foodPreferences = await FoodPreference.findAll({
@@ -72,6 +88,8 @@ router.get('/users/:UserID', async (req, res) => {
         // Map the results to get the desired preference types.
         user.setDataValue('foodPreferences', foodPreferences.map(fp => fp.FoodType));
         user.setDataValue('regionPreferences', regionPreferences.map(rp => rp.RegionType));
+
+         */
 
         return res.send(user);
     } catch (error) {
@@ -99,17 +117,6 @@ router.put('/users/:id', [
         const updatedUser = await user.update(req.body);
 
         return res.send(updatedUser);
-    } else {
-        return res.status(404).send({ message: 'User not found' });
-    }
-});
-
-// Delete a user by id
-router.delete('/users/:id', async (req, res) => {
-    const user = await User.findByPk(req.params.id);
-    if (user) {
-        await user.destroy();
-        return res.send({ message: 'User deleted' });
     } else {
         return res.status(404).send({ message: 'User not found' });
     }

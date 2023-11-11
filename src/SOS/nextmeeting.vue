@@ -216,7 +216,7 @@ export default defineComponent({
 
     const cancelEditing = () => {
       Object.assign(meetingDetails.value, originalMeetingDetails);
-      isEditing.value = false; // Exit editing mode.
+      isEditing.value = false;
     };
 
     const editMeeting = () => {

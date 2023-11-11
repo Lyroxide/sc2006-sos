@@ -49,9 +49,9 @@ const actions = {
             }
         )
     },
-    getUserRegionalPreferences({ rootState }) {
+    getUserRegionPreferences({ rootState }) {
         let UserID = rootState.auth.user.id;
-        return UserService.getUserRegionalPreferences(UserID).then(
+        return UserService.getUserRegionPreferences(UserID).then(
             response => {
                 return Promise.resolve(response.data);
             },
@@ -60,9 +60,9 @@ const actions = {
             }
         )
     },
-    editUserRegionalPreferences({ rootState }, pref) {
+    editUserRegionPreferences({ rootState }, pref) {
         let UserID = rootState.auth.user.id;
-        return UserService.editUserRegionalPreferences(UserID, pref).then(
+        return UserService.editUserRegionPreferences(UserID, pref).then(
             response => {
                 return Promise.resolve(response.data);
             },

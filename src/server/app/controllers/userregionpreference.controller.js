@@ -1,12 +1,17 @@
 import express from 'express';
 import UserRegionPreference from '../models/UserRegionPreference.js';
+import RegionPreference from '../models/RegionPreference.js';
 
 const router = express.Router();
 
 // Get all Preferences by UserID
-router.get('/user-region-prefernces/:userid', async (req, res) => {
+router.get('/user-region-preferences/:UserID', async (req, res) => {
     try {
-        const preferences = await UserRegionPreference.findAll({ where: { UserID: req.body.UserID } });
+        const preferences = await UserRegionPreference.findAll({ where: { UserID: req.params.UserID } });
+        for (let pref of preferences) {
+            const rp = await RegionPreference.findByPk(pref.RegionPreferenceID);
+            pref.setDataValue('RegionType', rp.RegionType);
+        }
         res.send(preferences);
     } catch (error) {
         res.status(500).send({

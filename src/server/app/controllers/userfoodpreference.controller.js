@@ -1,12 +1,17 @@
 import express from 'express';
 import UserFoodPreference from '../models/UserFoodPreference.js';
+import FoodPreference from "../models/FoodPreference.js";
 
 const router = express.Router();
 
 // Get all Preferences by UserID
-router.get('/user-food-preferences/:userid', async (req, res) => {
+router.get('/user-food-preferences/:UserID', async (req, res) => {
     try {
-        const preferences = await UserFoodPreference.findAll({ where: { UserID: req.body.UserID } });
+        const preferences = await UserFoodPreference.findAll({ where: { UserID: req.params.UserID } });
+        for (let pref of preferences) {
+            const fp = await FoodPreference.findByPk(pref.FoodPreferenceID);
+            pref.setDataValue('FoodType', fp.FoodType);
+        }
         res.send(preferences);
     } catch (error) {
         res.status(500).send({
