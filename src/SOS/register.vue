@@ -192,6 +192,7 @@ export default defineComponent({
       gender: [
         {
           required: true,
+          trigger: ["input", "blur"]
         }
       ]
     };

@@ -1,49 +1,50 @@
 <template>
   <n-space class="editprofile" item-style="display:flex; height: 100%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
-    <n-card size="huge">
+    <n-card size="huge" style="width:500px;">
       <n-h1 style="text-align: center;"> Account Details </n-h1>
       <n-thing>
-        <template v-if="isEditing">
-          <n-form ref="formRef" :model="userDetails" :rules="rules" style="width:500px; flex-wrap: nowrap;">
+        <template v-if="isEditing && userDetails">
+          <n-form ref="formRef" :model="userDetails" :rules="rules" style="flex-wrap: nowrap;">
             <n-space item-style="font-size: 70px; display: flex;" justify="center">
               <n-icon :component="UserRegular" color="#342628"/>
             </n-space>
-            <n-form-item path="username" label="Username">
+            <n-form-item path="Username" label="Username">
               <n-input
                   v-model:value="userDetails.Username"
                   maxlength="39"
                   show-count
-                  @keydown.enter.prevent/>
-            </n-form-item>
-            <n-form-item path="email" label="Email">
-              <n-input
-                  v-model:value="userDetails.Email"
-                  @keydown.enter.prevent
+                  @keydown.enter.prevent="saveEdit"
               />
             </n-form-item>
-            <n-form-item path="displayName" label="Display Name">
+            <n-form-item path="Email" label="Email">
+              <n-input
+                  v-model:value="userDetails.Email"
+                  @keydown.enter.prevent="saveEdit"
+              />
+            </n-form-item>
+            <n-form-item path="Name" label="Display Name">
               <n-input
                   v-model:value="userDetails.Name"
                   maxlength="100"
                   show-count
-                  @keydown.enter.prevent
+                  @keydown.enter.prevent="saveEdit"
               />
             </n-form-item>
-            <n-form-item path="age" label="Age" style="width:10%;">
+            <n-form-item path="Age" label="Age" style="width:15%;">
               <n-input
                   v-model:value="userDetails.Age"
-                  @keydown.enter.prevent
+                  @keydown.enter.prevent="saveEdit"
               />
             </n-form-item>
-            <n-form-item path="gender" label="Gender">
-              <n-select :value="userDetails.Gender"
+            <n-form-item path="Gender" label="Gender">
+              <n-select v-model:value="userDetails.Gender"
                         @update:value="userDetails.Gender = $event"
                         :options="options"/>
             </n-form-item>
 
             <n-form-item path="regionPref" label="Choose Region Preferences">
               <n-select
-                  v-model:value="userRegionPrefs.RegionType"
+                  v-model:value="userRegionPrefs"
                   placeholder="Please Choose"
                   multiple
                   :options="RPOptions"
@@ -53,7 +54,7 @@
 
             <n-form-item path="foodPref" label="Choose Food Preferences">
               <n-select
-                  v-model:value="userFoodPrefs.FoodType"
+                  v-model:value="userFoodPrefs"
                   placeholder="Please Choose"
                   multiple
                   :options="FPOptions"
@@ -62,11 +63,18 @@
             </n-form-item>
 
             <n-space align="center" justify="end">
-              <n-button round type="primary" @click="saveEdit" color="#D9D9D9" style="margin-top: 15px;"><n-icon :component="Check" color="#342628"/></n-button>
+              <n-button
+                  round
+                  type="primary"
+                  @click="saveEdit"
+                  color="#D9D9D9"
+                  style="margin-top: 15px;"
+                  :disabled="!userDetails.Username || !userDetails.Email || !userDetails.Name || !userDetails.Age || !userDetails.Gender"
+              >
+                <n-icon :component="Check" color="#342628"/>
+              </n-button>
               <n-button round @click="cancelEdit" color="#D9D9D9" style="margin-top: 15px;"><n-icon :component="Times" color="#342628"/></n-button>
             </n-space>
-
-
           </n-form>
         </template>
         <template v-else>
@@ -89,25 +97,23 @@
             Gender: {{ userDetails.Gender }}
           </n-space>
           <n-space item-style="flex-direction: row; margin-bottom: 15px;" align="center" justify="center">
-            <n-tag v-for="rp in userRegionPrefs" round :color="{ color: 'rgba(52,38,40,0.2)', textColor: 'rgba(52,38,40,0.8)'}">
+            <n-tag v-for="rp in userRegionPrefsProxy" round :color="{ color: 'rgba(52,38,40,0.2)', textColor: 'rgba(52,38,40,0.8)'}">
               <n-icon :component="LocationOutline" size="12" color="#342628"/>
               {{ rp.RegionType }}
             </n-tag>
           </n-space>
-          <n-space item-style="flex-direction: row;" align="center" justify="center">
+          <n-space item-style="flex-direction: row; " align="center" justify="center" v-if="userFoodPrefsProxy.length > 0">
             You like:
-            <n-tag v-for="fp in userFoodPrefs" round :color="{ color: 'rgba(52,38,40,0.2)', textColor: 'rgba(52,38,40,0.8)'}">
+            <n-tag v-for="fp in userFoodPrefsProxy" round :color="{ color: 'rgba(52,38,40,0.2)', textColor: 'rgba(52,38,40,0.8)'}">
               {{ fp.FoodType }}
             </n-tag>
           </n-space>
-
-
 
           <n-space align="center" justify="end">
             <n-a @click="goTo('/changepassword')">
               <n-button round type="primary" color="#D9D9D9"  style="margin-top: 15px; color: #342628">Change Password</n-button>
             </n-a>
-            <n-button round type="primary" @click="editProfile()" color="#D9D9D9"  style="margin-top: 15px;"><n-icon :component="Pen" color="#342628"/></n-button>
+            <n-button round type="primary" @click="editProfile" color="#D9D9D9"  style="margin-top: 15px;"><n-icon :component="Pen" color="#342628"/></n-button>
           </n-space>
 
         </template>
@@ -121,7 +127,7 @@
 import { Check, Pen, Times, UserRegular } from "@vicons/fa";
 import { LocationOutline } from "@vicons/ionicons5";
 import { useMessage } from "naive-ui";
-import { defineComponent, onMounted, reactive, ref } from "vue";
+import {defineComponent, onMounted, reactive, ref, nextTick, watchEffect} from "vue";
 import store from "../store/index.js";
 import { useRouter } from 'vue-router';
 
@@ -135,32 +141,34 @@ export default defineComponent({
     const isEditing = ref(false);
     const userDetails = ref({});
     const originalUserDetails = reactive({});
-    const userFoodPrefs = ref({});
-    const userRegionPrefs = ref({});
+    const userFoodPrefs = ref([]);
+    const userRegionPrefs = ref([]);
+    const userFoodPrefsProxy = ref({});
+    const userRegionPrefsProxy = ref({});
 
     const rules = {
-      displayName: [
+      Name: [
         {
           required: true,
           message: "Display Name is required",
           trigger: ["input", "blur"]
         }
       ],
-      email: [
+      Email: [
         {
           required: true,
           message: "Email is required",
           trigger: ["input", "blur"]
         }
       ],
-      username: [
+      Username: [
         {
           required: true,
           message: "Username is required",
           trigger: ["input", "blur"]
         }
       ],
-      age: [
+      Age: [
         {
           required: true,
           validator(rule, value) {
@@ -176,70 +184,63 @@ export default defineComponent({
           trigger: ["input", "blur"]
         }
       ],
-      gender: [
+      Gender: [
         {
           required: true,
         }
       ]
     };
 
+
     const RPOptions = ref([]);
     const FPOptions = ref([]);
 
     const handleFPSelection = (selectedFoodPrefs) => {
-      userDetails.foodPreferences = selectedFoodPrefs;
+      userFoodPrefs.value = selectedFoodPrefs;
     }
     const handleRPSelection = (selectedRegionPref) => {
-      userDetails.regionPreferences = selectedRegionPref;
+      userRegionPrefs.value = selectedRegionPref;
     }
 
-
-    onMounted(async () => {
+    async function fetchInitialData() {
       try {
         const foodPref = await store.dispatch("preference/getAllFoodPreferences");
-        for (let p of foodPref) {
-          FPOptions.value.push({
-            label: p.FoodType,
-            value: `${p.FoodPreferenceID}`
-          });
-        }
+        FPOptions.value = foodPref.map(p => ({
+          label: p.FoodType,
+          value: `${p.FoodPreferenceID}`
+        }));
+
         const regionPref = await store.dispatch("preference/getAllRegionPreferences");
-        for (let q of regionPref) {
-          RPOptions.value.push({
-            label: q.RegionType,
-            value: `${q.RegionPreferenceID}`
-          });
-        }
+        RPOptions.value = regionPref.map(q => ({
+          label: q.RegionType,
+          value: `${q.RegionPreferenceID}`
+        }));
 
         userDetails.value = await store.dispatch("user/getUserDetails");
-        userFoodPrefs.value = await store.dispatch("user/getUserFoodPreferences");
-        userRegionPrefs.value = await store.dispatch("user/getUserRegionPreferences");
-        console.log(userFoodPrefs.value);
+        userFoodPrefsProxy.value = await store.dispatch("user/getUserFoodPreferences");
+        userRegionPrefsProxy.value = await store.dispatch("user/getUserRegionPreferences");
 
-        console.log(userDetails);
+        userFoodPrefs.value = userFoodPrefsProxy.value.map(fp => `${fp.FoodPreferenceID}`);
+        userRegionPrefs.value = userRegionPrefsProxy.value.map(rp => `${rp.RegionPreferenceID}`);
       } catch (error) {
         console.error(error);
       }
-    });
+    }
+
+    onMounted(fetchInitialData);
 
     const goTo = (path) => {
       router.push(path)
     }
 
     async function saveEdit() {
-      const userCoreDetails = { ...userDetails };
-      delete userCoreDetails.regionPreferences;
-      delete userCoreDetails.foodPreferences;
-
-      const selectedRegionPrefs = userDetails.regionPreferences;
-      const selectedFoodPrefs = userDetails.foodPreferences;
-
       try {
-        await store.dispatch("user/editUserDetails", userCoreDetails);
-        await store.dispatch("user/editUserRegionPreferences", selectedRegionPrefs);
-        await store.dispatch("user/editUserFoodPreferences", selectedFoodPrefs);
-        message.info("Successfully Saved");
+        await store.dispatch("user/editUserDetails", userDetails.value);
+        await store.dispatch("user/editUserRegionPreferences", userRegionPrefs.value);
+        await store.dispatch("user/editUserFoodPreferences", userFoodPrefs.value);
+        await fetchInitialData();
         isEditing.value = false;
+        message.info("Successfully Saved");
       } catch (error) {
         console.error(error);
         message.error("Failed to save");
@@ -250,6 +251,7 @@ export default defineComponent({
       if(!isEditing.value) {
         Object.assign(originalUserDetails, userDetails.value);
         isEditing.value = true;
+        nextTick();
       }
     }
 
@@ -273,8 +275,8 @@ export default defineComponent({
       cancelEdit,
       editProfile,
       userDetails,
-      userFoodPrefs,
-      userRegionPrefs,
+      userFoodPrefs, userFoodPrefsProxy,
+      userRegionPrefs, userRegionPrefsProxy,
       isEditing,
       FPOptions, RPOptions, handleFPSelection, handleRPSelection,
       options: [
@@ -290,8 +292,7 @@ export default defineComponent({
           label: "Prefer not to say",
           value: "Prefer not to say"
         }
-      ],
-
+      ]
     };
   },
 });
@@ -306,5 +307,6 @@ export default defineComponent({
 .n-card {
   border-radius: 30px;
   margin-top: 10%;
+  width: auto;
 }
 </style>

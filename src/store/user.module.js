@@ -7,7 +7,6 @@ const actions = {
         let UserID = rootState.auth.user.id;
         return UserService.getUserDetails(UserID).then(
             response => {
-                console.log(response.data);
                 return Promise.resolve(response.data);
             },
             error => {
@@ -15,7 +14,7 @@ const actions = {
             }
         );
     },
-    editUserDetails({ rootState }, { commit }, user) {
+    editUserDetails({ rootState , commit }, user) {
         let UserID = rootState.auth.user.id;
         return UserService.editUserDetails(UserID, user).then(
             response => {

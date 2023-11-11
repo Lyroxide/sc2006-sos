@@ -4,7 +4,7 @@
       <n-card size="huge">
         <n-h1 style="text-align: center;">Log In</n-h1>
         <n-form ref="formRef" :model="model" :rules="rules">
-          <n-form-item path="username" label="Username/Email">
+          <n-form-item path="loginInput" label="Username/Email">
             <n-input v-model:value="model.loginInput" @keydown.enter.prevent />
           </n-form-item>
           <n-form-item path="password" label="Password">
@@ -55,7 +55,7 @@
 
 <script>
 import { useMessage } from "naive-ui";
-import { defineComponent, ref } from "vue";
+import {defineComponent, ref, watchEffect} from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
