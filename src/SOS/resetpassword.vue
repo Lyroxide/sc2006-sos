@@ -8,7 +8,7 @@
             <n-icon :component="UserRegular" color="#342628"/>
             </n-space>
             <n-form-item path="newPassword" label="Enter New Password">
-            <n-input v-model:value="model.newPassword" type="password" @input="handlePasswordInput" @keydown.enter.prevent placeholder="Enter minimum 12 characters" show-password-on="click"/>
+            <n-input v-model:value="model.newPassword" type="password" @input="handlePasswordInput" @keydown.enter.prevent placeholder="Enter min. 12 alphanumeric characters" show-password-on="click"/>
             </n-form-item>
             <n-form-item ref="rPasswordFormItemRef" first path="reenteredPassword" label="Re-enter New Password">
             <n-input v-model:value="model.reenteredPassword" type="password" @keydown.enter.prevent placeholder="Re-enter New Password" show-password-on="click"/>
@@ -51,7 +51,13 @@ export default defineComponent({
     });
 
     function validatePasswordSame(rule, value) {
-        return value === modelRef.value.newPassword;
+        return new Promise((resolve, reject) => {
+            if (value === modelRef.value.newPassword) {
+            resolve(true);
+            } else {
+            reject(new Error("Password is not same as new password!"));
+            }
+        });
     }
 
     async function saveEdit() {
@@ -79,30 +85,44 @@ export default defineComponent({
     }
 
     const rules = {
-        newPassword: [
+    currentPassword: [
         {
-            required: true,
-            message: "Password input required",
-            trigger: ["input", "blur"]
+        required: true,
+        message: "Current Password required",
+        trigger: ["input", "blur"]
+        }
+    ],
+    newPassword: [
+        {
+        required: true,
+        message: "Password input required",
+        trigger: ["input", "blur"]
         },
         {
-            min: 12,
-            message: "Password must be at least 12 characters",
-            trigger: ["input", "blur"]
-        }
-        ],
-        reenteredPassword: [
-        {
-            required: true,
-            message: "Re-entered password is required",
-            trigger: ["input", "blur"]
+        min: 12,
+        message: "Password must be at least 12 characters",
+        trigger: ["input", "blur"]
         },
         {
-            validator: validatePasswordSame,
-            message: "Password is not same as new password!",
-            trigger: ["blur", "password-input"]
+        validator: (rule, value) => {
+            const alphanumericRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+            return alphanumericRegex.test(value);
+        },
+        message: "Password must contain at least one letter and one number",
+        trigger: ["input", "blur"]
         }
-        ]
+    ],
+    reenteredPassword: [
+    {
+        required: true,
+        message: "Re-entered password is required",
+        trigger: ["input", "blur"]
+    },
+    {
+        validator: validatePasswordSame,
+        trigger: "blur"
+    }
+    ]
     };
 
     onMounted(async () => {
@@ -144,9 +164,9 @@ export default defineComponent({
         userEmail,
 
         handlePasswordInput() {
-        if (modelRef.value.reenteredPassword) {
-            rPasswordFormItemRef.value?.validate({ trigger: "password-input" });
-        }
+            if (modelRef.value.reenteredPassword) {
+                rPasswordFormItemRef.value?.validate({ trigger: "input" });
+            }
         },
     };
     },

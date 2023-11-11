@@ -1,12 +1,8 @@
 import bcrypt from 'bcryptjs';
 import express from 'express';
 import { check, validationResult } from 'express-validator';
-import FoodPreference from "../models/FoodPreference.js";
-import RegionPreference from "../models/RegionPreference.js";
-import User from '../models/User.js';
-import UserFoodPreference from "../models/UserFoodPreference.js";
-import UserRegionPreference from "../models/UserRegionPreference.js";
 import { Op } from "sequelize";
+import User from '../models/User.js';
 
 const router = express.Router();
 const saltRounds = 10;
@@ -99,9 +95,27 @@ router.get('/users/:UserID', async (req, res) => {
 });
 
 // Update a user by id
-router.put('/users/:id', [
-    check('email').isEmail(),
-    check('password').isLength({ min: 8 }).optional()
+router.put('/users/:UserID', [
+    check('Username').notEmpty(),
+    check('Email').isEmail(),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors);
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const user = await User.findByPk(req.params.UserID);
+    if (user) {
+        const updatedUser = await user.update(req.body);
+        return res.send(updatedUser);
+    } else {
+        return res.status(404).send({ message: 'User not found' });
+    }
+});
+
+// Update a user's password by id
+router.put('/users/:id/password', [
+    check('password').isLength({ min: 8 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -110,16 +124,36 @@ router.put('/users/:id', [
 
     const user = await User.findByPk(req.params.id);
     if (user) {
-        if (req.body.password) {
-            req.body.password = bcrypt.hashSync(req.body.password, saltRounds);
-        }
-
-        const updatedUser = await user.update(req.body);
+        const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
+        const updatedUser = await user.update({ Password: hashedPassword });
 
         return res.send(updatedUser);
     } else {
         return res.status(404).send({ message: 'User not found' });
     }
 });
+
+router.post('/users/:id/check-password', async (req, res) => {
+    
+    const user = await User.findByPk(req.params.id);
+    if (user) {
+        console.log("Current User Password: "+user.Password);
+        console.log("Incoming User Password: "+req.body.password);
+        const isMatch = bcrypt.compareSync(req.body.password, user.Password);
+        //const isMatch = req.body.password == user.Password;
+        return res.send({ isMatch });
+    } else {
+        return res.status(404).send({ message: 'User not found' });
+    }
+});
+
+/*
+router.post('/users/:id/hash-password', async (req, res) => {
+    const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
+    console.log("Newly Gay: " + hashedPassword)
+});
+*/
+
+
 
 export default router;
