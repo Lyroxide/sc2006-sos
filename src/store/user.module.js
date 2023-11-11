@@ -71,6 +71,42 @@ const actions = {
             }
         )
     },
+    updateUserPassword({ rootState }, newPassword) {
+        let UserID = rootState.auth.user.id;
+        return UserService.updateUserPassword(UserID, newPassword).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+    },
+    
+    checkCurrentPassword({ rootState }, hashedPassword) {
+        let UserID = rootState.auth.user.id;
+        return UserService.checkCurrentPassword(UserID, hashedPassword).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+            );
+    },
+    /*
+    hashPassword({ rootState }, password) {
+        let UserID = rootState.auth.user.id;
+        return UserService.hashPassword(UserID, password).then(
+            response => {
+            return Promise.resolve(response.data);
+            },
+            error => {
+            return Promise.reject(error);
+            }
+        );
+    },
+    */
 };
 
 const mutations = {

@@ -42,6 +42,23 @@ class UserService {
         return axios.get(API_URL + `group-members/user/${UserID}`,{ headers: authHeader() });
     }
 
+    updateUserPassword(UserID, newPassword) {
+        let data = { password: newPassword };
+        return axios.put(API_URL + `users/${UserID}/password`, data, { headers: authHeader() });
+    }
+    checkCurrentPassword(UserID, hashedPassword) {
+        let data = { password: hashedPassword };
+        return axios.post(API_URL + `users/${UserID}/check-password`, data, { headers: authHeader() });
+    }
+    /*
+    hashPassword(UserID, password) {
+        let data = { password: password };
+        return axios.post(API_URL + `users/${UserID}/hash-password`, data, { headers: authHeader() });
+    }
+    */
+
+
+
 
 }
 
