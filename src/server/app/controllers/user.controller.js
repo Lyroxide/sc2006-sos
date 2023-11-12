@@ -17,7 +17,8 @@ router.get('/users', async (req, res) => {
 router.post('/users', [
     check('username').notEmpty(),
     check('email').isEmail(),
-    check('password').isLength({ min: 12 })
+    check('password').isLength({ min: 12 }),
+    check('age').isInt({ min: 18 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -71,6 +72,7 @@ router.get('/users/:UserID', async (req, res) => {
 router.put('/users/:UserID', [
     check('Username').notEmpty(),
     check('Email').isEmail(),
+    check('Age').isInt({ min: 18 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

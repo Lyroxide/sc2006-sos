@@ -99,7 +99,7 @@ export default {
   top: 0;
   width: 100%;
   padding: 10px;
-  background-color: #342628;
+  background-color: rgba(52,38,40,0.95);
   z-index: 10;
 }
 

@@ -12,7 +12,7 @@
             :class="{'message-card-current': message.ByCurrentUser, 'message-card-other': !message.ByCurrentUser}"
         >
           <n-space item-style="flex-direction: row;" align="baseline">
-            <n-text style="font-size: 20px;">{{ message.Username }} @{{ message.Name }}</n-text>
+            <n-text style="font-size: 20px;">{{ message.Name }} @{{ message.Username }}</n-text>
           </n-space>
           <n-space item-style="flex-direction: row;" align="center">
             <n-text style="font-size: 14px; text-align: start;">{{ message.Message }}</n-text>
@@ -24,11 +24,18 @@
         </n-space>
       </n-list>
       <n-input-group style="margin-top: 4px">
-        <n-input :value="userMessage" @update:value="updateInputText" @keydown.enter="sendChatMessage"
-                ref="inputArea" class="input-text" type="textarea" :autosize="{ minRows: 1, maxRows: 6 }"
+        <n-input
+            :value="userMessage"
+            @update:value="updateInputText"
+            @keydown.enter="sendChatMessage"
+            ref="inputArea"
+            class="input-text"
+            type="textarea"
+            :autosize="{ minRows: 1, maxRows: 6 }"
+            maxlength="3000"
         >
           <template #suffix>
-            <n-button>
+            <n-button text>
               <n-icon :size="16" :component="Send28Filled"/>
             </n-button>
           </template>
@@ -159,13 +166,13 @@ export default defineComponent({
 }
 
 .message-card-current {
-  background-color: rgba(254,170,0,.60);
+  background-color: rgba(254,170,0,.30);
   border-right: 4px solid #FEAA00;
   margin-left: auto;
 }
 
 .message-card-other {
-  background-color: rgba(120,132,2,.60);
+  background-color: rgba(120,132,2,.30);
   border-left: 4px solid #788402;
   margin-right: auto;
 }

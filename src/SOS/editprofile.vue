@@ -30,9 +30,11 @@
                   @keydown.enter.prevent="saveEdit"
               />
             </n-form-item>
-            <n-form-item path="Age" label="Age" style="width:15%;">
-              <n-input
+            <n-form-item path="Age" label="Age" style="width:30%;">
+              <n-input-number
                   v-model:value="userDetails.Age"
+                  :min="0"
+                  :max="100"
                   @keydown.enter.prevent="saveEdit"
               />
             </n-form-item>
