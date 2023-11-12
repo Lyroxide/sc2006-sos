@@ -6,8 +6,7 @@
       <n-input v-model:value="searchvalue" type="text" :loading="isSearching" @keyup.enter="searchRequest" placeholder="Search by Group Name">
       </n-input>
       <n-button type="info" @click="searchRequest">
-        <n-icon size="24">
-          <SearchIcon />
+        <n-icon size="24" :component="SearchOutlined">
         </n-icon>
       </n-button>
     </n-space>

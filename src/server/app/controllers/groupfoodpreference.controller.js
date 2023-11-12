@@ -15,35 +15,19 @@ router.get('/group-food-preferences', async (req, res) => {
     }
 });
 
-// route to add a GroupFoodPreference
+// route to add/edit GroupFoodPreferences
 router.post('/group-food-preferences', async (req, res) => {
-    const newGroupFoodPreference = {
-        GroupID: req.body.GroupID,
-        FoodPreferenceID: req.body.FoodPreferenceID
-    };
-
+    const { GroupID, pref } = req.body;
     try {
-        const groupFoodPreference = await GroupFoodPreference.create(newGroupFoodPreference);
-        res.send(groupFoodPreference);
+        await GroupFoodPreference.destroy({ where: { GroupID } });
+        const preferencesToAdd = pref.map(FoodPreferenceID => ({ GroupID, FoodPreferenceID }));
+        const batchPreferences = await GroupFoodPreference.bulkCreate(preferencesToAdd);
+        res.send(batchPreferences);
     } catch (error) {
-        res.status(500).send({
-            message: error.message || "An error occurred while creating the GroupFoodPreference."
-        });
+        res.status(500).send({ message: error.message || "An error occurred while updating preferences." });
     }
 });
 
-// route to delete a GroupFoodPreference
-router.delete('/group-food-preferences/:id', async (req, res) => {
-    try {
-        await GroupFoodPreference.destroy({
-            where: { GroupFoodPreferenceID: req.params.id }
-        });
-        res.send({ message: "GroupFoodPreference was deleted successfully!" });
-    } catch (error) {
-        res.status(500).send({
-            message: error.message || "Could not delete GroupFoodPreference."
-        });
-    }
-});
+
 
 export default router;

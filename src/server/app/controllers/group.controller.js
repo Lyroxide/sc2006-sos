@@ -77,10 +77,10 @@ router.get('/groups/:GroupID', async (req, res) => {
 // route to add a group
 router.post('/groups', async (req, res) => {
     const newGroup = {
-        GroupName: req.body.GroupName,
-        GroupDesc: req.body.GroupDesc
+        OwnerID: req.body.UserID,
+        GroupName: req.body.Group.GroupName,
+        GroupDesc: req.body.Group.GroupDesc
     };
-
     try {
         const group = await Group.create(newGroup);
         res.send(group);

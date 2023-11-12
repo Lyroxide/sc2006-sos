@@ -36,16 +36,15 @@
       <n-modal v-model:show="showModal" :mask-closable="false">
         <n-space class="createGroup" item-style="display:flex; height: 1000%; width: 200%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
           <n-card size="huge" style="border-radius: 40px;">
-            <n-h3> Create your Group! </n-h3>
-            <n-form ref="formRef" :model="model" style="width:100%; flex-wrap: nowrap;">
-              <!-- enter group name (100), food preference, regional preference, choose photo, description (5000)-->
+            <n-h3 style="text-align: center;"> Create your Group! </n-h3>
+            <n-form ref="formRef" :model="model"  :rules="rules" style="width:100%; flex-wrap: nowrap;">
               <n-space item-style="display: flex; margin-bottom: 30px; border-radius: 20px; font-size: 70px;" justify="center">
-                <n-button square @click="addGroupPhoto()" color="#F7F4EF"><n-icon :component="AddPhotoAlternateRound" color="#342628" size="100%"/></n-button>
+                <n-button square @click="addGroupPhoto" color="#F7F4EF"><n-icon :component="AddPhotoAlternateRound" color="#342628" size="100%"/></n-button>
               </n-space>
 
-              <n-form-item path="groupName" label="Enter Group Name">
+              <n-form-item path="GroupName" label="Enter Group Name">
                 <n-input
-                    v-model:value="model.groupName"
+                    v-model:value="model.GroupName"
                     maxlength="100"
                     @keydown.enter.prevent
                     placeholder="Maximum 100 Characters"
@@ -53,27 +52,27 @@
                 />
               </n-form-item>
 
-              <n-form-item path="groupDesc" label="Enter Group Description">
+              <n-form-item path="GroupDesc" label="Enter Group Description">
                 <n-input type="textarea"
-                         maxlength="5000"
-                         v-model:value="model.groupDesc"
+                         maxlength="3000"
+                         v-model:value="model.GroupDesc"
                          @keydown.enter.prevent
-                         placeholder="Maximum 5000 Characters"
+                         placeholder="Maximum 3000 Characters"
                          item-style="height: 150%"
                          show-count
                 />
               </n-form-item>
 
               <n-form-item path="foodPref" label="Choose Food Preferences (maximum 3)">
-                <n-select v-model:value="model.foodPref" placeholder="Maximum 3 Preferences" multiple :max-tag-count="3" :options="FPoptions" @update:value="handleFPselection"/>
+                <n-select v-model:value="foodPref" placeholder="Maximum 3 Preferences" multiple :max-tag-count="3" :options="FPOptions" @update:value="handleFPSelection"/>
               </n-form-item>
 
               <n-form-item path="regionPref" label="Choose Regional Preference (only 1)">
-                <n-select v-model:value="model.regionPref" placeholder="Only 1 Preferences" :max-tag-count="1" :options="RPoptions" @update:value="handleRPselection"/>
+                <n-select v-model="regionPref" placeholder="Only 1 Preference" :max-tag-count="1" :options="RPOptions" @update:value="handleRPSelection"/>
               </n-form-item>
 
               <n-space align="center" justify="end">
-                <n-button circle @click="createGroup" color="#F7F4EF"><n-icon :component="Check" color="#342628" size="110%"/></n-button>
+                <n-button circle @click="createGroup" color="#F7F4EF" :disabled="!model.GroupName || !model.GroupDesc || !foodPref || !regionPref"><n-icon :component="Check" color="#342628" size="110%"/></n-button>
                 <n-button circle @click="cancelCreation" color="#F7F4EF"><n-icon :component="Times" color="#342628" size="110%"/></n-button>
               </n-space>
             </n-form>
@@ -122,58 +121,104 @@ export default defineComponent({
     }
 
     const model = ref({
-      groupName: null,
-      groupDesc: null,
-      foodPref: [],
-      regionPref: null,
+      GroupName: null,
+      GroupDesc: null
     });
 
-    const RPoptions = ref([]);
-    const FPoptions = ref([]);
+    const foodPref = ref([]);
+    const regionPref = ref(null);
+
+    const rules = {
+      GroupName: [
+        {
+          required: true,
+          message: "Group Name is required",
+          trigger: ["input", "blur"]
+        }
+      ],
+      GroupDesc: [
+        {
+          required: true,
+          message: "Description is required",
+          trigger: ["input", "blur"]
+        }
+      ],
+      foodPref: [
+        {
+          required: true
+        }
+      ],
+      regionPref: [
+        {
+          required: true
+        }
+      ],
+    }
+
+    const RPOptions = ref([]);
+    const FPOptions = ref([]);
 
     // store group details after group has been created
     async function createGroup() {
       try {
-        await store.dispatch("group/createGroup", model);
+        console.log(model.value);
+        console.log(regionPref.value);
+        console.log(foodPref.value);
+        const newGroup = await store.dispatch("group/createGroup", model.value);
+        await store.dispatch("group/createGroupRegionPreference", { GroupID: newGroup.GroupID, pref: regionPref.value });
+        await store.dispatch("group/createGroupFoodPreference",  { GroupID: newGroup.GroupID, pref: foodPref.value });
+        await store.dispatch("group/joinGroup", newGroup.GroupID);
         message.success("Group successfully created!");
+        await fetchGroupDetails();
         showModal.value = false;
+        clearForm();
       } catch (error) {
         console.error(error);
         message.error("Failed to create group :(");
       }
     }
 
+    function clearForm() {
+      model.value.GroupName = null;
+      model.value.GroupDesc = null;
+      regionPref.value = null;
+      foodPref.value = [];
+    }
+
     const cancelCreation = () => {
       showModal.value = false;
     }
-    const handleFPselection = (selectedFoodPrefs) => {
+    const handleFPSelection = (selectedFoodPrefs) => {
       if (selectedFoodPrefs.length > 3) {
         message.warning('You can only choose up to 3 food preferences.');
         selectedFoodPrefs.pop();
       }
-      model.foodPref = selectedFoodPrefs;
+      foodPref.value = selectedFoodPrefs;
     }
-    const handleRPselection = (selectedRegionPref) => {
-      model.regionPref = selectedRegionPref;
+    const handleRPSelection = (selectedRegionPref) => {
+      regionPref.value = selectedRegionPref;
     }
 
-    onMounted(async() => {
+    async function fetchGroupDetails() {
       groups.value = await store.dispatch("group/getOwnGroups");
       for (let group of groups.value) {
         const g = await store.dispatch('group/getGroupDetails', group.GroupID);
-        console.log(g);
         Object.assign(group, g);
       }
-      const foodPref = await store.dispatch("preference/getAllFoodPreferences");
-      for (let p of foodPref) {
-        FPoptions.value.push({
+    }
+
+    onMounted(async() => {
+      await fetchGroupDetails();
+      const foodPrefProxy = await store.dispatch("preference/getAllFoodPreferences");
+      for (let p of foodPrefProxy) {
+        FPOptions.value.push({
           label: p.FoodType,
           value: `${p.FoodPreferenceID}`
         });
       }
-      const regionPref = await store.dispatch("preference/getAllRegionPreferences");
-      for (let q of regionPref) {
-        RPoptions.value.push({
+      const regionPrefProxy = await store.dispatch("preference/getAllRegionPreferences");
+      for (let q of regionPrefProxy) {
+        RPOptions.value.push({
           label: q.RegionType,
           value: `${q.RegionPreferenceID}`
         });
@@ -184,18 +229,20 @@ export default defineComponent({
       LocationOutline,
       Check, Plus, Times,
       AddPhotoAlternateRound,
+      formRef,
       active,
       groups,
       selectedGroupId,
       placement,
       type,
       selectGroup,
-
+      rules,
       model,
       showModal: showModal,
       createGroup,
       cancelCreation,
-      FPoptions, RPoptions, handleFPselection, handleRPselection
+      foodPref, regionPref,
+      FPOptions, RPOptions, handleFPSelection, handleRPSelection
 
     };
   },

@@ -58,6 +58,48 @@ const actions = {
             }
         );
     },
+    createGroupFoodPreference(_, { GroupID, pref }) {
+        return GroupService.createGroupFoodPreference(GroupID, pref).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+    },
+    editGroupFoodPreference({ rootState }, pref) {
+        let GroupID = rootState.group.groups.GroupID;
+        return GroupService.editGroupFoodPreference(GroupID, pref).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+    },
+    createGroupRegionPreference(_, { GroupID, pref }) {
+        return GroupService.createGroupRegionPreference(GroupID, pref).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+    },
+    editGroupRegionPreference({ rootState }, pref) {
+        let GroupID = rootState.group.groups.GroupID;
+        return GroupService.editGroupRegionPreference(GroupID, pref).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+    },
     editGroup(Group) {
         return GroupService.editGroup(Group).then(
             response => {

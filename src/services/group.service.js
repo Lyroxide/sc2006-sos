@@ -17,6 +17,26 @@ class GroupService {
         return axios.post(API_URL + 'groups', data, { headers: authHeader() });
     }
 
+    createGroupFoodPreference(GroupID, pref) {
+        let data = { GroupID, pref };
+        return axios.post(API_URL + 'group-food-preferences', data, { headers: authHeader() });
+    }
+
+    editGroupFoodPreference(GroupID, pref) {
+        let data = { GroupID, pref };
+        return axios.post(API_URL + 'group-food-preferences', data, { headers: authHeader() });
+    }
+
+    createGroupRegionPreference(GroupID, pref) {
+        let data = { GroupID, pref };
+        return axios.post(API_URL + 'group-region-preferences', data, { headers: authHeader() });
+    }
+
+    editGroupRegionPreference(GroupID, pref) {
+        let data = { GroupID, pref };
+        return axios.post(API_URL + 'group-region-preferences', data, { headers: authHeader() });
+    }
+
     editGroup(Group) {
         return axios.put(API_URL + 'groups', Group, { headers: authHeader() });
     }

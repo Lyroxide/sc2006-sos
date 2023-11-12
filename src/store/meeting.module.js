@@ -17,8 +17,9 @@ const actions = {
             }
         );
     },
-    createMeeting(Group) {
-        return MeetingService.createMeeting(Group).then(
+    createMeeting({ rootState }, Meeting) {
+        let GroupID = rootState.group.groups.GroupID;
+        return MeetingService.createMeeting(GroupID, Meeting).then(
             response => {
                 return Promise.resolve(response.data);
             },
@@ -27,17 +28,6 @@ const actions = {
             }
         );
     },
-   /* editMeeting({ rootState }, Meeting) {
-        let GroupID = rootState.group.groups.GroupID;
-        return MeetingService.editMeeting(GroupID, Meeting).then(
-            response => {
-                return Promise.resolve(response.data);
-            },
-            error => {
-                return Promise.reject(error);
-            }
-        );
-    },*/
     editMeeting({ rootState }, Meeting) {
         let GroupID = rootState.group.groups.GroupID;
         return MeetingService.editMeeting(GroupID, Meeting.MeetingID, Meeting).then(

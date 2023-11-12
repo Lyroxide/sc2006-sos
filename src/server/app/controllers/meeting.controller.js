@@ -26,13 +26,12 @@ router.get('/meetings/groups/:GroupID', async (req, res) => {
 router.post('/meetings', async (req, res) => {
     const newMeeting = {
         GroupID: req.body.GroupID,
-        PlaceID: req.body.PlaceID,
-        MeetingDate: req.body.MeetingDate,
-        MeetingAddress: req.body.MeetingAddress,
-        MeetingDesc: req.body.MeetingDesc,
-        MeetingPlace: req.body.MeetingPlace,
+        PlaceID: req.body.Meeting.PlaceID,
+        MeetingDate: req.body.Meeting.MeetingDate,
+        MeetingAddress: req.body.Meeting.MeetingAddress,
+        MeetingDesc: req.body.Meeting.MeetingDesc,
+        MeetingPlace: req.body.Meeting.MeetingPlace,
     };
-
     try {
         const meeting = await Meeting.create(newMeeting);
         res.send(meeting);

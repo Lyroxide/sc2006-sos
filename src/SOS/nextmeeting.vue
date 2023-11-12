@@ -3,19 +3,7 @@
     <n-space class="meeting-panel" style="justify-content: center">
       <n-card title="Next Meeting Details" size="huge" content-style="justify-content: center; align-items: center;">
         <n-thing>
-          <template v-if="!isMeetingExists">
-            <n-h1>There are no upcoming meetings.</n-h1>
-            <n-button
-                round type="primary"
-                v-show="isGroupOwner"
-                @click="editMeeting"
-                color="#D9D9D9"
-                style="margin-top: 15px; color: #342628"
-            >
-              Create Meeting
-            </n-button>
-          </template>
-          <template v-else-if="isEditing">
+          <template v-if="isEditing">
             <n-form ref="formRef" :model="model" style="width:300px">
               <n-text>Date and Time</n-text>
               <n-date-picker
@@ -54,33 +42,53 @@
             </n-form>
           </template>
           <template v-else>
-            <n-space item-style="flex-direction: row;" align="center" justify="center">
-              <n-text style="font-size: 20px; text-align: center;">Date: {{ model.Date }}</n-text>
-              <n-text style="font-size: 20px; text-align: center;">Time: {{ model.Time }}</n-text>
-            </n-space>
-            <n-space item-style="flex-direction: row;" align="center" justify="center">
-              <n-text style="text-align: center;">Place Name: {{ model.MeetingPlace }}</n-text>
-            </n-space>
-            <n-space item-style="flex-direction: row;" align="center" justify="center">
-              <n-text style="text-align: center;">Location: {{ model.MeetingAddress }}</n-text>
-            </n-space>
-            <n-space align="center" justify="center">
-              <n-text >{{ model.MeetingDesc }}</n-text>
-            </n-space>
+            <template v-if="!isMeetingExists">
+              <n-space vertical justify="center" align="center">
+                <n-h1>There are no upcoming meetings.</n-h1>
+                <n-button
+                    round type="primary"
+                    v-show="isGroupOwner && !isMeetingExists"
+                    @click="createMeeting"
+                    color="#D9D9D9"
+                    style="margin-top: 15px; color: #342628"
+                >
+                  Create Meeting
+                </n-button>
+              </n-space>
+
+            </template>
+            <template v-else>
+              <n-space item-style="flex-direction: row;" align="center" justify="center">
+                <n-text style="font-size: 20px; text-align: center;">Date: {{ model.Date }}</n-text>
+                <n-text style="font-size: 20px; text-align: center;">Time: {{ model.Time }}</n-text>
+              </n-space>
+              <n-space item-style="flex-direction: row;" align="center" justify="center">
+                <n-text style="text-align: center;">Place Name: {{ model.MeetingPlace }}</n-text>
+              </n-space>
+              <n-space item-style="flex-direction: row;" align="center" justify="center">
+                <n-text style="text-align: center;">Location: {{ model.MeetingAddress }}</n-text>
+              </n-space>
+              <n-space align="center" justify="center">
+                <n-text >{{ model.MeetingDesc }}</n-text>
+              </n-space>
+
+              <n-space align="center" justify="end">
+                <n-button
+                    round type="primary"
+                    v-show="isGroupOwner"
+                    @click="editMeeting"
+                    color="#D9D9D9"
+                    style="margin-top: 15px; color: #342628"
+                >
+                  <n-icon :component="Pen" color="#342628"/>
+                </n-button>
+              </n-space>
+            </template>
 
 
 
-            <n-space align="center" justify="end">
-              <n-button
-                  round type="primary"
-                  v-show="isGroupOwner"
-                  @click="editMeeting"
-                  color="#D9D9D9"
-                  style="margin-top: 15px; color: #342628"
-              >
-                <n-icon :component="Pen" color="#342628"/>
-              </n-button>
-            </n-space>
+
+
           </template>
         </n-thing>
 
@@ -153,7 +161,6 @@ export default defineComponent({
       MeetingPlace: '',
       MeetingAddress: '',
       PlaceID: '',
-      DateTime: '',
       MeetingDesc: ''
     });
     let map = ref(null); // Google Maps 'Map'
@@ -176,7 +183,7 @@ export default defineComponent({
       await getGroupDetails(newVal);
     }, {immediate: true});
 
-    onMounted(async() => {
+    const initialMount = async() => {
       await getGroupDetails(props.groupId);
       if (group.value) {
         try {
@@ -195,8 +202,9 @@ export default defineComponent({
           console.error(error);
         }
       }
+    }
 
-    })
+    onMounted(initialMount);
 
     async function getLatestMeeting(meetings) {
       for (let meeting of meetings) {
@@ -224,12 +232,28 @@ export default defineComponent({
       isEditing.value = true;
     };
 
+    const createMeeting = () => {
+      let currentTime = DateTime.now().toFormat('x');
+      meetingDetails.value = {
+        MeetingPlace: '',
+        MeetingAddress: '',
+        PlaceID: '',
+        DateTime: Number(currentTime), // using Luxon DateTime for current time handling
+        MeetingDesc: ''
+      };
+      originalMeetingDetails.value = {}; // Reset original details
+      console.log(meetingDetails.value);
+      isEditing.value = true;
+    };
+
     const saveMeetingDetails = async () => {
       if(isEditing.value) {
         try {
+          console.log(meetingDetails.value);
           meetingDetails.value.MeetingDate = DateTime.fromMillis(meetingDetails.value.DateTime).toISO();
           await store.dispatch("meeting/editMeeting", meetingDetails.value);
           message.info("Successfully Saved");
+          await initialMount();
           isEditing.value = false;
         } catch (error) {
           console.error(error);
@@ -239,14 +263,17 @@ export default defineComponent({
     }
 
     const createMeetingDetails = async () => {
+      console.log(meetingDetails.value);
       if(isEditing.value) {
         try {
-          await store.dispatch("user/editMeeting", meetingDetails.value);
-          message.info("Successfully Saved");
+          meetingDetails.value.MeetingDate = DateTime.fromMillis(meetingDetails.value.DateTime).toISO();
+          await store.dispatch("meeting/createMeeting", meetingDetails.value);
+          message.info("Successfully Created");
+          await initialMount();
           isEditing.value = false;
         } catch (error) {
           console.error(error);
-          message.error("Failed to save");
+          message.error("Failed to create");
         }
       }
     }
@@ -444,6 +471,7 @@ export default defineComponent({
       formRef,
       cancelEditing,
       editMeeting,
+      createMeeting,
       saveMeetingDetails,
       createMeetingDetails,
       handleMeetingAction,
