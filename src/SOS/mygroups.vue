@@ -1,8 +1,8 @@
 <template>
   <n-space class="group-page" item-style="display:flex;" justify="center" align="center" style="flex-wrap: nowrap; ;align-items: start;">
     <n-space vertical class="group-listing">
-      <n-list hoverable clickable>
-        <n-list-item v-for="group in groups" @click="selectGroup(group.GroupID)" :key="group.GroupID" :class="{ 'active-item': active === group.GroupID }">
+      <n-list hoverable clickable v-for="group in groups" style="margin-bottom: 10px;">
+        <n-list-item  @click="selectGroup(group.GroupID)" :key="group.GroupID" :class="{ 'active-item': active === group.GroupID }">
           <n-thing :title="group.GroupName" content-style="margin-top: 10px;">
             <template #description>
               <n-space size="small" style="margin-top: 4px">
@@ -26,7 +26,6 @@
               </n-space>
             </template>
             {{ group.GroupDesc }}
-            <!-- Leave Group button -->
           </n-thing>
         </n-list-item>
       </n-list>

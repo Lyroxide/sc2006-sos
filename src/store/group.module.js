@@ -132,6 +132,16 @@ const actions = {
             }
         );
     },
+    searchGroups(_, searchPayload) {
+        return GroupService.searchGroups(searchPayload).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+    }
 
 };
 

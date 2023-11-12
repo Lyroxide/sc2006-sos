@@ -51,6 +51,10 @@ class GroupService {
         return axios.delete(API_URL + 'group-members', GroupID, { headers: authHeader() });
     }
 
+    searchGroups(searchPayload) {
+        return axios.post(API_URL + 'groups/search', searchPayload, { headers: authHeader() });
+    }
+
 
 }
 

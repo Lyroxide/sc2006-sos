@@ -5,18 +5,18 @@
     <n-space item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap;">
       <n-input v-model:value="searchvalue" type="text" :loading="isSearching" @keyup.enter="searchRequest" placeholder="Search by Group Name">
       </n-input>
-      <n-button type="info" @click="searchRequest">
-        <n-icon size="24" :component="SearchOutlined">
-        </n-icon>
+      <n-button  @click="searchRequest">
+        <n-icon size="24" :component="SearchOutlined"/>
       </n-button>
     </n-space>
 
     <n-space vertical >
       <n-select
-          v-model:value="selectedValues"
+          v-model:value="userFoodPrefs"
           placeholder="Food Preferences"
           multiple
           :options="options"
+          @update:value="handleFPSelection"
           class="select-component"
           :style="{width: componentWidth}"
       />
@@ -49,7 +49,7 @@
           </n-space>
 
           <n-space class="group-tags" justify="start">
-            <n-tag class="tag" :bordered="false">{{ group.regionPreference }}</n-tag>
+            <n-tag class="tag" :bordered="false" style="justify-content: center;"><n-icon :component="LocationOutline" size="12" color="#342628"/>{{ group.regionPreference }}</n-tag>
             <n-tag v-for="tag in group.foodPreferences" :key="tag" class="tag" :bordered="false">{{ tag }}</n-tag>
           </n-space>
 
@@ -70,6 +70,7 @@
 import {defineComponent, ref, computed, onMounted} from "vue";
 import {useMessage} from "naive-ui";
 import { SearchOutlined } from "@vicons/material";
+import { LocationOutline } from "@vicons/ionicons5";
 import { User } from "@vicons/fa";
 import store from "../store/index.js";
 export default defineComponent({
@@ -83,11 +84,21 @@ export default defineComponent({
     const selectedValues = ref(null);
     const message = useMessage();
     const options = ref([]);
-    async function searchRequest() {
-      isSearching.value = true;
 
+    const userFoodPrefs = ref([]);
+    const userFoodPrefsProxy = ref({});
+    async function searchRequest() {
       try {
-        groups.value = await store.dispatch("group/getAllGroups");
+        let searchPayload = {};
+
+        // Only add the search criteria to the payload if they exist
+        if (searchvalue.value.trim() || userFoodPrefs.value.length) {
+          searchPayload = {
+            searchValue: searchvalue.value.trim(),
+            foodPreferences: userFoodPrefs.value
+          };
+        }
+        groups.value = await store.dispatch("group/searchGroups", searchPayload);
         isSearching.value = false;
       } catch (error) {
         console.error(error);
@@ -118,6 +129,9 @@ export default defineComponent({
           value: `${p.FoodPreferenceID}`
         });
       }
+
+      userFoodPrefsProxy.value = await store.dispatch("user/getUserFoodPreferences");
+      userFoodPrefs.value = userFoodPrefsProxy.value.map(fp => `${fp.FoodPreferenceID}`);
     })
 
     const componentWidth = computed(() => {
@@ -125,6 +139,10 @@ export default defineComponent({
       const optionWidth = 40; // Width of an option
       return `${baseWidth + selectedValues.length * optionWidth}px`;
     });
+
+    const handleFPSelection = (selectedFoodPrefs) => {
+      userFoodPrefs.value = selectedFoodPrefs;
+    }
 
     return {
       groups: groups,
@@ -136,9 +154,10 @@ export default defineComponent({
       joinGroup,
       options: options.value,
       componentWidth,
+      handleFPSelection,
+      userFoodPrefs,
       selectedValues: selectedValues,
-      SearchOutlined,
-      User,
+      SearchOutlined, User, LocationOutline
     };
   },
 });
