@@ -1,5 +1,5 @@
 <template>
-  <n-space class="group-page" item-style="display:flex;" justify="center" align="center" style="flex-wrap: nowrap; align-items: start; justify-content: center;">
+  <n-space class="group-page" item-style="display:flex;" justify="center" align="center" style="flex-wrap: nowrap; ;align-items: start;">
     <n-space vertical class="group-listing">
       <n-list hoverable clickable>
         <n-list-item v-for="group in groups" @click="selectGroup(group.GroupID)" :key="group.GroupID" :class="{ 'active-item': active === group.GroupID }">

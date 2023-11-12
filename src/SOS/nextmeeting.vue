@@ -181,6 +181,13 @@ export default defineComponent({
 
     watch(() => props.groupId, async (newVal) => {
       await getGroupDetails(newVal);
+      if(group.value){
+        try {
+          await initialMount();
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }, {immediate: true});
 
     const initialMount = async() => {
