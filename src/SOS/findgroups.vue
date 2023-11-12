@@ -1,10 +1,9 @@
 <template>
-  <n-space vertical class="findgroups">
+  <n-space vertical class="findgroups" item-style="display:flex; height: 100%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
     <n-h1> Find Groups Here!</n-h1>
-    <n-space item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: nowrap;">
 
+    <n-space item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap;">
       <n-input v-model:value="searchvalue" type="text" :loading="isSearching" @keyup.enter="searchRequest" placeholder="Search by Group Name">
-
       </n-input>
       <n-button type="info" @click="searchRequest">
         <n-icon size="24">
@@ -12,7 +11,6 @@
         </n-icon>
       </n-button>
     </n-space>
-
 
     <n-space vertical >
       <n-select
@@ -30,24 +28,38 @@
       <n-space class="vertical-scroll-container" item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: wrap;">
         <n-card hoverable v-for="(group, index) in groups" :key="group.id" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
           <n-space vertical align="center" justify="center" item-style="display: flex;">
-            <n-space class="card-top" justify="start">
-              <n-h1 class ="group-name"> {{ group.GroupName }} </n-h1>
-              <font-awesome-icon :icon="['fas', 'user']" class="shift-icon" />
-              <n-text class="group-capacity">{{group.memberCount.count}}/{{ group.Capacity }}</n-text>
+            <n-space class="card-top">
+              <n-grid :cols="4" x-gap="12">
+                <n-gi/>
+                <n-gi :span="2">
+                  <n-space class="group-name" style="font-size: 30px;" justify="center"> {{ group.GroupName }} </n-space>
+                </n-gi>
+                <n-gi style="display: flex; align-items: center; justify-content: center;">
+                  <n-space class="group-count-wrapper" align="center">
+                    <n-icon :component="User" class="shift-icon" size="20"/>
+                    <n-text class="group-count">{{group.memberCount.count}}</n-text>
+                  </n-space>
+                </n-gi>
+
+              </n-grid>
             </n-space>
+
             <n-space class="group-description" justify="center" align="center">
               {{ group.GroupDesc }}
             </n-space>
           </n-space>
+
           <n-space class="group-tags" justify="start">
             <n-tag class="tag" :bordered="false">{{ group.regionPreference }}</n-tag>
             <n-tag v-for="tag in group.foodPreferences" :key="tag" class="tag" :bordered="false">{{ tag }}</n-tag>
           </n-space>
+
           <n-space class="group-footer" justify="center" align="center">
             <n-button circle @click="joinGroup(group)">
               <font-awesome-icon :icon="['fas', 'user-plus']"/>
             </n-button>
           </n-space>
+
         </n-card>
       </n-space>
     </n-scrollbar>
@@ -58,12 +70,10 @@
 <script>
 import {defineComponent, ref, computed, onMounted} from "vue";
 import {useMessage} from "naive-ui";
-import {SearchOutlined} from "@vicons/material";
+import { SearchOutlined } from "@vicons/material";
+import { User } from "@vicons/fa";
 import store from "../store/index.js";
 export default defineComponent({
-  components: {
-    SearchIcon: SearchOutlined,
-  },
 
   setup() {
     const searchvalue = ref("");
@@ -118,7 +128,6 @@ export default defineComponent({
     });
 
     return {
-      show: ref(true),
       groups: groups,
       searchvalue,
       isSearching,
@@ -129,6 +138,8 @@ export default defineComponent({
       options: options.value,
       componentWidth,
       selectedValues: selectedValues,
+      SearchOutlined,
+      User,
     };
   },
 });
@@ -146,7 +157,7 @@ export default defineComponent({
 .custom-card-first {
   justify-content: center;
   align-items: center;
-  background-color: rgba(254,170,0,.60); /* Replace with your desired color for the top half */
+  background-color: rgba(254,170,0,.50); /* Replace with your desired color for the top half */
   width: 400px;
   height: 400px;
   border-radius: 30px;
@@ -155,7 +166,7 @@ export default defineComponent({
 .custom-card-second {
   justify-content: center;
   align-items: center;
-  background-color: rgba(120,132,2, .60); /* Replace with your desired color for the top half */
+  background-color: rgba(120,132,2, .50); /* Replace with your desired color for the top half */
   width: 400px;
   height: 400px;
   border-radius: 30px;
@@ -164,37 +175,20 @@ export default defineComponent({
 .custom-card-third {
   justify-content: center;
   align-items: center;
-  background-color: rgba(87, 40, 34, .60); /* Replace with your desired color for the top half */
+  background-color: rgba(87, 40, 34, .50); /* Replace with your desired color for the top half */
   width: 400px;
   height: 400px;
   border-radius: 30px;
 }
 
-
-.shift-icon {
-  position: absolute;
-  top: 29px;
-  right: 20px;
-}
-
-.group-capacity {
-  position: absolute;
-  top: 42px;
-  right: 15px;
-  font-size: 12px;
-}
-
 .findgroups {
-  margin: 2% 18%;
+  margin: 5% 20%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.shift-icon {
-  margin-right: 5px;
-}
 
 .group-description {
   background-color: rgb(239, 222, 205);

@@ -349,8 +349,9 @@ export default {
       if(place.officialWebsite){
         websiteHeader.textContent = `🌐 Website:`; 
         websiteElement.textContent = `${place.officialWebsite}`; //Website
-        websiteElement.href = `${place.officialWebsite}`;
-        websiteElement.target = '_blank';
+        // open website in new tab and make sure it is not under localhost:8081/ 
+        websiteElement.href = place.officialWebsite;
+        websiteElement.target = '_new';
       }
       else{
         websiteHeader.textContent = `Google Search 🔎:`;

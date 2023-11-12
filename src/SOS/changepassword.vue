@@ -91,7 +91,7 @@ export default defineComponent({
       await store.dispatch("user/updateUserPassword", modelRef.value.newPassword);
       message.success("Password updated successfully");
       router.push('/editprofile');
-      
+
     } catch (error) {
       console.error(error);
       message.error("Failed to update password");
@@ -110,7 +110,7 @@ export default defineComponent({
     }
     onMounted(getDetails);
     */
-    
+
 
     const rules = {
     newPassword: [
@@ -126,7 +126,7 @@ export default defineComponent({
       },
       {
         validator: (rule, value) => {
-          const alphanumericRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+          const alphanumericRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
           return alphanumericRegex.test(value);
         },
         message: "Password must contain at least one letter and one number",

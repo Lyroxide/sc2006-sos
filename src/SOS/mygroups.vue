@@ -30,7 +30,7 @@
           </n-thing>
         </n-list-item>
       </n-list>
-      <n-divider />
+
       <!-- create group model + form here -->
       <n-button circle @click="showModal=true" color="#F7F4EF"><n-icon :component="Plus" color="#342628" size="20px"/></n-button>
       <n-modal v-model:show="showModal" :mask-closable="false">

@@ -17,7 +17,8 @@ router.get('/users', async (req, res) => {
 router.post('/users', [
     check('username').notEmpty(),
     check('email').isEmail(),
-    check('password').isLength({ min: 12 })
+    check('password').isLength({ min: 12 }),
+    check('age').isInt({ min: 18 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -60,33 +61,6 @@ router.get('/users/:UserID', async (req, res) => {
         if (!user) {
             return res.status(404).send({ message: 'User not found' });
         }
-        /*
-        // Assuming FoodPreference model has an association with UserFoodPreference
-        // through a foreign key that is named as in the original provided code.
-        const foodPreferences = await FoodPreference.findAll({
-            include: [{
-                model: UserFoodPreference,
-                where: { UserID },
-                attributes: [],
-            }]
-        });
-
-        // Assuming RegionPreference model has an association with UserRegionPreference
-        // through a foreign key that is named as in the original provided code.
-        const regionPreferences = await RegionPreference.findAll({
-            include: [{
-                model: UserRegionPreference,
-                where: { UserID },
-                attributes: [],
-            }]
-        });
-
-        // Map the results to get the desired preference types.
-        user.setDataValue('foodPreferences', foodPreferences.map(fp => fp.FoodType));
-        user.setDataValue('regionPreferences', regionPreferences.map(rp => rp.RegionType));
-
-         */
-
         return res.send(user);
     } catch (error) {
         console.error(error);
@@ -98,24 +72,48 @@ router.get('/users/:UserID', async (req, res) => {
 router.put('/users/:UserID', [
     check('Username').notEmpty(),
     check('Email').isEmail(),
+    check('Age').isInt({ min: 18 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         console.log(errors);
         return res.status(400).json({ errors: errors.array() });
     }
-    const user = await User.findByPk(req.params.UserID);
-    if (user) {
+
+    try {
+        const user = await User.findByPk(req.params.UserID);
+        if (!user) {
+            return res.status(404).json({message: 'User not found'});
+        }
+        const existingUser = await User.findOne({
+            where: {
+                [Op.and]: [
+                    {UserID: {[Op.ne]: req.params.UserID}},
+                    {
+                        [Op.or]: [
+                            {Username: req.body.Username},
+                            {Email: req.body.Email}
+                        ]
+                    }
+                ]
+            }
+        });
+        if (existingUser) {
+            return res.status(400).json({
+                message: "A user with the given username or email already exists."
+            });
+        }
         const updatedUser = await user.update(req.body);
-        return res.send(updatedUser);
-    } else {
-        return res.status(404).send({ message: 'User not found' });
+        return res.json(updatedUser);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred while updating the user.' });
     }
 });
 
 // Update a user's password by id
 router.put('/users/:id/password', [
-    check('password').isLength({ min: 8 })
+    check('password').isLength({ min: 12 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -134,7 +132,7 @@ router.put('/users/:id/password', [
 });
 
 router.post('/users/:id/check-password', async (req, res) => {
-    
+
     const user = await User.findByPk(req.params.id);
     if (user) {
         console.log("Current User Password: "+user.Password);
@@ -146,14 +144,5 @@ router.post('/users/:id/check-password', async (req, res) => {
         return res.status(404).send({ message: 'User not found' });
     }
 });
-
-/*
-router.post('/users/:id/hash-password', async (req, res) => {
-    const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
-    console.log("Newly Gay: " + hashedPassword)
-});
-*/
-
-
 
 export default router;

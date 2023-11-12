@@ -478,7 +478,7 @@ export default defineComponent({
   border-width: 3px !important;
   justify-content: center;
   align-items: center;
-  background-color: rgba(254,170,0,.60);
+  background-color: rgba(254,170,0,.30);
   border-radius: 30px;
 }
 
