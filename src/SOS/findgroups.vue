@@ -1,5 +1,5 @@
 <template>
-  <n-space vertical class="findgroups" item-style="display:flex; height: 100%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
+  <n-space vertical class="findgroups" item-style="display:flex; height: 100%;" align="center" justify="center" style="flex-wrap: nowrap;">
     <n-h1> Find Groups Here!</n-h1>
 
     <n-space item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap;">
@@ -90,8 +90,6 @@ export default defineComponent({
     async function searchRequest() {
       try {
         let searchPayload = {};
-
-        // Only add the search criteria to the payload if they exist
         if (searchvalue.value.trim() || userFoodPrefs.value.length) {
           searchPayload = {
             searchValue: searchvalue.value.trim(),
@@ -200,9 +198,9 @@ export default defineComponent({
 }
 
 .findgroups {
-  margin: 5% 20%;
-  display: flex;
+  position: relative;
   flex-direction: row;
+  margin: 5% 10% 0 10%;
   justify-content: space-between;
   align-items: center;
 }

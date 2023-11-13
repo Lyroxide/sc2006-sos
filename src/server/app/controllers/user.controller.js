@@ -16,9 +16,9 @@ router.get('/users', async (req, res) => {
 // Create a new user
 router.post('/users', [
     check('username').notEmpty(),
-    check('email').isEmail(),
+    check('email').isEmail().withMessage("Email is invalid!"),
     check('password').isLength({ min: 12 }),
-    check('age').isInt({ min: 18 })
+    check('age').isInt({ min: 18 }).withMessage("You must be 18 and above to register!")
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -36,7 +36,9 @@ router.post('/users', [
 
     if (existingUser) {
         return res.status(400).json({
-            message: "A user with the given username or email already exists."
+            errors: [{
+                msg: "A user with the given username or email already exists."
+            }]
         });
     }
 
@@ -71,8 +73,8 @@ router.get('/users/:UserID', async (req, res) => {
 // Update a user by id
 router.put('/users/:UserID', [
     check('Username').notEmpty(),
-    check('Email').isEmail(),
-    check('Age').isInt({ min: 18 })
+    check('Email').isEmail().withMessage("Email is invalid!"),
+    check('Age').isInt({ min: 18 }).withMessage("You must be 18 and above to register!")
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -100,7 +102,9 @@ router.put('/users/:UserID', [
         });
         if (existingUser) {
             return res.status(400).json({
-                message: "A user with the given username or email already exists."
+                errors: [{
+                    msg: "A user with the given username or email already exists."
+                }]
             });
         }
         const updatedUser = await user.update(req.body);

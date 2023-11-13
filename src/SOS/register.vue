@@ -223,9 +223,14 @@ export default defineComponent({
                 message.success("Registration Success");
               })
               .catch((err) => {
-                message.error(err.message);
-              }
-              );
+                if (err.response && err.response.data && err.response.data.errors) {
+                  err.response.data.errors.forEach(error => {
+                    message.error(error.msg);
+                  });
+                } else {
+                  message.error(err.message || 'Registration Failed');
+                }
+              });
         } else {
           console.log(errors);
         }

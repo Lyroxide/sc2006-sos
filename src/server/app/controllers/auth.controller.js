@@ -33,12 +33,20 @@ router.post('/users', [
     });
 
     if (!user) {
-        return res.status(401).send("User not found");
+        return res.status(400).json({
+            errors: [{
+                msg: "Wrong Username or Email!"
+            }]
+        });
     }
 
     const passwordIsValid = bcrypt.compareSync(req.body.password, user.dataValues.Password);
     if (!passwordIsValid) {
-        return res.status(401).send("Provided password is incorrect");
+        return res.status(400).json({
+            errors: [{
+                msg: "Incorrect password!"
+            }]
+        });
     }
 
     const token = jwt.sign({ id: user.id }, 'secretKey', {
