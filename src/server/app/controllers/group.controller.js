@@ -108,6 +108,7 @@ router.delete('/groups/:GroupID', async (req, res) => {
     }
 });
 
+
 // route to update a group
 router.put('/groups/:id', async (req, res) => {
     const updateGroup = {

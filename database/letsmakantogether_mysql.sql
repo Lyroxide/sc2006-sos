@@ -95,7 +95,7 @@ CREATE TABLE GroupChatMessage (
   MessageDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   Message VARCHAR(3000) NOT NULL,
   PRIMARY KEY (GroupChatMessageID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
   FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
@@ -107,7 +107,7 @@ CREATE TABLE GroupMember (
   GroupID INT NOT NULL,
   PRIMARY KEY (GroupMemberID),
   FOREIGN KEY (UserID) REFERENCES Users(UserID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE
 );
 
 
@@ -117,7 +117,7 @@ CREATE TABLE GroupPicture (
   GroupID INT NOT NULL,
   PictureFile VARCHAR(255) NOT NULL,
   PRIMARY KEY (PictureID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE
 );
 
 
@@ -127,7 +127,7 @@ CREATE TABLE GroupFoodPreference (
   GroupID INT NOT NULL,
   FoodPreferenceID INT NOT NULL,
   PRIMARY KEY (GroupFoodPreferenceID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
   FOREIGN KEY (FoodPreferenceID) REFERENCES FoodPreference(FoodPreferenceID),
   UNIQUE KEY UQ_Group_Food_Preference (GroupID, FoodPreferenceID)
 );
@@ -139,7 +139,7 @@ CREATE TABLE GroupRegionPreference (
   GroupID INT NOT NULL,
   RegionPreferenceID INT NOT NULL,
   PRIMARY KEY (GroupRegionPreferenceID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
   FOREIGN KEY (RegionPreferenceID) REFERENCES RegionPreference(RegionPreferenceID),
   UNIQUE KEY UQ_Group_Region_Preference (GroupID, RegionPreferenceID)
 );
@@ -155,7 +155,7 @@ CREATE TABLE Meeting (
   MeetingDesc VARCHAR(3000) NOT NULL,
   MeetingPlace VARCHAR(255) NOT NULL,
   PRIMARY KEY (MeetingID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE
 );
 
 
@@ -321,3 +321,4 @@ INSERT INTO Meeting (MeetingID, GroupID, PlaceID, MeetingDate, MeetingAddress, M
 (2, 2, 'ChIJ36AdBg0Z2jERvFl0QFoqZ0E','2023-10-11 22:00:00', '165 Tg Pagar Rd, Amara Hotel, Singapore 088539', 'I managed to book for 8 pax. Join us to unwind after work.', 'Jigger & Pony'),
 (3, 3, 'ChIJQ51o40Y92jERStkiz0uY78w','2023-11-30 18:00:00', '78 Airport Boulevard B2-227/228 Jewel, Singapore Changi Airport, 819666', 'Legit best sushi here. We will go in pax of 6s. 20% discount available!' ,'Sushiro Jewel Changi'),
 (4, 4, 'ChIJZfromh8Q2jER5-7OVxJevCk','2023-11-01 11:30:00', '347 Jurong East Ave 1, #01-180, Singapore 600347', 'Super budget friendly, tons of options, but might be sold out at 1pm. So don\'t be late and join us at 11.30!' ,'Lam Chan Mixed Veg Rice');
+

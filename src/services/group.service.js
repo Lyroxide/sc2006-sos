@@ -41,16 +41,21 @@ class GroupService {
         return axios.put(API_URL + 'groups', Group, { headers: authHeader() });
     }
 
-    deleteGroup(GroupID) {
+    /*deleteGroup(GroupID) {
         console.log(GroupID);
         return axios.delete(API_URL + `groups/${GroupID}`, { headers: authHeader()});
-    }
+    }*/
 
+    deleteGroup(GroupID) {
+        console.log(GroupID);
+        const url = API_URL + `groups/${GroupID}`; // Construct the URL properly
+        return axios.delete(url, {headers: authHeader()});
+    }
     leaveGroup(UserID, GroupID) {
-        console.log(UserID, GroupID)
-        return axios.delete(API_URL + 'group-members', GroupID, { headers: authHeader() });
+        console.log(UserID, GroupID);
+        const url = API_URL + `group-members/${UserID}/${GroupID}`;
+        return axios.delete(url, { headers: authHeader() });
     }
-
     searchGroups(searchPayload) {
         return axios.post(API_URL + 'groups/search', searchPayload, { headers: authHeader() });
     }

@@ -3,7 +3,11 @@
     <n-card size="huge" content-style="width: 1000px; justify-content: center;">
       <div class="container" style="display:flex">
         <h2 class="title">{{ group.GroupName }}</h2>
-        <div class="actions" style="margin-top:20px; margin-left:750px" >
+        <n-space class="group-count-wrapper" align="center" style="margin-left:10px; margin-top:5px">
+          <n-icon :component="User" class="shift-icon" size="20"/>
+          <n-text class="group-count">{{memberCount}}</n-text>
+        </n-space>
+        <div class="actions" style="margin-top:20px; margin-left:635px" >
           <n-button v-show="!isGroupOwner" circle @click="handleLeaveButtonClick" color="#F7F4EF" style="width:100px">
             Leave
           </n-button>
@@ -25,6 +29,7 @@
 </template>
 
 <script>
+import { User } from "@vicons/fa";
 import { onMounted, ref, toRefs , watch, toRaw} from 'vue';
 import store from '../store/index.js';
 import Meeting from './nextmeeting.vue';
@@ -32,7 +37,13 @@ import GroupChat from './groupchat.vue';
 import { useMessage } from "naive-ui";
 import { useRouter } from 'vue-router';
 
+
 export default {
+  computed: {
+    User() {
+      return User
+    }
+  },
   props: {
     groupId: {
       type: Number,
@@ -47,15 +58,18 @@ export default {
   setup(props) {
     const message = useMessage();
     const group = ref({});
-    const isGroupOwner = ref({});
+    const isGroupOwner = ref(false);
     const router = useRouter();
     const userDetails = ref({});
+    const memberCount = ref({});
 
     const getGroupDetails = async (groupId) => {
       if (groupId) {
         group.value = await store.dispatch('group/getGroupDetails', groupId)
             .catch(error => console.error(error));
+        memberCount.value = group.value.memberCount.count;
         return group.value;
+
       }
     };
     watch(() => props.groupId, async (newVal) => {
@@ -63,8 +77,9 @@ export default {
         group.value = await store.dispatch('group/getGroupDetails', newVal)
             .catch(error => console.error(error));
       }
-    }, {immediate: true});
 
+    }, {immediate: true});
+    console.log(isGroupOwner.value);
     //check if current user is group owner
     onMounted(async() => {
       await getGroupDetails(props.groupId);
@@ -84,9 +99,9 @@ export default {
     })
 
     //leave group
-    async function handleLeaveButtonClick(e) {
+    async function handleLeaveButtonClick() {
        // e.preventDefault();
-            store.dispatch("group/leaveGroup", group.value.GroupId).then(
+            store.dispatch("group/leaveGroup", group.value.GroupID).then(
                 () => {
                   router.push("/mygroups");
                   message.success("Leave Success");
@@ -99,23 +114,22 @@ export default {
       }
     //delete group
     async function handleDeleteButtonClick() {
-    //  e.preventDefault();
-          console.log(Number.isInteger(group.value.GroupID));
-      if (Number.isInteger(group.value.GroupID)) {
-        store.dispatch("group/deleteGroup", group.value.GroupID).then(
-            () => {
-              router.push("/mygroups");
-              message.success("Delete Success");
-            })
-            .catch((err) => {
-                  message.error(err.message);
-                  message.error('Delete fail');
-                }
-            );
-      }else{console.error("GroupID is not an interger", group.value.GroupID)}
+      //handleLeaveButtonClick(); //to remove owner from group while deleting group??
+      //deleteMeeting Details along with group (optional)
+      store.dispatch("group/deleteGroup",group.value.GroupID).then(
+          () => {
+            router.push("/mygroups");
+            message.success("Delete Success");
+          })
+          .catch((err) => {
+                message.error(err.message);
+                message.error('Delete fail');
+              }
+          );
     }
     return {
       group,
+      memberCount,
       Meeting,
       GroupChat,
       isGroupOwner,

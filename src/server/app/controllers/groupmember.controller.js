@@ -46,13 +46,23 @@ router.post('/group-members', async (req, res) => {
 });
 
 // DELETE a group member
-router.delete('/group-members/:id', async (req, res) => {
+router.delete('/group-members/:userId/:groupId', async (req, res) => {
+    const { userId, groupId } = req.params;
     try {
-        const GroupMemberID = req.params.id
-        await GroupMember.destroy({ where: { GroupMemberID } });
-        res.status(204).json({ message: `Deleted GroupMember with id ${GroupMemberID}` });
+        const result = await GroupMember.destroy({
+            where: {
+                UserID: userId,
+                GroupID: groupId
+            }
+        });
+
+        if (result === 0) {
+            return res.status(404).json({ message: `No GroupMember found with UserID=${userId} and GroupID=${groupId}` });
+        }
+
+        res.status(204).json({ message: `Deleted GroupMember with UserID=${userId} and GroupID=${groupId}` });
     } catch(error) {
-        res.status(500).json({ message: error.message || `An error occurred while deleting the group member with id ${GroupMemberID}` });
+        res.status(500).json({ message: error.message || `An error occurred while deleting the group member with UserID=${userId} and GroupID=${groupId}` });
     }
 });
 

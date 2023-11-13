@@ -110,8 +110,8 @@ const actions = {
             }
         );
     },
-    deleteGroup(GroupID) {
-        console.log(GroupID);
+    deleteGroup({rootState}) {
+        let GroupID = rootState.group.groups.GroupID;
         return GroupService.deleteGroup(GroupID).then(
             response => {
                 return Promise.resolve(response.data);
