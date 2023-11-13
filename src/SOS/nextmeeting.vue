@@ -100,30 +100,45 @@
     </div>
     <div id="map-side-panel">
       <div id="map" ref="mapElement"></div>
-      <div id="side-panel" v-if="showSidePanel">
-        <h2>{{ selectedPlace.name }}</h2>
-        <h3>🏠Address:</h3>
-        <p>{{ selectedPlace.formatted_address }}</p>
+      <n-drawer
+          v-model:show="showSidePanel"
+          :width="333"
+          :placement="placement"
+          :trap-focus="false"
+          to="#map"
+      >
+        <n-drawer-content :title="selectedPlace.name">
+          <n-h3>🏠Address:</n-h3>
+          <n-p>{{ selectedPlace.formatted_address }}</n-p>
 
-        <h3 v-if="selectedPlace.rating">
-          ⭐ Rating: {{ selectedPlace.rating }}/5 ⭐
-        </h3>
-        <h3 v-if="selectedPlace.phone_number">
-          📞 Contact: {{ selectedPlace.phone_number }}
-        </h3>
+          <n-h3 v-if="selectedPlace.rating">
+            ⭐ Rating: {{ selectedPlace.rating }}/5 ⭐
+          </n-h3>
+          <n-h3 v-if="selectedPlace.phone_number">
+            📞 Contact: {{ selectedPlace.phone_number }}
+          </n-h3>
 
-        <a
-            v-if="selectedPlace.google_url"
-            :href="selectedPlace.google_url"
-            target="_blank"
-        >
-          Google 🔎: {{ selectedPlace.name }}
-        </a>
+          <n-space style="flex-direction: row; align-items: center;">
+            <n-a
+                v-if="selectedPlace.google_url"
+                :href="selectedPlace.google_url"
+                target="_blank"
+            >
+              Google 🔎: {{ selectedPlace.name }}
+            </n-a>
 
-        <n-button v-show="isEditing" @click="showSidePanel = false">Close</n-button>
-        <n-button v-show="isEditing" @click="confirmPlaceSelection">Confirm</n-button>
-        <!-- Add other details and buttons as needed -->
-      </div>
+            <n-a
+                v-if="selectedPlace.website"
+                :href="selectedPlace.website"
+                target="_blank"
+            >
+              Website 🌐: {{ selectedPlace.name }}
+            </n-a>
+            <n-button v-show="isEditing" @click="confirmPlaceSelection">Confirm</n-button>
+          </n-space>
+
+        </n-drawer-content>
+      </n-drawer>
     </div>
   </div>
 
@@ -150,12 +165,12 @@ export default defineComponent({
     const group = ref({});
     const userDetails = ref({});
     const isGroupOwner = ref(false);
-    //const meetingDetails = ref({});
     const isMeetingExists = ref(false);
     const originalMeetingDetails = reactive({});
 
     const selectedPlace = ref(null);
     const showSidePanel = ref(false);
+    const placement = ref("right");
     const meetingDetails = ref({
       // Initialize your object structure here
       MeetingPlace: '',
@@ -301,6 +316,7 @@ export default defineComponent({
         rating: place.rating ? place.rating : null,
         phone_number: place.formatted_phone_number ? place.formatted_phone_number : null,
         google_url: place.url ? place.url : `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
+        website: place.website,
         place_id: place.place_id,
       };
       // Show the side panel by setting the flag to true.
@@ -424,7 +440,7 @@ export default defineComponent({
               const service = new google.maps.places.PlacesService(marker.map);
               service.getDetails({
                 placeId: marker.placeId,  // Use the placeId from the marker
-                fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos', 'place_id']
+                fields: ['name', 'formatted_address', 'rating', 'reviews', 'url','website','formatted_phone_number','photos', 'place_id']
               }, (place, status) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                   displayPlaceDetails(place);
@@ -491,6 +507,7 @@ export default defineComponent({
       ...toRefs(meetingDetails), // Convert the reactive `meetingDetails` to refs
       selectedPlace,
       showSidePanel,
+      placement,
       confirmPlaceSelection,
       initializeMap,
       mapElement,
