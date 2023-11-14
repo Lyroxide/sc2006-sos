@@ -317,8 +317,18 @@ INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPrefe
 
 -- Meeting
 INSERT INTO Meeting (MeetingID, GroupID, PlaceID, MeetingDate, MeetingAddress, MeetingDesc, MeetingPlace) VALUES
-(1, 1, 'ChIJtcxff28U2jER1Ux43_QFQ2I','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot'),
 (2, 2, 'ChIJ36AdBg0Z2jERvFl0QFoqZ0E','2023-10-11 22:00:00', '165 Tg Pagar Rd, Amara Hotel, Singapore 088539', 'I managed to book for 8 pax. Join us to unwind after work.', 'Jigger & Pony'),
 (3, 3, 'ChIJQ51o40Y92jERStkiz0uY78w','2023-11-30 18:00:00', '78 Airport Boulevard B2-227/228 Jewel, Singapore Changi Airport, 819666', 'Legit best sushi here. We will go in pax of 6s. 20% discount available!' ,'Sushiro Jewel Changi'),
 (4, 4, 'ChIJZfromh8Q2jER5-7OVxJevCk','2023-11-01 11:30:00', '347 Jurong East Ave 1, #01-180, Singapore 600347', 'Super budget friendly, tons of options, but might be sold out at 1pm. So don\'t be late and join us at 11.30!' ,'Lam Chan Mixed Veg Rice');
 
+-- Meetings for Group 1: Grass
+INSERT INTO Meeting (GroupID, PlaceID, MeetingDate, MeetingAddress, MeetingDesc, MeetingPlace) VALUES
+(1, '', '2023-01-15 12:30:00', '101 Veg Location, Veggie Lane, Singapore 123456', 'Healthy Eating Gathering', 'Veggie Delight'),
+(1, '', '2023-02-10 11:45:00', '202 Green Terrace, Plant-Based Park, Singapore 654321', 'Plant-Based Buffet Meetup', 'Green Buffet'),
+(1, '', '2023-03-21 13:00:00', '333 Veggie Boulevard, Singapore 789101', 'Farmers Market Luncheon', 'Market Bites'),
+(1, '', '2023-04-18 12:00:00', '404 Salad Street, Singapore 223344', 'Salad Social', 'Salad Bowl Bistro'),
+(1, '', '2023-01-15 12:30:00', '101 Veg Location, Veggie Lane, Singapore 123456', 'Healthy Eating Gathering', 'Veggie Delight'),
+(1, '', '2023-02-10 11:45:00', '202 Green Terrace, Plant-Based Park, Singapore 654321', 'Plant-Based Buffet Meetup', 'Green Buffet'),
+(1, '', '2023-03-21 13:00:00', '333 Veggie Boulevard, Singapore 789101', 'Farmers Market Luncheon', 'Market Bites'),
+(1, '', '2023-04-18 12:00:00', '404 Salad Street, Singapore 223344', 'Salad Social', 'Salad Bowl Bistro'),
+(1, 'ChIJtcxff28U2jER1Ux43_QFQ2I','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot');

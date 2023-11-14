@@ -1,6 +1,7 @@
 import express from 'express';
 import GroupMember from '../models/GroupMember.js';
 import Group from '../models/Group.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -26,6 +27,24 @@ router.get('/group-members/user/:UserID', async (req, res) => {
 
         }
         res.send(userGroups);
+    } catch(error) {
+        res.status(500).json({ message: error.message || `An error occurred while retrieving group members for user ${UserID}` });
+    }
+});
+
+router.get('/group-members/:GroupID', async (req, res) => {
+    try {
+        let memberNames = [];
+        const GroupID = req.params.GroupID;
+        const members = await GroupMember.findAll({ where: { GroupID } });
+        for (let member of members) {
+            const users = await User.findAll({ where: { UserID: member.UserID }});
+            for (let user of users) {
+                memberNames.push(user.Name);
+            }
+
+        }
+        res.send(memberNames);
     } catch(error) {
         res.status(500).json({ message: error.message || `An error occurred while retrieving group members for user ${UserID}` });
     }

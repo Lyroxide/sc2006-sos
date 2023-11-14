@@ -37,6 +37,17 @@ const actions = {
             }
         );
     },
+    getAllGroupMembers({ rootState }) {
+        let GroupID = rootState.group.groups.GroupID;
+        return GroupService.getAllGroupMembers(GroupID).then(
+            response => {
+                return Promise.resolve(response.data);
+            },
+            error => {
+                return Promise.reject(error);
+            }
+        );
+    },
     getAllGroups() {
         return GroupService.getAllGroups().then(
             response => {

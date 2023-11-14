@@ -25,7 +25,6 @@
                 </n-tag>
               </n-space>
             </template>
-            {{ group.GroupDesc }}
           </n-thing>
         </n-list-item>
       </n-list>

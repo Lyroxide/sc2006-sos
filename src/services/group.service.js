@@ -8,13 +8,16 @@ class GroupService {
     }
 
     getGroupDetails(GroupID) {
-
         return axios.get(API_URL + `groups/${GroupID}`, { headers: authHeader() });
     }
 
     createGroup(UserID, Group) {
         let data = { UserID, Group };
         return axios.post(API_URL + 'groups', data, { headers: authHeader() });
+    }
+
+    getAllGroupMembers(GroupID) {
+        return axios.get(API_URL + `group-members/${GroupID}`, { headers: authHeader() })
     }
 
     createGroupFoodPreference(GroupID, pref) {

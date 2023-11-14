@@ -1,22 +1,37 @@
 <template>
   <n-space class="group" v-if="group" item-style="display: flex;" justify="space-evenly">
     <n-card size="huge" content-style="width: 1000px; justify-content: center;">
-      <div class="container" style="display:flex">
-        <h2 class="title">{{ group.GroupName }}</h2>
-        <n-space class="group-count-wrapper" align="center" style="margin-left:10px; margin-top:5px">
-          <n-icon :component="User" class="shift-icon" size="20"/>
-          <n-text class="group-count">{{memberCount}}</n-text>
-        </n-space>
+      <n-space justify="space-around" align="center">
+        <n-grid :cols="10">
+          <n-gi span="8">
+            <n-h2 class="title">{{ group.GroupName }}</n-h2>
+          </n-gi>
+          <n-gi>
+            <n-space class="group-count-wrapper" align="center" style="margin-top: 5px">
+              <n-icon :component="User" class="shift-icon" size="20"/>
+              <n-text class="group-count">{{ memberCount }}</n-text>
+            </n-space>
+          </n-gi>
+          <n-gi>
+            <n-button v-show="!isGroupOwner" strong round type="error" circle @click="handleConfirmLeave" color="#F7F4EF" style="width:100px">
+              Leave
+            </n-button>
+            <n-button v-show="isGroupOwner" strong round type="error" circle @click="handleConfirmDelete"  style="width:100px">
+              Delete
+            </n-button>
+          </n-gi>
+        </n-grid>
+
+
         <div class="actions" style="margin-top:20px; margin-left:635px" >
-          <n-button v-show="!isGroupOwner" circle @click="handleLeaveButtonClick" color="#F7F4EF" style="width:100px">
-            Leave
-          </n-button>
-          <n-button v-show="isGroupOwner" circle @click="handleDeleteButtonClick" color="#F7F4EF" style="width:100px">
-            Delete
-          </n-button>
+
+
           </div>
-      </div>
+      </n-space>
       <n-tabs default-value="oasis" justify-content="space-evenly" type="line">
+        <n-tab-pane name="detail" tab="Group Details">
+          <GroupDetail :group-id="group.GroupID"/>
+        </n-tab-pane>
         <n-tab-pane name="chat" tab="Group Chat">
           <GroupChat :group-id="group.GroupID"/>
         </n-tab-pane>
@@ -34,8 +49,10 @@ import { onMounted, ref, toRefs , watch, toRaw} from 'vue';
 import store from '../store/index.js';
 import Meeting from './nextmeeting.vue';
 import GroupChat from './groupchat.vue';
-import { useMessage } from "naive-ui";
+import GroupDetail from './groupdetail.vue';
 import { useRouter } from 'vue-router';
+import { defineComponent } from 'vue';
+import { useMessage, useDialog } from 'naive-ui';
 
 
 export default {
@@ -52,16 +69,19 @@ export default {
   },
   components: {
     Meeting,
-    GroupChat
+    GroupChat,
+    GroupDetail
   },
 
   setup(props) {
-    const message = useMessage();
+    const message = useMessage()
+    const dialog = useDialog()
     const group = ref({});
     const isGroupOwner = ref(false);
     const router = useRouter();
     const userDetails = ref({});
     const memberCount = ref({});
+
 
     const getGroupDetails = async (groupId) => {
       if (groupId) {
@@ -132,9 +152,35 @@ export default {
       memberCount,
       Meeting,
       GroupChat,
+      GroupDetail,
       isGroupOwner,
-      handleLeaveButtonClick,
-      handleDeleteButtonClick,
+      handleConfirmLeave () {
+        dialog.warning({
+          title: 'Confirm',
+          content: 'Are you sure you want to leave the group?',
+          positiveText: 'LEAVE GROUP',
+          negativeText: 'CANCEL',
+          onPositiveClick: () => {
+            handleLeaveButtonClick()
+          },
+          onNegativeClick: () => {
+          }
+        })
+      },
+      handleConfirmDelete () {
+        dialog.warning({
+          title: 'Confirm',
+          content: 'Are you sure you want to delete and leave the group?',
+          positiveText: 'DELETE GROUP',
+          negativeText: 'CANCEL',
+          onPositiveClick: () => {
+            handleDeleteButtonClick()
+          },
+          onNegativeClick: () => {
+          }
+        })
+      },
+
     };
   },
 };

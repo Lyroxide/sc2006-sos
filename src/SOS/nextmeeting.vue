@@ -4,22 +4,25 @@
       <n-card title="Next Meeting Details" size="huge" content-style="justify-content: center; align-items: center;">
         <n-thing>
           <template v-if="isEditing">
-            <n-form ref="formRef" :model="model" style="width:300px">
+            <n-form ref="formRef" :model="model"  :rules="rules" style="width:300px">
               <n-text>Date and Time</n-text>
               <n-date-picker
-                  type="datetime"
-                  :default-value="Date.now()"
-                  :is-date-disabled="disablePreviousDate"
-                  v-model:value="model.DateTime"
-              />
-              <n-form-item label="Place" style="margin-top: 1em;">
-                <n-input v-model:value="model.MeetingPlace" :disabled="!isEditing" @keydown.enter.prevent/>
-              </n-form-item>
-              <n-form-item label="Location">
-                <n-input type="textarea" v-model:value="model.MeetingAddress" :disabled="!isEditing" @keydown.enter.prevent/>
-              </n-form-item>
-              <n-form-item label="Description">
+                    type="datetime"
+                    :default-value="Date.now()"
+                    :is-date-disabled="disablePreviousDate"
+                    :status="dateStatus"
+                    v-model:value="model.DateTime"
+                  @update:value="handleDateSelection"
+                />
+
+              <n-form-item path="Description" label="Description" style="margin-top: 1em;">
                 <n-input type="textarea" v-model:value="model.MeetingDesc" :disabled="!isEditing" @keydown.enter.prevent/>
+              </n-form-item>
+              <n-form-item path="MeetingPlace" label="Place">
+                <n-input v-model:value="model.MeetingPlace" disabled @keydown.enter.prevent placeholder="Use Searchbar"/>
+              </n-form-item>
+              <n-form-item path="MeetingAddress" label="Location">
+                <n-input type="textarea" v-model:value="model.MeetingAddress" disabled @keydown.enter.prevent placeholder="Use Searchbar"/>
               </n-form-item>
               <n-space align="center" justify="end">
                 <n-button
@@ -27,6 +30,7 @@
                     @click="handleMeetingAction"
                     color="#D9D9D9"
                     style="margin-top: 15px;"
+                    :disabled="!model.DateTime ||!model.MeetingDesc || !model.MeetingPlace || !model.MeetingAddress || dateStatus === 'error'"
                 >
                   <n-icon :component="Check" color="#342628"/>
                 </n-button>
@@ -94,10 +98,9 @@
 
       </n-card>
     </n-space>
-    <div v-show="isGroupOwner">
+    <n-space v-show="isGroupOwner" justify="center">
       <input v-show="isEditing" ref="searchInputElement" id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴">
-      <n-button v-show="isEditing" class="controls" id="get-current-location">Get Current Location📍</n-button>
-    </div>
+    </n-space>
     <div id="map-side-panel">
       <div id="map" ref="mapElement"></div>
       <n-drawer
@@ -184,6 +187,41 @@ export default defineComponent({
     const searchInputElement = ref(null); // Create a ref for the search input
     const isComponentLoaded = ref(false);
 
+    const dateStatus = ref("error");
+
+    const rules = {
+      Description: [
+        {
+          required: true,
+        }
+      ],
+      DateTime: [
+        {
+          required: true,
+        }
+      ],
+      MeetingAddress: [
+        {
+          required: true,
+        }
+      ],
+      MeetingPlace: [
+        {
+          required: true,
+        }
+      ]
+    };
+
+    const handleDateSelection = (selectedDateTime) => {
+      if (selectedDateTime <= Date.now()) {
+        dateStatus.value = "error";
+      }
+      else {
+        meetingDetails.value.DateTime = selectedDateTime;
+        dateStatus.value = "success";
+      }
+    }
+
 
     const getGroupDetails = async (groupId) => {
       if (groupId) {
@@ -242,6 +280,7 @@ export default defineComponent({
           meeting.Date = date;
           meeting.Time = time;
           meeting.DateTime =  Number(meetingX);
+          dateStatus.value = "success"
           return meeting;
         }
       }
@@ -496,6 +535,9 @@ export default defineComponent({
       Check,
       isGroupOwner,
       formRef,
+      rules,
+      dateStatus,
+      handleDateSelection,
       cancelEditing,
       editMeeting,
       createMeeting,
@@ -566,7 +608,6 @@ export default defineComponent({
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 400px;
-  margin-left: 170px;
   margin-top: 50px;
 
 }
