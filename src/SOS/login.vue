@@ -94,10 +94,14 @@ export default defineComponent({
                 message.success("Login Success");
               })
               .catch((err) => {
-                message.error(err.message);
-                message.error('Invalid Username or Password');
-              }
-          );
+                if (err.response && err.response.data && err.response.data.errors) {
+                  err.response.data.errors.forEach(error => {
+                    message.error(error.msg);
+                  });
+                } else {
+                  message.error(err.message || 'Login Failed');
+                }
+              });
         } else {
           console.log(errors);
         }

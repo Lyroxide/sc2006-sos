@@ -63,15 +63,15 @@
               </n-form-item>
 
               <n-form-item path="foodPref" label="Choose Food Preferences (maximum 3)">
-                <n-select v-model:value="foodPref" placeholder="Maximum 3 Preferences" multiple :max-tag-count="3" :options="FPOptions" @update:value="handleFPSelection"/>
+                <n-select v-model:value="model.foodPref" placeholder="Maximum 3 Preferences" multiple :max-tag-count="3" :options="FPOptions" @update:value="handleFPSelection"/>
               </n-form-item>
 
               <n-form-item path="regionPref" label="Choose Regional Preference (only 1)">
-                <n-select v-model="regionPref" placeholder="Only 1 Preference" :max-tag-count="1" :options="RPOptions" @update:value="handleRPSelection"/>
+                <n-select v-model="model.regionPref" placeholder="Only 1 Preference" :max-tag-count="1" :options="RPOptions" @update:value="handleRPSelection"/>
               </n-form-item>
 
               <n-space align="center" justify="end">
-                <n-button circle @click="createGroup" color="#F7F4EF" :disabled="!model.GroupName || !model.GroupDesc || !foodPref || !regionPref"><n-icon :component="Check" color="#342628" size="110%"/></n-button>
+                <n-button circle @click="createGroup" color="#F7F4EF" :disabled="!model.GroupName || !model.GroupDesc || model.foodPref.length === 0 || !model.regionPref"><n-icon :component="Check" color="#342628" size="110%"/></n-button>
                 <n-button circle @click="cancelCreation" color="#F7F4EF"><n-icon :component="Times" color="#342628" size="110%"/></n-button>
               </n-space>
             </n-form>
@@ -121,11 +121,10 @@ export default defineComponent({
 
     const model = ref({
       GroupName: null,
-      GroupDesc: null
+      GroupDesc: null,
+      foodPref: [],
+      regionPref: null,
     });
-
-    const foodPref = ref([]);
-    const regionPref = ref(null);
 
     const rules = {
       GroupName: [
@@ -144,12 +143,14 @@ export default defineComponent({
       ],
       foodPref: [
         {
-          required: true
+          required: true,
+          message: "Select at least 1 preference"
         }
       ],
       regionPref: [
         {
-          required: true
+          required: true,
+          message: "Regional preference is required"
         }
       ],
     }
@@ -158,33 +159,45 @@ export default defineComponent({
     const FPOptions = ref([]);
 
     // store group details after group has been created
-    async function createGroup() {
-      try {
-        console.log(model.value);
-        console.log(regionPref.value);
-        console.log(foodPref.value);
-        const newGroup = await store.dispatch("group/createGroup", model.value);
-        await store.dispatch("group/createGroupRegionPreference", { GroupID: newGroup.GroupID, pref: regionPref.value });
-        await store.dispatch("group/createGroupFoodPreference",  { GroupID: newGroup.GroupID, pref: foodPref.value });
-        await store.dispatch("group/joinGroup", newGroup.GroupID);
-        message.success("Group successfully created!");
-        await fetchGroupDetails();
-        showModal.value = false;
-        clearForm();
-      } catch (error) {
-        console.error(error);
-        message.error("Failed to create group :(");
-      }
+    async function createGroup(e) {
+      e.preventDefault();
+      formRef.value?.validate((errors) => {
+        if (!errors) {
+          store.dispatch("group/createGroup", model.value).then(
+              async (newGroup) => {
+                await store.dispatch("group/createGroupRegionPreference", { GroupID: newGroup.GroupID, pref: model.value.regionPref });
+                await store.dispatch("group/createGroupFoodPreference",  { GroupID: newGroup.GroupID, pref: model.value.foodPref });
+                await store.dispatch("group/joinGroup", newGroup.GroupID);
+                message.success("Group successfully created!");
+                await fetchGroupDetails();
+                showModal.value = false;
+                clearForm();
+              })
+              .catch((err) => {
+                if (err.response && err.response.data && err.response.data.errors) {
+                  err.response.data.errors.forEach(error => {
+                    message.error(error.msg);
+                  });
+                } else {
+                  console.error(err);
+                  message.error("Failed to create group :(");
+                }
+              });
+        } else {
+          console.log(errors);
+        }
+      });
     }
 
     function clearForm() {
       model.value.GroupName = null;
       model.value.GroupDesc = null;
-      regionPref.value = null;
-      foodPref.value = [];
+      model.value.regionPref = null;
+      model.value.foodPref = [];
     }
 
     const cancelCreation = () => {
+      clearForm();
       showModal.value = false;
     }
     const handleFPSelection = (selectedFoodPrefs) => {
@@ -192,10 +205,10 @@ export default defineComponent({
         message.warning('You can only choose up to 3 food preferences.');
         selectedFoodPrefs.pop();
       }
-      foodPref.value = selectedFoodPrefs;
+      model.value.foodPref = selectedFoodPrefs;
     }
     const handleRPSelection = (selectedRegionPref) => {
-      regionPref.value = selectedRegionPref;
+      model.value.regionPref = selectedRegionPref;
     }
 
     async function fetchGroupDetails() {
@@ -240,7 +253,6 @@ export default defineComponent({
       showModal: showModal,
       createGroup,
       cancelCreation,
-      foodPref, regionPref,
       FPOptions, RPOptions, handleFPSelection, handleRPSelection
 
     };

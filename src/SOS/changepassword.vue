@@ -1,9 +1,9 @@
 <template>
-  <n-space class="changePassword" item-style="display:flex; height: 100%; width: 25%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
-    <n-card size="medium">
-      <n-h2> Change your Password </n-h2>
+  <n-space class="changePassword" item-style="display:flex; height: 100%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
+    <n-card size="huge" style="width:500px;">
+      <n-h1 style="text-align: center;"> Change your Password </n-h1>
       <n-thing>
-        <n-form ref="formRef" :model="model" :rules="rules" style="width:100%; flex-wrap: nowrap;">
+        <n-form ref="formRef" :model="model" :rules="rules" style="flex-wrap: nowrap;">
           <n-space item-style="font-size: 70px; display: flex; margin-bottom: 30px;" justify="center">
             <n-icon :component="UserRegular" color="#342628"/>
           </n-space>
@@ -19,7 +19,7 @@
           <n-space align="center" justify="end">
             <n-button round type="primary"
                       :disabled="!model.currentPassword || !model.newPassword || !model.reenteredPassword"
-                      @click="saveNewPassword()"
+                      @click="saveNewPassword"
                       color="#D9D9D9"
                       style="margin-top: 15px; padding: 20px;">
               <n-icon :component="Check" color="#342628" style="font-size: 100%;"/>
@@ -44,7 +44,6 @@ export default defineComponent({
     const formRef = ref(null);
     const rPasswordFormItemRef = ref(null);
     const message = useMessage();
-    const userDetails = reactive({});
     const isCurrentPasswordCorrect = ref(false);
     const router = useRouter();
 
@@ -65,98 +64,80 @@ export default defineComponent({
     }
     async function hashCurrentPassword() {
       try {
-        //const hashedPassword = await store.dispatch("user/hashPassword", modelRef.value.currentPassword);
-        //console.log("Hashed password: ", hashedPassword.hashedPassword);
-        //modelRef.value.currentPassword = hashedPassword;
         const isMatch = await store.dispatch("user/checkCurrentPassword", modelRef.value.currentPassword);
         isCurrentPasswordCorrect.value = isMatch.isMatch
-        //console.log("Is match: ", isMatch.isMatch);
-        /*
-        if (!isMatch.isMatch) {
-          message.error("Current password is incorrect");
-        }
-        */
       } catch (error) {
         console.error(error);
       }
     }
 
-  async function saveNewPassword() {
-    await hashCurrentPassword();
-    if (!isCurrentPasswordCorrect.value) {
-      message.error("Please enter the correct current password");
-      return;
-    }
-    try {
-      await store.dispatch("user/updateUserPassword", modelRef.value.newPassword);
-      message.success("Password updated successfully");
-      router.push('/editprofile');
-
-    } catch (error) {
-      console.error(error);
-      message.error("Failed to update password");
-    }
-  }
-
-    // getting existing user password stored in DB
-    /*
-    async function getDetails() {
+    async function saveNewPassword() {
+      await hashCurrentPassword();
+      if (!isCurrentPasswordCorrect.value) {
+        message.error("Please enter the correct current password");
+        return;
+      }
       try {
-        const details = await store.dispatch("user/getUserDetails");
-        Object.assign(userDetails, details.password);
+        await store.dispatch("user/updateUserPassword", modelRef.value.newPassword);
+        message.success("Password updated successfully");
+        router.push('/editprofile');
+
       } catch (error) {
         console.error(error);
+        message.error("Failed to update password");
       }
     }
-    onMounted(getDetails);
-    */
-
 
     const rules = {
-    newPassword: [
-      {
-        required: true,
-        message: "Password input required",
-        trigger: ["input", "blur"]
-      },
-      {
-        min: 12,
-        message: "Password must be at least 12 characters",
-        trigger: ["input", "blur"]
-      },
-      {
-        validator: (rule, value) => {
-          const alphanumericRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
-          return alphanumericRegex.test(value);
+      currentPassword: [
+        {
+          required: true,
+          message: "Password input required",
+          trigger: ["input", "blur"]
+        }
+      ],
+      newPassword: [
+        {
+          required: true,
+          message: "Password input required",
+          trigger: ["input", "blur"]
         },
-        message: "Password must contain at least one letter and one number",
-        trigger: ["input", "blur"]
-      }
-    ],
-    reenteredPassword: [
-      {
-        required: true,
-        message: "Re-entered password is required",
-        trigger: ["input", "blur"]
-      },
-      {
-        validator: validatePasswordSame,
-        trigger: "blur"
-      }
-    ]
-  };
+        {
+          min: 12,
+          message: "Password must be at least 12 characters",
+          trigger: ["input", "blur"]
+        },
+        {
+          validator: (rule, value) => {
+            const alphanumericRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+            return alphanumericRegex.test(value);
+          },
+          message: "Password must contain at least one letter and one number",
+          trigger: ["input", "blur"]
+        }
+      ],
+      reenteredPassword: [
+        {
+          required: true,
+          message: "Re-entered password is required",
+          trigger: ["input", "blur"]
+        },
+        {
+          validator: validatePasswordSame,
+          trigger: "blur"
+        }
+      ]
+    };
 
     return {
       UserRegular,
       Check,
       formRef,
       rules,
-      //getDetails,
       saveNewPassword,
       isCurrentPasswordCorrect,
       rPasswordFormItemRef,
       model: modelRef,
-
       handlePasswordInput() {
         if (modelRef.value.reenteredPassword) {
           rPasswordFormItemRef.value?.validate({ trigger: "input" });
@@ -173,13 +154,11 @@ export default defineComponent({
   margin: 10% 0;
 }
 
-.n-h2 {
-  text-align: center;
-}
 
 .n-card {
   border-radius: 30px;
   margin-top: 10%;
+  width: auto;
 }
 
 </style>

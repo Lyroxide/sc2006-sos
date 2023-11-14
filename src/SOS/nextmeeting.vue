@@ -12,7 +12,7 @@
                   :is-date-disabled="disablePreviousDate"
                   v-model:value="model.DateTime"
               />
-              <n-form-item label="Place">
+              <n-form-item label="Place" style="margin-top: 1em;">
                 <n-input v-model:value="model.MeetingPlace" :disabled="!isEditing" @keydown.enter.prevent/>
               </n-form-item>
               <n-form-item label="Location">
@@ -172,7 +172,6 @@ export default defineComponent({
     const showSidePanel = ref(false);
     const placement = ref("right");
     const meetingDetails = ref({
-      // Initialize your object structure here
       MeetingPlace: '',
       MeetingAddress: '',
       PlaceID: '',
@@ -199,6 +198,9 @@ export default defineComponent({
       if(group.value){
         try {
           await initialMount();
+          if (meetingDetails.value.PlaceID) {
+            initializeMap();
+          }
         } catch (error) {
           console.error(error);
         }
@@ -217,16 +219,18 @@ export default defineComponent({
           let meetings = await store.dispatch("meeting/getMeeting", group.value.GroupID);
           meetingDetails.value = await getLatestMeeting(meetings);
           isMeetingExists.value = Boolean(meetingDetails.value);
-          if (meetingDetails.value.PlaceID) {
-            initializeMap();
-          }
         } catch (error) {
           console.error(error);
         }
       }
     }
 
-    onMounted(initialMount);
+    onMounted( async() => {
+      await initialMount();
+      if (meetingDetails.value.PlaceID) {
+        initializeMap();
+      }
+    });
 
     async function getLatestMeeting(meetings) {
       for (let meeting of meetings) {

@@ -80,7 +80,7 @@
           </n-form>
         </template>
         <template v-else>
-          <n-space item-style="font-size: 50px; display: flex; margin-bottom: 15px;" justify="center">
+          <n-space item-style="font-size: 70px; display: flex; margin-bottom: 15px;" justify="center">
             <n-icon :component="UserRegular" color="#342628"/>
           </n-space>
           <n-space item-style="flex-direction: row;" align="center" justify="center">
@@ -235,18 +235,31 @@ export default defineComponent({
       router.push(path)
     }
 
-    async function saveEdit() {
-      try {
-        await store.dispatch("user/editUserDetails", userDetails.value);
-        await store.dispatch("user/editUserRegionPreferences", userRegionPrefs.value);
-        await store.dispatch("user/editUserFoodPreferences", userFoodPrefs.value);
-        await fetchInitialData();
-        isEditing.value = false;
-        message.info("Successfully Saved");
-      } catch (error) {
-        console.error(error);
-        message.error("Failed to save");
-      }
+    async function saveEdit(e) {
+      e.preventDefault();
+      formRef.value?.validate((errors) => {
+        if (!errors) {
+          store.dispatch("user/editUserDetails", userDetails.value).then(
+              async () => {
+                await store.dispatch("user/editUserRegionPreferences", userRegionPrefs.value);
+                await store.dispatch("user/editUserFoodPreferences", userFoodPrefs.value);
+                await fetchInitialData();
+                isEditing.value = false;
+                message.info("Successfully Saved");
+              })
+              .catch((err) => {
+                if (err.response && err.response.data && err.response.data.errors) {
+                  err.response.data.errors.forEach(error => {
+                    message.error(error.msg);
+                  });
+                } else {
+                  message.error(err.message || 'Registration Failed');
+                }
+              });
+        } else {
+          console.log(errors);
+        }
+      });
     }
 
     function editProfile() {
