@@ -34,7 +34,7 @@
 <script>
 import { Check, UserRegular } from "@vicons/fa";
 import { useMessage } from "naive-ui";
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useRouter } from 'vue-router';
 import store from "../store/index.js";
 
