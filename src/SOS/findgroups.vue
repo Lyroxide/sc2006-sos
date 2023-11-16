@@ -34,7 +34,7 @@
                   <n-space class="group-name" style="font-size: 30px;" justify="center"> {{ group.GroupName }} </n-space>
                 </n-gi>
                 <n-gi style="display: flex; align-items: center; justify-content: center;">
-                  <n-space class="group-count-wrapper" align="center">
+                  <n-space class="group-count-wrapper" align="center" style="margin-top: 10px;">
                     <n-icon :component="User" class="shift-icon" size="20"/>
                     <n-text class="group-count">{{group.memberCount.count}}</n-text>
                   </n-space>

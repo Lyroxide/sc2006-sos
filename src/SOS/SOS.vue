@@ -23,8 +23,6 @@ import footerVue from "./footer.vue"
 import { defineComponent } from 'vue';
 
 
-
-
 export default defineComponent ({
   components: {
     "Header": headerVue,

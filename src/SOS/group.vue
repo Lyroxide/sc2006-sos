@@ -71,8 +71,9 @@ export default {
     GroupChat,
     GroupDetail
   },
-
-  setup(props) {
+  emits: ['group-updated'],
+  setup(props, { emit }) {
+    const context = { emit };
     const message = useMessage()
     const dialog = useDialog()
     const group = ref({});
@@ -124,6 +125,7 @@ export default {
                 () => {
                   router.push("/mygroups");
                   message.success("Leave Success");
+                  context.emit('group-updated');
                 })
                 .catch((err) => {
                       message.error(err.message);
@@ -139,6 +141,7 @@ export default {
           () => {
             router.push("/mygroups");
             message.success("Delete Success");
+            context.emit('group-updated');
           })
           .catch((err) => {
                 message.error(err.message);
