@@ -89,7 +89,7 @@
 
     </n-space>
     <n-space v-if="selectedGroupId">
-      <Group :group-id="selectedGroupId"/>
+      <Group :group-id="selectedGroupId" @group-updated="refreshGroupList"/>
     </n-space>
   </n-space>
 </template>
@@ -276,6 +276,12 @@ export default defineComponent({
       }
     })
 
+    async function refreshGroupList() {
+      await fetchGroupDetails();
+      selectedGroupId.value = null;
+      active.value = null;
+    }
+
     return {
       LocationOutline,
       Check, Plus, Times,
@@ -293,8 +299,9 @@ export default defineComponent({
       createGroup,
       cancelCreation,
       FPOptions, RPOptions, handleFPSelection, handleRPSelection,
-      onFileChange, fileInputClick, fileInput, clearImage
+      onFileChange, fileInputClick, fileInput, clearImage,
 
+      refreshGroupList
     };
   },
 });

@@ -2,11 +2,11 @@
   <div class="container">
     <!-- show a red box with text to indicate error message -->
     <div v-show="error" class="error-box">{{ error }}</div>
-    <div class="container2">
+    <n-space class="container2" justify="center">
       <n-select @update:value="getAddressUsingTourism" :options="options" placeholder="Recommend Food 🍔" class="select-component"/>
       <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴" v-model="address">
       <n-button class="controls" id="get-current-location" style="margin-top:100px">Get Current Location📍</n-button>
-    </div>
+    </n-space>
 
 
 
@@ -152,20 +152,20 @@ export default {
 
   methods: {
     getAddressFrom(lat, long){
-        axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apikey}`)
-        .then(response => {
-          if(response.data.error_message) {
-            this.error = response.data.error_message;
-            // alert(response.data.error_message);
-          }
-          else {
-            if(this.address == ''){
-              this.address = response.data.results[0].formatted_address;
+      axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apikey}`)
+          .then(response => {
+            if(response.data.error_message) {
+              this.error = response.data.error_message;
+              // alert(response.data.error_message);
             }
-          }
-        }).catch(error => {
-          this.error = error.message;
-        });
+            else {
+              if(this.address == ''){
+                this.address = response.data.results[0].formatted_address;
+              }
+            }
+          }).catch(error => {
+        this.error = error.message;
+      });
     },
 
     getAddressUsingTourism(values){
@@ -175,44 +175,44 @@ export default {
           "Content-Type": "application/json"
         }
       })
-      .then(response => {
-        if(response.data.error_message) {
-          // console.log(response.data.error_message);
-          this.error = response.data.error_message;
-        }
-        else {
-          // iterate through the array of data and display the name of the place
-          const places = response.data.data;
-          var location;
-          var hasMorePlaces = true;
-          var offset = 0;
-          // const geocoder = new google.maps.Geocoder();
-          this.clearRecommendedMarkers(); // clear all recommended markers when a new dropdown value is selected
-          places.forEach(place => {
-            // process each place's information
-            const lower_cuisine = place.cuisine.toLowerCase();
-            const lower_name = place.name.toLowerCase();
-            const lower_tags = place.tags.map(tag => tag.toLowerCase());
+          .then(response => {
+            if(response.data.error_message) {
+              // console.log(response.data.error_message);
+              this.error = response.data.error_message;
+            }
+            else {
+              // iterate through the array of data and display the name of the place
+              const places = response.data.data;
+              var location;
+              var hasMorePlaces = true;
+              var offset = 0;
+              // const geocoder = new google.maps.Geocoder();
+              this.clearRecommendedMarkers(); // clear all recommended markers when a new dropdown value is selected
+              places.forEach(place => {
+                // process each place's information
+                const lower_cuisine = place.cuisine.toLowerCase();
+                const lower_name = place.name.toLowerCase();
+                const lower_tags = place.tags.map(tag => tag.toLowerCase());
 
-            if(lower_cuisine.includes(values) === true || lower_name.includes(values) === true || lower_tags.includes(values) === true){
-                const location_data = place.location; // get the location data
-                location = {lat: location_data.latitude, lng: location_data.longitude}; // create an array to be parsed to marker
-                const marker = new google.maps.Marker({
-                  map: this.map,
-                  position: location,
-                  icon: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
-                });
-                this.recommended_markers.push(marker); // Push the marker to the array
-                // console.log(marker);
-                marker.addListener('click', () => {
-                  console.log(place);
-                  this.displayRecommendedPlaceDetails(place);
-                });
-            } //close if
+                if(lower_cuisine.includes(values) === true || lower_name.includes(values) === true || lower_tags.includes(values) === true){
+                  const location_data = place.location; // get the location data
+                  location = {lat: location_data.latitude, lng: location_data.longitude}; // create an array to be parsed to marker
+                  const marker = new google.maps.Marker({
+                    map: this.map,
+                    position: location,
+                    icon: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                  });
+                  this.recommended_markers.push(marker); // Push the marker to the array
+                  // console.log(marker);
+                  marker.addListener('click', () => {
+                    console.log(place);
+                    this.displayRecommendedPlaceDetails(place);
+                  });
+                } //close if
 
 
-          }); //close forEach
-          this.geocoder.geocode({location: location}).then((response) => {
+              }); //close forEach
+              this.geocoder.geocode({location: location}).then((response) => {
                 if(response.results[0]){
                   // console.log(response.results[0]);
                   if (response.results[0].geometry.viewport) {
@@ -224,11 +224,11 @@ export default {
                   this.map.setZoom(13);
                 }
               })
-              .catch((e) => {
-                console.log(e);
-              });
-        }
-      }).catch(error => {
+                  .catch((e) => {
+                    console.log(e);
+                  });
+            }
+          }).catch(error => {
         this.error = error.message;
         console.log(error);
       });
@@ -311,8 +311,8 @@ export default {
               });
             });
           }
-          });
-          this.map.fitBounds(this.bounds);
+        });
+        this.map.fitBounds(this.bounds);
       });
 
       // get current location button
@@ -320,25 +320,25 @@ export default {
       getCurrentLocationButton.addEventListener("click", () => {
         if (navigator.geolocation){
           navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              };
-              this.getAddressFrom(position.coords.latitude, position.coords.longitude);
-              this.map.setCenter(pos);
-              this.map.setZoom(16);
-              // create marker to indicate current location
-              const marker = new google.maps.Marker({
-                map: this.map,
-                position: pos,
-                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-              });
-              this.markers.push(marker); // Push the marker to the array
-            },
-            () => {
-              alert("Location permission denied");
-            }
+              (position) => {
+                const pos = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                };
+                this.getAddressFrom(position.coords.latitude, position.coords.longitude);
+                this.map.setCenter(pos);
+                this.map.setZoom(16);
+                // create marker to indicate current location
+                const marker = new google.maps.Marker({
+                  map: this.map,
+                  position: pos,
+                  icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                });
+                this.markers.push(marker); // Push the marker to the array
+              },
+              () => {
+                alert("Location permission denied");
+              }
           )
         }
         else {
@@ -404,9 +404,7 @@ export default {
  }
 
  .select-component {
-   z-index: 1000;
-   margin-top: 99px;
-   margin-left: 310px;
+   margin-top: 100px;
  }
 
 
@@ -440,7 +438,6 @@ export default {
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 400px;
-  margin-left: 0px;
   margin-top: 100px;
 
 }

@@ -19,14 +19,20 @@
 
       <n-scrollbar style="max-height: 200px">
         <n-space class="vertical-scroll-container" align="center" justify="center">
-          <n-card hoverable v-for="(meeting, index) in meetings" :key="meeting.GroupID" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
-            <n-space vertical align="center" justify="center" item-style="display: flex;">
-              <n-h1 class ="group-name">{{ meeting.GroupName }}</n-h1>
-              <n-space><n-text class="group-mdate">Date: {{ meeting.Date }}</n-text></n-space>
-              <n-space><n-text class="group-mtime">Time: {{ meeting.Time }}</n-text></n-space>
-              <n-space><n-text class="group-mloc">Location: {{ meeting.MeetingAddress }}</n-text></n-space>
-            </n-space>
-          </n-card>
+          <template v-if="meetings.length > 0">
+            <n-card hoverable v-for="(meeting, index) in meetings" :key="meeting.GroupID" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
+              <n-space vertical align="center" justify="center" item-style="display: flex;">
+                <n-h1 class ="group-name">{{ meeting.GroupName }}</n-h1>
+                <n-space><n-text class="group-mdate">Date: {{ meeting.Date }}</n-text></n-space>
+                <n-space><n-text class="group-mtime">Time: {{ meeting.Time }}</n-text></n-space>
+                <n-space><n-text class="group-mloc">Location: {{ meeting.MeetingAddress }}</n-text></n-space>
+              </n-space>
+            </n-card>
+          </template>
+          <template v-else>
+            <n-h1>There are no upcoming meetings.</n-h1>
+          </template>
+
         </n-space>
       </n-scrollbar>
     </n-space>
