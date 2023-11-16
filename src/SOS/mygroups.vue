@@ -6,6 +6,7 @@
           <n-thing :title="group.GroupName" content-style="margin-top: 10px;">
             <template #description>
               <n-space size="small" style="margin-top: 4px">
+                <img v-if="group.pictureFilePath" :src="`http://localhost:8080/uploads/${group.pictureFilePath}`" alt="Group Picture" style="width: 100%"/>
                 <n-tag
                     :bordered="false"
                     round
@@ -41,10 +42,10 @@
                 <n-form-item>
                   <input type="file" ref="fileInput" @change="onFileChange" style="display: none" />
                   <n-space class="image-container">
-                    <img v-if="model.previewImage" :src="model.previewImage" alt="Preview" class="preview-image" />
+                    <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview-image" />
                   </n-space>
                 </n-form-item>
-                <n-button round @click="clearImage" color="#F7F4EF" v-if="model.previewImage"><n-icon :component="Clear" color="#342628" size="100%"/></n-button>
+                <n-button round @click="clearImage" color="#F7F4EF" v-if="previewImage"><n-icon :component="Clear" color="#342628" size="100%"/></n-button>
               </n-space>
 
               <n-form-item path="GroupName" label="Enter Group Name">
@@ -115,6 +116,7 @@ export default defineComponent({
     const placement = ref("left");
     const type = ref("card");
     const fileInput = ref(null);
+    var previewImage = ref(null);
 
     const message = useMessage()
     const showModal = ref(false)
@@ -131,7 +133,6 @@ export default defineComponent({
       foodPref: [],
       regionPref: null,
       selectedFile: null,
-      previewImage: null
     });
 
     const rules = {
@@ -171,6 +172,14 @@ export default defineComponent({
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
+          let formData = new FormData();
+          formData.append('GroupName', model.value.GroupName);
+          formData.append('GroupDesc', model.value.GroupDesc);
+          formData.append('foodPref', JSON.stringify(model.value.foodPref));
+          formData.append('regionPref', model.value.regionPref);
+          if (model.value.selectedFile) {
+            formData.append('groupPicture', model.value.selectedFile);
+          }
           store.dispatch("group/createGroup", model.value).then(
               async (newGroup) => {
                 await store.dispatch("group/createGroupRegionPreference", { GroupID: newGroup.GroupID, pref: model.value.regionPref });
@@ -203,7 +212,7 @@ export default defineComponent({
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        model.value.previewImage = e.target.result;
+        previewImage.value = e.target.result;
         //console.log('Image selected, previewImage:', model.value.previewImage);
       };
       reader.readAsDataURL(file);
@@ -224,12 +233,14 @@ export default defineComponent({
       model.value.GroupName = null;
       model.value.GroupDesc = null;
       model.value.regionPref = null;
+      model.value.selectedFile = null;
+      previewImage.value = null;
       model.value.foodPref = [];
     }
 
     function clearImage() {
       model.value.selectedFile = null;
-      model.value.previewImage = null;
+      previewImage.value = null;
       if (fileInput.value) {
         fileInput.value.value = null;
       }
@@ -254,12 +265,22 @@ export default defineComponent({
       groups.value = await store.dispatch("group/getOwnGroups");
       for (let group of groups.value) {
         const g = await store.dispatch('group/getGroupDetails', group.GroupID);
-        Object.assign(group, g);
+        const pictureData = await store.dispatch('group/getGroupPictureFilePath', group.GroupID);
+        //console.log(pictureData.PictureFile);
+        Object.assign(group, g, { pictureFilePath: pictureData.PictureFile });
+        //console.log(group);
       }
     }
 
     onMounted(async() => {
       await fetchGroupDetails();
+
+      // Fetch group picture file path
+      
+      // for (let group of groups.value) {
+      //   await store.dispatch('group/getGroupPictureFilePath', group.GroupID);
+      // }
+
       const foodPrefProxy = await store.dispatch("preference/getAllFoodPreferences");
       for (let p of foodPrefProxy) {
         FPOptions.value.push({
@@ -267,6 +288,7 @@ export default defineComponent({
           value: `${p.FoodPreferenceID}`
         });
       }
+
       const regionPrefProxy = await store.dispatch("preference/getAllRegionPreferences");
       for (let q of regionPrefProxy) {
         RPOptions.value.push({
@@ -293,7 +315,7 @@ export default defineComponent({
       createGroup,
       cancelCreation,
       FPOptions, RPOptions, handleFPSelection, handleRPSelection,
-      onFileChange, fileInputClick, fileInput, clearImage
+      onFileChange, fileInputClick, fileInput, clearImage, previewImage
 
     };
   },

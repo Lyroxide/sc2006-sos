@@ -11,9 +11,13 @@ class GroupService {
         return axios.get(API_URL + `groups/${GroupID}`, { headers: authHeader() });
     }
 
-    createGroup(UserID, Group) {
-        let data = { UserID, Group };
-        return axios.post(API_URL + 'groups', data, { headers: authHeader() });
+    // createGroup(UserID, Group) {
+    //     let data = { UserID, Group };
+    //     return axios.post(API_URL + 'groups', data, { headers: authHeader() });
+    // }
+
+    createGroup(formData) {
+        return axios.post(API_URL + 'groups', formData, { headers: authHeader() });
     }
 
     getAllGroupMembers(GroupID) {
@@ -63,6 +67,9 @@ class GroupService {
         return axios.post(API_URL + 'groups/search', searchPayload, { headers: authHeader() });
     }
 
+    getGroupPicture(groupId) {
+        return axios.get(API_URL + `group-picture/${groupId}/picture`, { headers: authHeader() });
+    }
 
 }
 

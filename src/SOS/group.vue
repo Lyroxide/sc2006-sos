@@ -45,14 +45,13 @@
 
 <script>
 import { User } from "@vicons/fa";
-import { onMounted, ref, toRefs , watch, toRaw} from 'vue';
+import { useDialog, useMessage } from 'naive-ui';
+import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import store from '../store/index.js';
-import Meeting from './nextmeeting.vue';
 import GroupChat from './groupchat.vue';
 import GroupDetail from './groupdetail.vue';
-import { useRouter } from 'vue-router';
-import { defineComponent } from 'vue';
-import { useMessage, useDialog } from 'naive-ui';
+import Meeting from './nextmeeting.vue';
 
 
 export default {
