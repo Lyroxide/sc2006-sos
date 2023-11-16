@@ -37,7 +37,14 @@
             <n-h3 style="text-align: center;"> Create your Group! </n-h3>
             <n-form ref="formRef" :model="model"  :rules="rules" style="width:100%; flex-wrap: nowrap;">
               <n-space item-style="display: flex; margin-bottom: 30px; border-radius: 20px; font-size: 70px;" justify="center">
-                <n-button square @click="addGroupPhoto" color="#F7F4EF"><n-icon :component="AddPhotoAlternateRound" color="#342628" size="100%"/></n-button>
+                <n-button round @click="fileInputClick" color="#F7F4EF"><n-icon :component="AddPhotoAlternateRound" color="#342628" size="100%"/></n-button>
+                <n-form-item>
+                  <input type="file" ref="fileInput" @change="onFileChange" style="display: none" />
+                  <n-space class="image-container">
+                    <img v-if="model.previewImage" :src="model.previewImage" alt="Preview" class="preview-image" />
+                  </n-space>
+                </n-form-item>
+                <n-button round @click="clearImage" color="#F7F4EF" v-if="model.previewImage"><n-icon :component="Clear" color="#342628" size="100%"/></n-button>
               </n-space>
 
               <n-form-item path="GroupName" label="Enter Group Name">
@@ -52,12 +59,12 @@
 
               <n-form-item path="GroupDesc" label="Enter Group Description">
                 <n-input type="textarea"
-                         maxlength="3000"
-                         v-model:value="model.GroupDesc"
-                         @keydown.enter.prevent
-                         placeholder="Maximum 3000 Characters"
-                         item-style="height: 150%"
-                         show-count
+                        maxlength="3000"
+                        v-model:value="model.GroupDesc"
+                        @keydown.enter.prevent
+                        placeholder="Maximum 3000 Characters"
+                        item-style="height: 150%"
+                        show-count
                 />
               </n-form-item>
 
@@ -89,14 +96,13 @@
 
 
 <script>
-import { LocationOutline } from "@vicons/ionicons5";
 import { Check, Plus, Times } from "@vicons/fa";
+import { LocationOutline } from "@vicons/ionicons5";
 import { AddPhotoAlternateRound } from "@vicons/material";
-import { defineComponent, ref, computed, onMounted, reactive } from "vue";
-import {useMessage} from "naive-ui";
+import { useMessage } from "naive-ui";
+import { defineComponent, onMounted, ref } from "vue";
 import store from "../store/index.js";
 import Group from "./group.vue";
-
 export default defineComponent({
   components: {
     Group,
@@ -108,6 +114,7 @@ export default defineComponent({
     const selectedGroupId = ref(null);
     const placement = ref("left");
     const type = ref("card");
+    const fileInput = ref(null);
 
     const message = useMessage()
     const showModal = ref(false)
@@ -123,6 +130,8 @@ export default defineComponent({
       GroupDesc: null,
       foodPref: [],
       regionPref: null,
+      selectedFile: null,
+      previewImage: null
     });
 
     const rules = {
@@ -188,11 +197,42 @@ export default defineComponent({
       });
     }
 
+  function onFileChange(e) {
+    const file = e.target.files[0];
+    model.value.selectedFile = file;
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        model.value.previewImage = e.target.result;
+        //console.log('Image selected, previewImage:', model.value.previewImage);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+    async function fileInputClick() {
+      //console.log('fileInputClick called');
+      if (fileInput.value) {
+        //console.log('fileInput.value is defined');
+        fileInput.value.click();
+      } else {
+        //console.log('fileInput.value is not defined');
+      }
+    }
+
     function clearForm() {
       model.value.GroupName = null;
       model.value.GroupDesc = null;
       model.value.regionPref = null;
       model.value.foodPref = [];
+    }
+
+    function clearImage() {
+      model.value.selectedFile = null;
+      model.value.previewImage = null;
+      if (fileInput.value) {
+        fileInput.value.value = null;
+      }
     }
 
     const cancelCreation = () => {
@@ -252,7 +292,8 @@ export default defineComponent({
       showModal: showModal,
       createGroup,
       cancelCreation,
-      FPOptions, RPOptions, handleFPSelection, handleRPSelection
+      FPOptions, RPOptions, handleFPSelection, handleRPSelection,
+      onFileChange, fileInputClick, fileInput, clearImage
 
     };
   },
@@ -282,6 +323,16 @@ export default defineComponent({
 .active-item {
   background-color: #c19e89 !important;
   box-shadow: 0px 0px 20px 0px rgba(143, 52, 46, 0.3);
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+}
+
+.preview-image {
+  width: 25%;
+  height: auto;
 }
 
 </style>
