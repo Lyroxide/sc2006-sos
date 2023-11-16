@@ -1,13 +1,25 @@
 import express from 'express';
-import Group from '../models/Group.js';
-import GroupMember from '../models/GroupMember.js';
-import GroupFoodPreference from '../models/GroupFoodPreference.js';
-import GroupRegionPreference from '../models/GroupRegionPreference.js';
-import FoodPreference from '../models/FoodPreference.js';
-import RegionPreference from '../models/RegionPreference.js';
+import multer from 'multer';
 import { Op } from 'sequelize';
+import FoodPreference from '../models/FoodPreference.js';
+import Group from '../models/Group.js';
+import GroupFoodPreference from '../models/GroupFoodPreference.js';
+import GroupMember from '../models/GroupMember.js';
+import GroupPicture from '../models/GroupPicture.js';
+import GroupRegionPreference from '../models/GroupRegionPreference.js';
+import RegionPreference from '../models/RegionPreference.js';
 
 const router = express.Router();
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '.png') //Appending .png
+    }
+})
+
+const upload = multer({ storage: storage });
 
 
 // route to get all groups
@@ -75,15 +87,25 @@ router.get('/groups/:GroupID', async (req, res) => {
     }
 });
 
-// route to add a group
-router.post('/groups', async (req, res) => {
+router.post('/groups', upload.single('groupPicture'), async (req, res) => {
+    // console.log(req.body);
+    // console.log("file");
+    // console.log(req.file);
+    // console.log("end file");
     const newGroup = {
         OwnerID: req.body.UserID,
-        GroupName: req.body.Group.GroupName,
-        GroupDesc: req.body.Group.GroupDesc
+        GroupName: req.body.GroupName,
+        GroupDesc: req.body.GroupDesc
     };
     try {
         const group = await Group.create(newGroup);
+        //console.log(group.dataValues.GroupID);
+        //console.log(req.file);
+        if (req.file) {
+            //console.log("Adding Picutes");
+            const group_picture = await GroupPicture.create({ GroupID: group.dataValues.GroupID, PictureFile: req.file.filename });
+            //console.log("Added Picutes");
+        }
         res.send(group);
     } catch (error) {
         res.status(500).send({
