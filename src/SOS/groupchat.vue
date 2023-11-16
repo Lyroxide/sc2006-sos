@@ -1,30 +1,28 @@
 <template>
   <n-grid x-gap="12" :cols="24">
     <n-gi :offset="1" :span="22">
-      <div class="native-scrollbar" ref="scrollArea">
-        <n-list class="message-list">
-          <n-space vertical v-for="(messages, date) in messagesByDate" :key="date">
-            <n-space justify="center" align="center">
-              <n-tag size="small" round :color="{ color: 'rgba(52,38,40,0.2)', textColor: 'rgba(52,38,40,0.8)'}">{{ date }}</n-tag>
-            </n-space>
-            <n-card
-              v-for="message in messages"
-              :key="message.GroupChatMessageID"
-              :class="{'message-card-current': message.ByCurrentUser, 'message-card-other': !message.ByCurrentUser}"
-          >
-            <n-space item-style="flex-direction: row;" align="baseline">
-              <n-text style="font-size: 20px;">{{ message.Name }} @{{ message.Username }}</n-text>
-            </n-space>
-            <n-space item-style="flex-direction: row;" align="center">
-              <n-text style="font-size: 14px; text-align: start;">{{ message.Message }}</n-text>
-            </n-space>
-            <n-space item-style="flex-direction: row;" align="center" justify="end">
-              <n-text style="font-size: 10px;">{{ message.Time }}</n-text>
-            </n-space>
-          </n-card>
+      <n-list class="message-list">
+        <n-space vertical v-for="(messages, date) in messagesByDate" :key="date">
+          <n-space justify="center" align="center">
+            <n-tag size="small" round :color="{ color: 'rgba(52,38,40,0.2)', textColor: 'rgba(52,38,40,0.8)'}">{{ date }}</n-tag>
           </n-space>
-        </n-list>
-      </div>
+          <n-card
+            v-for="message in messages"
+            :key="message.GroupChatMessageID"
+            :class="{'message-card-current': message.ByCurrentUser, 'message-card-other': !message.ByCurrentUser}"
+        >
+          <n-space item-style="flex-direction: row;" align="baseline">
+            <n-text style="font-size: 20px;">{{ message.Name }} @{{ message.Username }}</n-text>
+          </n-space>
+          <n-space item-style="flex-direction: row;" align="center">
+            <n-text style="font-size: 14px; text-align: start;">{{ message.Message }}</n-text>
+          </n-space>
+          <n-space item-style="flex-direction: row;" align="center" justify="end">
+            <n-text style="font-size: 10px;">{{ message.Time }}</n-text>
+          </n-space>
+        </n-card>
+        </n-space>
+      </n-list>
       <n-input-group style="margin-top: 4px">
         <n-input
             :value="userMessage"
@@ -51,9 +49,8 @@
 import { Send28Filled } from "@vicons/fluent";
 import { DateTime } from 'luxon';
 import { useMessage } from "naive-ui";
-import {createApp, defineComponent, ref, watch, nextTick, onMounted} from "vue";
+import { defineComponent, ref, watch } from "vue";
 import store from "../store/index.js";
-
 
 export default defineComponent({
   props: {
@@ -73,7 +70,6 @@ export default defineComponent({
     }
     const messagesByDate = ref({});
     const watchedMessages = ref([]);
-    const scrollArea = ref(null);
 
     const getGroupDetails = async (groupId) => {
       if (groupId) {
@@ -82,14 +78,7 @@ export default defineComponent({
         return group.value;
       }
     };
-    const scrollToBottom = () => {
-      nextTick(() => {
-        const scrollContainer = scrollArea.value; // References the scrollable div container
-        if (scrollContainer) {
-          scrollContainer.scrollTop = scrollContainer.scrollHeight; // Scrolls to bottom
-        }
-      });
-    };
+
     const fetchChatMessages = async () => {
       const allChatMessages = await store.dispatch("chatMessage/getAllChatMessages");
       for (let m of allChatMessages) {
@@ -101,7 +90,6 @@ export default defineComponent({
         m.ByCurrentUser = m.UserID === data.UserID;
       }
       watchedMessages.value = allChatMessages;
-      //scrollToBottom();
     }
 
     watch(() => props.groupId, async (newGroupId) => {
@@ -141,28 +129,11 @@ export default defineComponent({
         await store.dispatch("chatMessage/sendChatMessage", data);
         userMessage.value = "";
         await fetchChatMessages();
-        scrollToBottom();
       } catch (error) {
         console.error(error);
         message.error("Failed to send");
       }
     }
-    const loadLatestMessagesAndScrollToBottom = async () => {
-      await fetchChatMessages();
-      scrollToBottom();
-    };
-
-    // Lifecycle hook for on mounted
-    onMounted(async () => {
-      await loadLatestMessagesAndScrollToBottom();
-    });
-
-    // Watch for changes in the group ID
-    watch(() => props.groupId, async (newGroupId, oldGroupId) => {
-      if (newGroupId !== oldGroupId) {
-        await loadLatestMessagesAndScrollToBottom();
-      }
-    });
 
     return {
       Send28Filled,
@@ -173,9 +144,6 @@ export default defineComponent({
       sendChatMessage,
       updateInputText,
       messagesByDate,
-      scrollToBottom,
-      scrollArea,
-      loadLatestMessagesAndScrollToBottom,
     };
   }
 })
@@ -184,14 +152,6 @@ export default defineComponent({
 
 
 <style scoped>
-
-.native-scrollbar {
-  max-height: 400px; /* Same as before, adjust this to your needs */
-  overflow-y: auto; /* Enables scrolling when content overflows */
-  /* Additional styles for aesthetics (optional) */
-  padding-right: 2px; /* Offset for scrollbar width if needed */
-}
-
 
 .message-list {
   margin-top: 8px;
