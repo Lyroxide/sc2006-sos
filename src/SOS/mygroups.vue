@@ -36,15 +36,11 @@
           <n-card size="huge" style="border-radius: 40px;">
             <n-h3 style="text-align: center;"> Create your Group! </n-h3>
             <n-form ref="formRef" :model="model"  :rules="rules" style="width:100%; flex-wrap: nowrap;">
-              <n-space item-style="display: flex; margin-bottom: 30px; border-radius: 20px; font-size: 70px;" justify="center">
+              <n-space item-style="display: flex; margin-bottom: 30px; justify-content: center;" justify="center">
                 <n-button round @click="fileInputClick" color="#F7F4EF"><n-icon :component="AddPhotoAlternateRound" color="#342628" size="100%"/></n-button>
-                <n-form-item>
-                  <input type="file" ref="fileInput" @change="onFileChange" style="display: none" />
-                  <n-space class="image-container">
-                    <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview-image" />
-                  </n-space>
-                </n-form-item>
-                <n-button round @click="clearImage" color="#F7F4EF" v-if="previewImage"><n-icon :component="Clear" color="#342628" size="100%"/></n-button>
+                <input type="file" ref="fileInput" @change="onFileChange" style="display: none" />
+                <img v-if="previewImage" :src="previewImage" alt="Preview" class="preview-image" />
+                <n-button round @click="clearImage" color="#F7F4EF" v-if="previewImage"><n-icon :component="Close" color="#342628" size="100%"/></n-button>
               </n-space>
 
               <n-form-item path="GroupName" label="Enter Group Name">
@@ -97,7 +93,7 @@
 
 <script>
 import { Check, Plus, Times } from "@vicons/fa";
-import { LocationOutline } from "@vicons/ionicons5";
+import { LocationOutline, Close } from "@vicons/ionicons5";
 import { AddPhotoAlternateRound } from "@vicons/material";
 import { useMessage } from "naive-ui";
 import { defineComponent, onMounted, ref } from "vue";
@@ -275,7 +271,7 @@ export default defineComponent({
       await fetchGroupDetails();
 
       // Fetch group picture file path
-      
+
       // for (let group of groups.value) {
       //   await store.dispatch('group/getGroupPictureFilePath', group.GroupID);
       // }
@@ -304,7 +300,7 @@ export default defineComponent({
     }
 
     return {
-      LocationOutline,
+      LocationOutline, Close,
       Check, Plus, Times,
       AddPhotoAlternateRound,
       formRef,
@@ -358,8 +354,8 @@ export default defineComponent({
 }
 
 .preview-image {
-  width: 25%;
-  height: auto;
+  width: auto;
+  height: 300px;
 }
 
 </style>
