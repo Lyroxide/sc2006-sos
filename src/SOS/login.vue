@@ -1,53 +1,58 @@
 <template>
-  <n-space vertical class="login" style="margin-top: 130px;" >
-    <n-space item-style="display:flex;margin:10px;" align="center" justify="center" style="flex-wrap: nowrap;">
-      <n-card title="Login" size="huge">
-        <n-form ref="formRef" :model="model" :rules="rules">
-          <n-form-item path="username" label="Username/Email">
-            <n-input v-model:value="model.username" @keydown.enter.prevent />
-          </n-form-item>
-          <n-form-item path="password" label="Password">
-            <n-input
-                v-model:value="model.password"
-                type="password"
-                @keydown.enter.prevent
-            />
-          </n-form-item>
-          <n-row :gutter="[0, 24]">
-            <n-col :span="16">
-              <div style="display: flex; justify-content: flex-end">
-                <n-button
-                    :disabled="!model.username || !model.password"
-                    round
-                    type="primary"
-                    @click="handleLoginButtonClick"
-                >
-                  Login
-                </n-button>
-              </div>
-            </n-col>
-          </n-row>
-          <n-space horizontal item-style="display: flex; front-size:0px" align="center" justify="center">
-            <n-p>New Here?</n-p>
-            <n-a @click="goTo('/register')">
-              <n-p style="color: #342628;">Register!</n-p>
-            </n-a>
-          </n-space>
-          <n-space horizontal item-style="display: flex; front-size:0px" align="center" justify="center">
-            <n-a @click="goTo('/forgetpassword')">
-              <n-p style="color: #342628;">Forget Password?</n-p>
-            </n-a>
-          </n-space>
-        </n-form>
-      </n-card>
-    </n-space>
+  <n-space vertical class="login" item-style="display:flex; height: 100%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
+    <n-card size="huge" style="width:500px;">
+      <n-h1 style="text-align: center;">Log In</n-h1>
+      <n-form ref="formRef" :model="model" :rules="rules" style="flex-wrap: nowrap;">
+        <n-form-item path="loginInput" label="Username/Email">
+          <n-input v-model:value="model.loginInput" @keydown.enter.prevent />
+        </n-form-item>
+        <n-form-item path="password" label="Password">
+          <n-input
+              v-model:value="model.password"
+              type="password"
+              show-password-on="mousedown"
+              @keyup.enter="handleLoginButtonClick"
+          />
+        </n-form-item>
+        <n-space style="display: flex; justify-content: center">
+          <n-button
+              :disabled="!model.loginInput || !model.password"
+              round
+              type="primary"
+              @click="handleLoginButtonClick"
+              color="rgba(120,132,2,0.6)"
+              text-color="rgba(52,38,40,0.8)"
+          >
+            Login
+          </n-button>
+        </n-space>
+        <n-space item-style="display: flex; margin: 20px auto 0;" justify="center">
+          <n-a @click="goTo('/forgetpassword')">
+            <n-p style="color: #342628;">Forgot Password?</n-p>
+          </n-a>
+        </n-space>
+        <n-divider/>
+        <n-space item-style="display: flex;" align="center" justify="center">
+          <n-p>New Here?</n-p>
+          <n-a @click="goTo('/register')">
+            <n-button
+                round
+                type="primary"
+                color="rgba(120,132,2,0.6)"
+                text-color="rgba(52,38,40,0.8)"
+            >
+              Register!
+            </n-button>
+          </n-a>
+        </n-space>
+      </n-form>
+    </n-card>
   </n-space>
-
 </template>
 
 <script>
 import { useMessage } from "naive-ui";
-import { defineComponent, ref } from "vue";
+import {defineComponent, ref, watchEffect} from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
@@ -58,12 +63,12 @@ export default defineComponent({
     const formRef = ref(null);
     const message = useMessage();
     const modelRef = ref({
-      username: null,
+      loginInput: null,
       password: null
     });
 
     const rules = {
-      username: [
+      loginInput: [
         {
           required: true,
           message: "Username or Email is required",
@@ -85,15 +90,18 @@ export default defineComponent({
         if (!errors) {
           store.dispatch("auth/login", modelRef.value).then(
               () => {
-                router.push("/findgroups");
+                router.push("/dashboard");
                 message.success("Login Success");
               })
               .catch((err) => {
-                // An error occurred, display its message
-                message.error(err.message);
-                message.error('Invalid Username or Password');
-              }
-          );
+                if (err.response && err.response.data && err.response.data.errors) {
+                  err.response.data.errors.forEach(error => {
+                    message.error(error.msg);
+                  });
+                } else {
+                  message.error(err.message || 'Login Failed');
+                }
+              });
         } else {
           console.log(errors);
         }
@@ -116,4 +124,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.login {
+  margin: 10% 0;
+}
+
+.n-card {
+  border-radius: 20px;
+}
 </style>

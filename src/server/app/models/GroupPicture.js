@@ -11,7 +11,7 @@ const GroupPicture = sequelize.define('GroupPicture', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    FilePath: {
+    PictureFile: {
         type: DataTypes.STRING,
         allowNull: false,
     },

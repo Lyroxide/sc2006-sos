@@ -2,12 +2,12 @@
   <metainfo />
   <n-layout class="site">
     <Header/>
-    <n-config-provider>
+    <n-config-provider :theme-overrides="themeOverrides">
       <n-global-style />
       <n-message-provider>
-        <router-view>
-
-        </router-view>
+        <n-dialog-provider>
+          <router-view/>
+        </n-dialog-provider>
       </n-message-provider>
     </n-config-provider>
 
@@ -20,15 +20,60 @@
 import { NConfigProvider, lightTheme } from 'naive-ui'
 import headerVue from "./header.vue"
 import footerVue from "./footer.vue"
+import { defineComponent } from 'vue';
 
 
-export default {
+export default defineComponent ({
   components: {
     "Header": headerVue,
     "Footer": footerVue
+  },
+  setup() {
+
+    const themeOverrides = {
+      common: {
+        primaryColor: 'rgba(120,132,2,1)'
+      },
+      Button: {
+        textColor: 'rgba(52,38,40,0.8)',
+        textColorHover: 'rgba(52,38,40,0.8)',
+        textColorPressed: 'rgba(52,38,40,1)',
+        textColorFocus: 'rgba(52,38,40,0.8)',
+        textColorGhostHover: 'rgba(52,38,40,0.8)',
+        textColorTextHover: 'rgba(52,38,40,0.8)',
+        textColorTextPressed: 'rgba(52,38,40,0.8)',
+        textColorTextFocus: 'rgba(52,38,40,0.8)',
+        border: '1px solid rgba(52,38,40,0.8)',
+        borderHover: '1px solid rgba(52,38,40,0.8)',
+        borderFocus: '1px solid rgba(52,38,40,0.8)'
+      },
+      Select: {
+        peers: {
+          InternalSelection: {
+            border: '1px solid rgba(120,132,2,.80)',
+            borderHover: '1px solid rgba(120,132,2,.80)',
+            borderFocus: '1px solid rgba(120,132,2,.80)',
+            boxShadowFocus: '0 0 0 1.5px rgba(120,132,2,.50)'
+          }
+        }
+      },
+      Input: {
+        border: '1px solid rgba(120,132,2,.80)',
+        borderHover: '1px solid rgba(120,132,2,.80)',
+        borderFocus: '1px solid rgba(120,132,2,.80)',
+        boxShadowFocus: '0 0 0 1.5px rgba(120,132,2,.50)'
+      }
+    }
+
+    return {
+      themeOverrides
+    }
   }
 
-};
+
+
+
+});
 </script>
 
 <style>

@@ -1,11 +1,8 @@
 import bcrypt from 'bcryptjs';
 import express from 'express';
 import { check, validationResult } from 'express-validator';
-import FoodPreference from "../models/FoodPreference.js";
-import RegionPreference from "../models/RegionPreference.js";
+import { Op } from "sequelize";
 import User from '../models/User.js';
-import UserFoodPreference from "../models/UserFoodPreference.js";
-import UserRegionPreference from "../models/UserRegionPreference.js";
 
 const router = express.Router();
 const saltRounds = 10;
@@ -19,12 +16,30 @@ router.get('/users', async (req, res) => {
 // Create a new user
 router.post('/users', [
     check('username').notEmpty(),
-    check('email').isEmail(),
-    check('password').isLength({ min: 8 })
+    check('email').isEmail().withMessage("Email is invalid!"),
+    check('password').isLength({ min: 12 }),
+    check('age').isInt({ min: 18 }).withMessage("You must be 18 and above to register!")
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
+    }
+
+    let existingUser = await User.findOne({
+        where: {
+            [Op.or]: [
+                { username: req.body.username },
+                { email: req.body.email }
+            ]
+        }
+    });
+
+    if (existingUser) {
+        return res.status(400).json({
+            errors: [{
+                msg: "A user with the given username or email already exists."
+            }]
+        });
     }
 
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
@@ -48,31 +63,6 @@ router.get('/users/:UserID', async (req, res) => {
         if (!user) {
             return res.status(404).send({ message: 'User not found' });
         }
-
-        // Assuming FoodPreference model has an association with UserFoodPreference
-        // through a foreign key that is named as in the original provided code.
-        const foodPreferences = await FoodPreference.findAll({
-            include: [{
-                model: UserFoodPreference,
-                where: { UserID },
-                attributes: [],
-            }]
-        });
-
-        // Assuming RegionPreference model has an association with UserRegionPreference
-        // through a foreign key that is named as in the original provided code.
-        const regionPreferences = await RegionPreference.findAll({
-            include: [{
-                model: UserRegionPreference,
-                where: { UserID },
-                attributes: [],
-            }]
-        });
-
-        // Map the results to get the desired preference types.
-        user.setDataValue('foodPreferences', foodPreferences.map(fp => fp.FoodType));
-        user.setDataValue('regionPreferences', regionPreferences.map(rp => rp.RegionType));
-
         return res.send(user);
     } catch (error) {
         console.error(error);
@@ -81,9 +71,53 @@ router.get('/users/:UserID', async (req, res) => {
 });
 
 // Update a user by id
-router.put('/users/:id', [
-    check('email').isEmail(),
-    check('password').isLength({ min: 8 }).optional()
+router.put('/users/:UserID', [
+    check('Username').notEmpty(),
+    check('Email').isEmail().withMessage("Email is invalid!"),
+    check('Age').isInt({ min: 18 }).withMessage("You must be 18 and above to register!")
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors);
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const user = await User.findByPk(req.params.UserID);
+        if (!user) {
+            return res.status(404).json({message: 'User not found'});
+        }
+        const existingUser = await User.findOne({
+            where: {
+                [Op.and]: [
+                    {UserID: {[Op.ne]: req.params.UserID}},
+                    {
+                        [Op.or]: [
+                            {Username: req.body.Username},
+                            {Email: req.body.Email}
+                        ]
+                    }
+                ]
+            }
+        });
+        if (existingUser) {
+            return res.status(400).json({
+                errors: [{
+                    msg: "A user with the given username or email already exists."
+                }]
+            });
+        }
+        const updatedUser = await user.update(req.body);
+        return res.json(updatedUser);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred while updating the user.' });
+    }
+});
+
+// Update a user's password by id
+router.put('/users/:id/password', [
+    check('password').isLength({ min: 12 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -92,11 +126,8 @@ router.put('/users/:id', [
 
     const user = await User.findByPk(req.params.id);
     if (user) {
-        if (req.body.password) {
-            req.body.password = bcrypt.hashSync(req.body.password, saltRounds);
-        }
-
-        const updatedUser = await user.update(req.body);
+        const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
+        const updatedUser = await user.update({ Password: hashedPassword });
 
         return res.send(updatedUser);
     } else {
@@ -104,12 +135,15 @@ router.put('/users/:id', [
     }
 });
 
-// Delete a user by id
-router.delete('/users/:id', async (req, res) => {
+router.post('/users/:id/check-password', async (req, res) => {
+
     const user = await User.findByPk(req.params.id);
     if (user) {
-        await user.destroy();
-        return res.send({ message: 'User deleted' });
+        console.log("Current User Password: "+user.Password);
+        console.log("Incoming User Password: "+req.body.password);
+        const isMatch = bcrypt.compareSync(req.body.password, user.Password);
+        //const isMatch = req.body.password == user.Password;
+        return res.send({ isMatch });
     } else {
         return res.status(404).send({ message: 'User not found' });
     }

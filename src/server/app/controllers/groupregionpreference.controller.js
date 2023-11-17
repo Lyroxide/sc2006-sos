@@ -15,20 +15,19 @@ router.get('/group-region-preferences', async (req, res) => {
     }
 });
 
-// route to add a GroupRegionPreference
+// route to add/edit GroupRegionPreference
 router.post('/group-region-preferences', async (req, res) => {
-    const newGroupRegionPreference = {
-        GroupID: req.body.GroupID,
-        RegionPreferenceID: req.body.RegionPreferenceID
-    };
-
+    const { GroupID, pref } = req.body;
     try {
-        const groupRegionPreference = await GroupRegionPreference.create(newGroupRegionPreference);
-        res.send(groupRegionPreference);
+        await GroupRegionPreference.destroy({ where: { GroupID } });
+        const preferencesToAdd = {
+            GroupID: GroupID,
+            RegionPreferenceID: pref
+        }
+        const batchPreferences = await GroupRegionPreference.create(preferencesToAdd);
+        res.send(batchPreferences);
     } catch (error) {
-        res.status(500).send({
-            message: error.message || "An error occurred while creating the GroupRegionPreference."
-        });
+        res.status(500).send({ message: error.message || "An error occurred while updating preferences." });
     }
 });
 

@@ -2,16 +2,58 @@
   <div class="container">
     <!-- show a red box with text to indicate error message -->
     <div v-show="error" class="error-box">{{ error }}</div>
-    <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴" v-model="address"> 
-    <!-- <input id="tourism-input" class="controls" type="text" placeholder="Search Tourism🏖️🏝️" v-model="tourism_place"> -->
-    <!-- get current location button -->
-    <n-button class="controls" id="get-current-location">Get Current Location📍</n-button>
+    <n-space class="container2" justify="center">
+      <n-select @update:value="getAddressUsingTourism" :options="options" placeholder="Recommend Food 🍔" class="select-component"/>
+      <input id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴" v-model="address">
+      <n-button class="controls" id="get-current-location" style="margin-top:100px">Get Current Location📍</n-button>
+    </n-space>
 
-    <n-select @update:value="getAddressUsingTourism" :options="options" placeholder="Recommend Food 🍔" class="select-component"/>
+
 
     <div id="map-side-panel">
       <div id="map"></div>
       <div id="side-panel"></div>
+      <n-drawer
+          v-model:show="showSidePanel"
+          :width="333"
+          :placement="placement"
+          :trap-focus="false"
+          to="#map"
+      >
+        <n-drawer-content :title="selectedPlace.name">
+          <n-h3>🏠Address:</n-h3>
+          <n-p>{{ selectedPlace.address }}</n-p>
+
+          <n-h3 v-if="selectedPlace.rating">
+            ⭐ Rating: {{ selectedPlace.rating }}/5 ⭐
+          </n-h3>
+          <n-h3 v-if="selectedPlace.contact">
+            📞 Contact: {{ selectedPlace.contact }}
+          </n-h3>
+          <n-h4 v-if="selectedPlace.description">
+            {{ selectedPlace.description }}
+          </n-h4>
+
+          <n-space style="flex-direction: row; align-items: center;">
+            <n-a
+                v-if="selectedPlace.google_url"
+                :href="selectedPlace.google_url"
+                target="_blank"
+            >
+              Google 🔎: {{ selectedPlace.name }}
+            </n-a>
+
+            <n-a
+                v-if="selectedPlace.website"
+                :href="selectedPlace.website"
+                target="_blank"
+            >
+              Website 🌐: {{ selectedPlace.name }}
+            </n-a>
+          </n-space>
+
+        </n-drawer-content>
+      </n-drawer>
     </div>
 
 
@@ -45,7 +87,10 @@ export default {
       tourism_place: '',
       value: ref(null),
       geocoder: new google.maps.Geocoder(),
-      bounds: new google.maps.LatLngBounds()
+      bounds: new google.maps.LatLngBounds(),
+      showSidePanel: false, // Controls the visibility of n-drawer
+      selectedPlace: null, // Data for currently selected place
+      placement: "right"
     }
   },
 
@@ -107,20 +152,20 @@ export default {
 
   methods: {
     getAddressFrom(lat, long){
-        axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apikey}`)
-        .then(response => {
-          if(response.data.error_message) {
-            this.error = response.data.error_message;
-            // alert(response.data.error_message);
-          }
-          else {
-            if(this.address == ''){
-              this.address = response.data.results[0].formatted_address;
+      axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${apikey}`)
+          .then(response => {
+            if(response.data.error_message) {
+              this.error = response.data.error_message;
+              // alert(response.data.error_message);
             }
-          }
-        }).catch(error => {
-          this.error = error.message;
-        });
+            else {
+              if(this.address == ''){
+                this.address = response.data.results[0].formatted_address;
+              }
+            }
+          }).catch(error => {
+        this.error = error.message;
+      });
     },
 
     getAddressUsingTourism(values){
@@ -130,44 +175,44 @@ export default {
           "Content-Type": "application/json"
         }
       })
-      .then(response => {
-        if(response.data.error_message) {
-          // console.log(response.data.error_message);
-          this.error = response.data.error_message;
-        }
-        else {
-          // iterate through the array of data and display the name of the place
-          const places = response.data.data;
-          var location;
-          var hasMorePlaces = true;
-          var offset = 0;
-          // const geocoder = new google.maps.Geocoder();
-          this.clearRecommendedMarkers(); // clear all recommended markers when a new dropdown value is selected
-          places.forEach(place => {
-            // process each place's information
-            const lower_cuisine = place.cuisine.toLowerCase();
-            const lower_name = place.name.toLowerCase();
-            const lower_tags = place.tags.map(tag => tag.toLowerCase());
-            
-            if(lower_cuisine.includes(values) === true || lower_name.includes(values) === true || lower_tags.includes(values) === true){
-                const location_data = place.location; // get the location data
-                location = {lat: location_data.latitude, lng: location_data.longitude}; // create an array to be parsed to marker
-                const marker = new google.maps.Marker({
-                  map: this.map,
-                  position: location,
-                  icon: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
-                });
-                this.recommended_markers.push(marker); // Push the marker to the array
-                // console.log(marker);
-                marker.addListener('click', () => {
-                  console.log(place);
-                  this.displayRecommendedPlaceDetails(place);
-                });
-            } //close if
+          .then(response => {
+            if(response.data.error_message) {
+              // console.log(response.data.error_message);
+              this.error = response.data.error_message;
+            }
+            else {
+              // iterate through the array of data and display the name of the place
+              const places = response.data.data;
+              var location;
+              var hasMorePlaces = true;
+              var offset = 0;
+              // const geocoder = new google.maps.Geocoder();
+              this.clearRecommendedMarkers(); // clear all recommended markers when a new dropdown value is selected
+              places.forEach(place => {
+                // process each place's information
+                const lower_cuisine = place.cuisine.toLowerCase();
+                const lower_name = place.name.toLowerCase();
+                const lower_tags = place.tags.map(tag => tag.toLowerCase());
+
+                if(lower_cuisine.includes(values) === true || lower_name.includes(values) === true || lower_tags.includes(values) === true){
+                  const location_data = place.location; // get the location data
+                  location = {lat: location_data.latitude, lng: location_data.longitude}; // create an array to be parsed to marker
+                  const marker = new google.maps.Marker({
+                    map: this.map,
+                    position: location,
+                    icon: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+                  });
+                  this.recommended_markers.push(marker); // Push the marker to the array
+                  // console.log(marker);
+                  marker.addListener('click', () => {
+                    console.log(place);
+                    this.displayRecommendedPlaceDetails(place);
+                  });
+                } //close if
 
 
-          }); //close forEach
-          this.geocoder.geocode({location: location}).then((response) => {
+              }); //close forEach
+              this.geocoder.geocode({location: location}).then((response) => {
                 if(response.results[0]){
                   // console.log(response.results[0]);
                   if (response.results[0].geometry.viewport) {
@@ -179,18 +224,18 @@ export default {
                   this.map.setZoom(13);
                 }
               })
-              .catch((e) => {
-                console.log(e);
-              });
-        }
-      }).catch(error => {
+                  .catch((e) => {
+                    console.log(e);
+                  });
+            }
+          }).catch(error => {
         this.error = error.message;
         console.log(error);
       });
 
 
     },
-    
+
     clearMarkers() {
       for (const marker of this.markers) {
         marker.setMap(null); // Remove the marker from the map
@@ -198,7 +243,7 @@ export default {
       }
       this.markers = []; // Clear the markers array
     },
-    
+
     clearRecommendedMarkers(){
       for (const marker of this.recommended_markers){
         marker.setMap(null);
@@ -252,12 +297,12 @@ export default {
               placeId: place.place_id  // Store the placeId in the marker
             });
             this.markers.push(marker); // Push the marker to the array
-            
+
             marker.addListener('click', () => {    //only display details when pin is clicked :D
               const service = new google.maps.places.PlacesService(this.map);
               service.getDetails({
                 placeId: marker.placeId,  // Use the placeId from the marker
-                fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos']
+                fields: ['name', 'formatted_address', 'rating', 'reviews','website', 'url', 'formatted_phone_number','photos']
               }, (place, status) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                   this.address = place.formatted_address;
@@ -266,8 +311,8 @@ export default {
               });
             });
           }
-          });
-          this.map.fitBounds(this.bounds);
+        });
+        this.map.fitBounds(this.bounds);
       });
 
       // get current location button
@@ -275,25 +320,25 @@ export default {
       getCurrentLocationButton.addEventListener("click", () => {
         if (navigator.geolocation){
           navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              };
-              this.getAddressFrom(position.coords.latitude, position.coords.longitude);
-              this.map.setCenter(pos);
-              this.map.setZoom(16);
-              // create marker to indicate current location
-              const marker = new google.maps.Marker({
-                map: this.map,
-                position: pos,
-                icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-              });
-              this.markers.push(marker); // Push the marker to the array
-            },
-            () => {
-              alert("Location permission denied");
-            }
+              (position) => {
+                const pos = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                };
+                this.getAddressFrom(position.coords.latitude, position.coords.longitude);
+                this.map.setCenter(pos);
+                this.map.setZoom(16);
+                // create marker to indicate current location
+                const marker = new google.maps.Marker({
+                  map: this.map,
+                  position: pos,
+                  icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                });
+                this.markers.push(marker); // Push the marker to the array
+              },
+              () => {
+                alert("Location permission denied");
+              }
           )
         }
         else {
@@ -302,202 +347,71 @@ export default {
       });
     }, //close initMap
 
-    displayRecommendedPlaceDetails(place){
-      const sidePanel = document.getElementById('side-panel');
-      sidePanel.style.display = 'block';
-      sidePanel.innerHTML = '';
-
-      const nameElement = document.createElement('h2');
-      nameElement.textContent = place.name; // Name
-      sidePanel.appendChild(nameElement);
-
-      var address;
-      if(place.address.floorNumber){
-        address = place.address.block + ' ' + place.address.streetName + ' #' + place.address.floorNumber + "-" + place.address.unitNumber + ' ' + place.address.buildingName;
-      }
-      else{
-        address = place.address.block + ' ' + place.address.streetName + ' ' + place.address.buildingName;
-      }
-      const addressHeader = document.createElement('h3');
-      addressHeader.textContent = `🏠 Address: ${address}`;
-      sidePanel.appendChild(addressHeader);
-      // const addressElement = document.createElement('p');
-      // addressElement.textContent = address; //Address
-      // sidePanel.appendChild(addressElement);
-
-      if(place.rating){
-        const ratingElement = document.createElement('h3');
-        ratingElement.textContent = `⭐ Rating: ${place.rating}/5`; //Rating
-        sidePanel.appendChild(ratingElement);
+    displayRecommendedPlaceDetails(place) {
+      let formattedAddress = 'N/A';
+      if (place.address) {
+        // Assemble the address with a conditional comma, based on the existence of streetName and buildingName
+        const parts = [];
+        if (place.address.streetName) {
+          parts.push(place.address.streetName);
+        }
+        if (place.address.buildingName) {
+          parts.push(place.address.buildingName);
+        }
+        formattedAddress = parts.join(', '); // Joins the address parts with a comma only if there are multiple parts
       }
 
-      if(place.contact.primaryContactNo){
-        const contactHeader = document.createElement('h3');
-        contactHeader.textContent = `📞 Contact: ${place.contact.primaryContactNo}`;
-        sidePanel.appendChild(contactHeader);
-      }
-
-      if(place.cuisine){
-        const cuisineHeader = document.createElement('h3');
-        cuisineHeader.textContent = `🍴 Cuisine: ${place.cuisine}`;
-        sidePanel.appendChild(cuisineHeader);
-      }
-
-      const websiteHeader = document.createElement('h3');
-      const websiteElement = document.createElement('a');
-      if(place.officialWebsite){
-        websiteHeader.textContent = `🌐 Website:`; 
-        websiteElement.textContent = `${place.officialWebsite}`; //Website
-        websiteElement.href = `${place.officialWebsite}`;
-        websiteElement.target = '_blank';
-      }
-      else{
-        websiteHeader.textContent = `Google Search 🔎:`;
-        websiteElement.textContent = `${place.name}`; //Website
-        websiteElement.href = `https://www.google.com/search?q=${place.name}`;
-        websiteElement.target = '_blank';
-      }
-      sidePanel.appendChild(websiteHeader);
-      sidePanel.appendChild(websiteElement);
-
-
-      const description  = place.description;
-      const descriptionHeader = document.createElement('h3');
-      descriptionHeader.textContent = `📝 Description:`;
-      sidePanel.appendChild(descriptionHeader);
-      const descriptionElement = document.createElement('p');
-      descriptionElement.textContent = description; //Description
-      sidePanel.appendChild(descriptionElement);
-
-
-      const newLine = document.createElement('h3');
-      newLine.textContent = '';
-      sidePanel.appendChild(newLine);
-
-      const closeButton = document.createElement('button');
-      closeButton.style.outline = 'none';
-      closeButton.style.border = '1px solid';
-      closeButton.style.borderRadius = '30px';
-      // set border color to same color as card
-      closeButton.style.borderColor = '#f7f3f0';
-      closeButton.textContent = '✖';
-      // position the button in the card at the top right corner
-      closeButton.style.position = 'absolute';
-      closeButton.style.top = '0';
-      closeButton.style.right = '0';
-      // add event listener to close the card when clicked
-      closeButton.addEventListener('click', () => {
-        sidePanel.style.display = 'none';
-      });
-      sidePanel.appendChild(closeButton);
+      this.selectedPlace = {
+        name: place.name,
+        address: formattedAddress,
+        rating: place.rating,
+        contact: place.contact ? place.contact.primaryContactNo : 'N/A',
+        cuisine: place.cuisine,
+        website: place.officialWebsite,
+        description: place.description
+      };
+      this.showSidePanel = true; // Open the drawer
     },
 
+    /* Function that is triggered when a place marker is clicked.
+       It updates the 'selectedPlace' property to display details in the drawer */
     displayPlaceDetails(place) {
-      // console.log(place);
-      const sidePanel = document.getElementById('side-panel');
-      sidePanel.style.display = 'block';
-      sidePanel.innerHTML = '';
-
-      const nameElement = document.createElement('h2');
-      nameElement.textContent = place.name; // Name
-      sidePanel.appendChild(nameElement);
-      const addressHeader = document.createElement('h3');
-      addressHeader.textContent = '🏠 Address:';
-      sidePanel.appendChild(addressHeader);''
-      const addressElement = document.createElement('p');
-      addressElement.textContent = place.formatted_address; //Address
-      sidePanel.appendChild(addressElement);
-      
-      // if places rating is not undefined, display rating
-      if(place.rating){
-        const ratingElement = document.createElement('h3');
-        ratingElement.textContent = `⭐ Rating: ${place.rating}/5`; //Rating
-        sidePanel.appendChild(ratingElement);
-      }
-
-      if(place.formatted_phone_number){
-        const contactHeader = document.createElement('h3');
-        contactHeader.textContent = `📞 Contact: ${place.formatted_phone_number}`;
-        sidePanel.appendChild(contactHeader);
-      }
-
-      // open website in new tab
-      if(place.website){
-        const websiteElement = document.createElement('a');
-        websiteElement.target = '_blank';
-        websiteElement.href = `${place.website}`;
-        websiteElement.textContent = `Website 🌐: ${place.name}`;
-        sidePanel.appendChild(websiteElement);
-      }
-      else{
-        const websiteElement = document.createElement('a');
-        websiteElement.target = '_blank';
-        websiteElement.href = `https://www.google.com/search?q=${place.name}`;
-        websiteElement.textContent = `Google 🔎: ${place.name}`;
-        sidePanel.appendChild(websiteElement);
-      }
-
-      const newLine = document.createElement('h3');
-      newLine.textContent = '';
-      sidePanel.appendChild(newLine);
+      this.selectedPlace = {
+        name: place.name,
+        address: place.formatted_address,
+        rating: place.rating,
+        contact: place.formatted_phone_number,
+        google_url: place.url ? place.url : `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
+        website: place.website,
+      };
+      this.showSidePanel = true; // Open the drawer
+    },
 
 
-      
-      const closeButton = document.createElement('button');
-      // closeButton.style.margin = '0 auto';
-      // remove click animation when clicked
-      closeButton.style.outline = 'none';
-      closeButton.style.border = '1px solid';
-      closeButton.style.borderRadius = '30px';
-      // set border color to same color as card
-      closeButton.style.borderColor = '#f7f3f0';
-      closeButton.textContent = '✖';
-      // position the button in the card at the top right corner
-      closeButton.style.position = 'absolute';
-      closeButton.style.top = '0';
-      closeButton.style.right = '0';
-      // add event listener to close the card when clicked
-      closeButton.addEventListener('click', () => {
-        sidePanel.style.display = 'none';
-      });
-      sidePanel.appendChild(closeButton);
-
-      // const reviewsHeader = document.createElement('h3');
-      // reviewsHeader.textContent = 'Reviews:';
-      // sidePanel.appendChild(reviewsHeader);
-      // place.reviews.forEach(review => {
-      //   const reviewElement = document.createElement('p');
-      //   reviewElement.textContent = review.text; //Review
-      //   sidePanel.appendChild(reviewElement);
-      // });
-      /*
-      const photoElement = document.createElement('img');
-      if (place.photos && place.photos.length > 0) {
-        const photoReference = place.photos[1].photo_reference; //DISPLAY PHOTO OF PLACE
-        photoElement.src = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=AIzaSyCJEbankCC_fPBj9rycpHn_l1YKRtFnA6E`;
-      }
-      sidePanel.appendChild(photoElement); */
-    }, //close displayplacedetails
   } //close methods
 }
 </script>
 
 <style scoped>
 
-/*.container{
-display: flex;
-flex-direction: column;
-height: 80vh;
+.container{
+  margin: 40px;
+  height: 80vh;
 }
+.container2 {
+   display: flex;
+   flex-direction: row;
+ }
 
-#map-side-panel {
- display: flex;
-flex-direction: row;
-}  */
+ .select-component {
+   margin-top: 100px;
+ }
+
+
 
 
 #map {
-  width: 80%;
+  width: 70%;
   height: 650px;
   margin: 30px auto auto;
   flex-grow:1;
@@ -512,7 +426,7 @@ flex-direction: row;
   height: 32px;
   outline: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  border-radius: 10px ;
+  border-radius: 10px;
 }
 
 #pac-input {
@@ -524,8 +438,7 @@ flex-direction: row;
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 400px;
-  margin-left: 680px;
-  margin-top: 90px;
+  margin-top: 100px;
 
 }
 

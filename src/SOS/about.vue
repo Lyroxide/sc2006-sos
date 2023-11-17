@@ -14,9 +14,18 @@
         <p>At Let'sMakanTogether, we believe that sharing a meal with friends is one of life's simple joys and it can be challenging to do so in today's fast-paced world. That's why we've created this platform that makes it easier than ever to connect with like-minded food enthusiasts and turn dining into a social experience.</p>
       </div>
       <div style="width: 100%; text-align: center;">
-        <router-link to="/login" #="{ navigate, href }" custom style="margin-right:24px;">
+        <router-link to="/login" #="{ navigate, href }" custom>
           <n-a :href="href" @click="navigate">
-            <n-button round type="primary" style="font-size: 18px;">GET STARTED</n-button>
+            <n-button
+                round
+                type="primary"
+                color="rgba(120,132,2,0.6)"
+                text-color="rgba(52,38,40,0.8)"
+                size="large"
+                style="font-size: 20px;"
+            >
+              GET STARTED
+            </n-button>
           </n-a>
         </router-link>
       </div>
@@ -25,7 +34,6 @@
 </template>
 
 <script>
-import UserService from "../services/user.service";
 
 export default {
   name: "Home",
@@ -33,22 +41,7 @@ export default {
     return {
       content: "",
     };
-  },
-  mounted() {
-    UserService.getPublicContent().then( //to call from backend
-        (response) => {
-          this.content = response.data;
-        },
-        (error) => {
-          this.content =
-              (error.response &&
-                  error.response.data &&
-                  error.response.data.message) ||
-              error.message ||
-              error.toString();
-        }
-    );
-  },
+  }
 };
 </script>
 

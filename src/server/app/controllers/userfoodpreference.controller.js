@@ -1,12 +1,17 @@
 import express from 'express';
 import UserFoodPreference from '../models/UserFoodPreference.js';
+import FoodPreference from "../models/FoodPreference.js";
 
 const router = express.Router();
 
 // Get all Preferences by UserID
-router.get('/user-food-preferences/:userid', async (req, res) => {
+router.get('/user-food-preferences/:UserID', async (req, res) => {
     try {
-        const preferences = await UserFoodPreference.findAll({ where: { UserID: req.body.UserID } });
+        const preferences = await UserFoodPreference.findAll({ where: { UserID: req.params.UserID } });
+        for (let pref of preferences) {
+            const fp = await FoodPreference.findByPk(pref.FoodPreferenceID);
+            pref.setDataValue('FoodType', fp.FoodType);
+        }
         res.send(preferences);
     } catch (error) {
         res.status(500).send({
@@ -17,17 +22,14 @@ router.get('/user-food-preferences/:userid', async (req, res) => {
 
 // Add a Preference
 router.post('/user-food-preferences', async (req, res) => {
-    const newPreference = {
-        UserID: req.body.UserID,
-        FoodPreferenceID: req.body.FoodPreferenceID
-    };
+    const { UserID, pref } = req.body;
     try {
-        const preference = await UserFoodPreference.create(newPreference);
-        res.send(preference);
+        await UserFoodPreference.destroy({ where: { UserID } });
+        const preferencesToAdd = pref.map(FoodPreferenceID => ({ UserID, FoodPreferenceID }));
+        const batchPreferences = await UserFoodPreference.bulkCreate(preferencesToAdd);
+        res.send(batchPreferences);
     } catch (error) {
-        res.status(500).send({
-            message: error.message || "An error occurred while creating the preference."
-        });
+        res.status(500).send({ message: error.message || "An error occurred while updating preferences." });
     }
 });
 

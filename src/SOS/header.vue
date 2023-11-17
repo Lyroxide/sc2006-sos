@@ -50,7 +50,7 @@
         </n-a>
         <n-space class="login" justify="end" item-style="display: flex;" align="center">
           <n-a @click="goTo('/login')">
-            <n-button round strong color='#FEAA00' style="color: #F7F4E4;">Sign In</n-button>
+            <n-button round strong color='#FEAA00' style="color: #f7e4e4;">Log In</n-button>
           </n-a>
         </n-space>
       </template>
@@ -99,7 +99,7 @@ export default {
   top: 0;
   width: 100%;
   padding: 10px;
-  background-color: #342628;
+  background-color: rgba(52,38,40,0.95);
   z-index: 10;
 }
 

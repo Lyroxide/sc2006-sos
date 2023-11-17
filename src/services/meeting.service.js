@@ -7,13 +7,11 @@ class MeetingService {
         return axios.get(API_URL + `meetings/groups/${GroupID}`,{ headers: authHeader() });
     }
 
-    createMeeting(Group) {
-        return axios.post(API_URL + 'meetings', Group, { headers: authHeader() });
+    createMeeting(GroupID, Meeting) {
+        let data = { GroupID, Meeting }
+        return axios.post(API_URL + 'meetings', data, { headers: authHeader() });
     }
 
-    /*editMeeting(GroupID, Meeting) {
-        return axios.put(API_URL + `meetings/groups/${GroupID}`, Meeting, { headers: authHeader() });
-    } */
     editMeeting(GroupID, MeetingID, Meeting) {
         return axios.put(API_URL + `meetings/${MeetingID}`, Meeting, { headers: authHeader() });
     }

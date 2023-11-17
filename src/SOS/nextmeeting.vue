@@ -3,35 +3,26 @@
     <n-space class="meeting-panel" style="justify-content: center">
       <n-card title="Next Meeting Details" size="huge" content-style="justify-content: center; align-items: center;">
         <n-thing>
-          <template v-if="!isMeetingExists">
-            <n-h1>There are no upcoming meetings.</n-h1>
-            <n-button
-                round type="primary"
-                v-show="isGroupOwner"
-                @click="editMeeting"
-                color="#D9D9D9"
-                style="margin-top: 15px; color: #342628"
-            >
-              Create Meeting
-            </n-button>
-          </template>
-          <template v-else-if="isEditing">
-            <n-form ref="formRef" :model="model" style="width:300px">
+          <template v-if="isEditing">
+            <n-form ref="formRef" :model="model"  :rules="rules" style="width:300px">
               <n-text>Date and Time</n-text>
               <n-date-picker
-                  type="datetime"
-                  :default-value="Date.now()"
-                  :is-date-disabled="disablePreviousDate"
-                  v-model:value="model.DateTime"
-              />
-              <n-form-item label="Place">
-                <n-input v-model:value="model.MeetingPlace" :disabled="!isEditing" @keydown.enter.prevent/>
-              </n-form-item>
-              <n-form-item label="Location">
-                <n-input type="textarea" v-model:value="model.MeetingAddress" :disabled="!isEditing" @keydown.enter.prevent/>
-              </n-form-item>
-              <n-form-item label="Description">
+                    type="datetime"
+                    :default-value="Date.now()"
+                    :is-date-disabled="disablePreviousDate"
+                    :status="dateStatus"
+                    v-model:value="model.DateTime"
+                  @update:value="handleDateSelection"
+                />
+
+              <n-form-item path="Description" label="Description" style="margin-top: 1em;">
                 <n-input type="textarea" v-model:value="model.MeetingDesc" :disabled="!isEditing" @keydown.enter.prevent/>
+              </n-form-item>
+              <n-form-item path="MeetingPlace" label="Place">
+                <n-input v-model:value="model.MeetingPlace" disabled @keydown.enter.prevent placeholder="Use Searchbar"/>
+              </n-form-item>
+              <n-form-item path="MeetingAddress" label="Location">
+                <n-input type="textarea" v-model:value="model.MeetingAddress" disabled @keydown.enter.prevent placeholder="Use Searchbar"/>
               </n-form-item>
               <n-space align="center" justify="end">
                 <n-button
@@ -39,6 +30,7 @@
                     @click="handleMeetingAction"
                     color="#D9D9D9"
                     style="margin-top: 15px;"
+                    :disabled="!model.DateTime ||!model.MeetingDesc || !model.MeetingPlace || !model.MeetingAddress || dateStatus === 'error'"
                 >
                   <n-icon :component="Check" color="#342628"/>
                 </n-button>
@@ -54,68 +46,102 @@
             </n-form>
           </template>
           <template v-else>
-            <n-space item-style="flex-direction: row;" align="center" justify="center">
-              <n-text style="font-size: 20px; text-align: center;">Date: {{ model.Date }}</n-text>
-              <n-text style="font-size: 20px; text-align: center;">Time: {{ model.Time }}</n-text>
-            </n-space>
-            <n-space item-style="flex-direction: row;" align="center" justify="center">
-              <n-text style="text-align: center;">Place Name: {{ model.MeetingPlace }}</n-text>
-            </n-space>
-            <n-space item-style="flex-direction: row;" align="center" justify="center">
-              <n-text style="text-align: center;">Location: {{ model.MeetingAddress }}</n-text>
-            </n-space>
-            <n-space align="center" justify="center">
-              <n-text >{{ model.MeetingDesc }}</n-text>
-            </n-space>
+            <template v-if="!isMeetingExists">
+              <n-space vertical justify="center" align="center">
+                <n-h1>There are no upcoming meetings.</n-h1>
+                <n-button
+                    round type="primary"
+                    v-show="isGroupOwner && !isMeetingExists"
+                    @click="createMeeting"
+                    color="#D9D9D9"
+                    style="margin-top: 15px; color: #342628"
+                >
+                  Create Meeting
+                </n-button>
+              </n-space>
+
+            </template>
+            <template v-else>
+              <n-space item-style="flex-direction: row;" align="center" justify="center">
+                <n-text style="font-size: 20px; text-align: center;">Date: {{ model.Date }}</n-text>
+                <n-text style="font-size: 20px; text-align: center;">Time: {{ model.Time }}</n-text>
+              </n-space>
+              <n-space item-style="flex-direction: row;" align="center" justify="center">
+                <n-text style="text-align: center;">Place Name: {{ model.MeetingPlace }}</n-text>
+              </n-space>
+              <n-space item-style="flex-direction: row;" align="center" justify="center">
+                <n-text style="text-align: center;">Location: {{ model.MeetingAddress }}</n-text>
+              </n-space>
+              <n-space align="center" justify="center">
+                <n-text >{{ model.MeetingDesc }}</n-text>
+              </n-space>
+
+              <n-space align="center" justify="end">
+                <n-button
+                    round type="primary"
+                    v-show="isGroupOwner"
+                    @click="editMeeting"
+                    color="#D9D9D9"
+                    style="margin-top: 15px; color: #342628"
+                >
+                  <n-icon :component="Pen" color="#342628"/>
+                </n-button>
+              </n-space>
+            </template>
 
 
 
-            <n-space align="center" justify="end">
-              <n-button
-                  round type="primary"
-                  v-show="isGroupOwner"
-                  @click="editMeeting"
-                  color="#D9D9D9"
-                  style="margin-top: 15px; color: #342628"
-              >
-                <n-icon :component="Pen" color="#342628"/>
-              </n-button>
-            </n-space>
+
+
           </template>
         </n-thing>
 
       </n-card>
     </n-space>
-    <div v-show="isGroupOwner">
+    <n-space v-show="isGroupOwner" justify="center">
       <input v-show="isEditing" ref="searchInputElement" id="pac-input" class="controls" type="text" placeholder="Search Food😋🍴">
-      <n-button v-show="isEditing" class="controls" id="get-current-location">Get Current Location📍</n-button>
-    </div>
+    </n-space>
     <div id="map-side-panel">
       <div id="map" ref="mapElement"></div>
-      <div id="side-panel" v-if="showSidePanel">
-        <h2>{{ selectedPlace.name }}</h2>
-        <h3>🏠Address:</h3>
-        <p>{{ selectedPlace.formatted_address }}</p>
+      <n-drawer
+          v-model:show="showSidePanel"
+          :width="333"
+          :placement="placement"
+          :trap-focus="false"
+          to="#map"
+      >
+        <n-drawer-content :title="selectedPlace.name">
+          <n-h3>🏠Address:</n-h3>
+          <n-p>{{ selectedPlace.formatted_address }}</n-p>
 
-        <h3 v-if="selectedPlace.rating">
-          ⭐ Rating: {{ selectedPlace.rating }}/5 ⭐
-        </h3>
-        <h3 v-if="selectedPlace.phone_number">
-          📞 Contact: {{ selectedPlace.phone_number }}
-        </h3>
+          <n-h3 v-if="selectedPlace.rating">
+            ⭐ Rating: {{ selectedPlace.rating }}/5 ⭐
+          </n-h3>
+          <n-h3 v-if="selectedPlace.phone_number">
+            📞 Contact: {{ selectedPlace.phone_number }}
+          </n-h3>
 
-        <a
-            v-if="selectedPlace.google_url"
-            :href="selectedPlace.google_url"
-            target="_blank"
-        >
-          Google 🔎: {{ selectedPlace.name }}
-        </a>
+          <n-space style="flex-direction: row; align-items: center;">
+            <n-a
+                v-if="selectedPlace.google_url"
+                :href="selectedPlace.google_url"
+                target="_blank"
+            >
+              Google 🔎: {{ selectedPlace.name }}
+            </n-a>
 
-        <n-button v-show="isEditing" @click="showSidePanel = false">Close</n-button>
-        <n-button v-show="isEditing" @click="confirmPlaceSelection">Confirm</n-button>
-        <!-- Add other details and buttons as needed -->
-      </div>
+            <n-a
+                v-if="selectedPlace.website"
+                :href="selectedPlace.website"
+                target="_blank"
+            >
+              Website 🌐: {{ selectedPlace.name }}
+            </n-a>
+            <n-button v-show="isEditing" @click="confirmPlaceSelection">Confirm</n-button>
+          </n-space>
+
+        </n-drawer-content>
+      </n-drawer>
     </div>
   </div>
 
@@ -142,18 +168,16 @@ export default defineComponent({
     const group = ref({});
     const userDetails = ref({});
     const isGroupOwner = ref(false);
-    //const meetingDetails = ref({});
     const isMeetingExists = ref(false);
     const originalMeetingDetails = reactive({});
 
     const selectedPlace = ref(null);
     const showSidePanel = ref(false);
+    const placement = ref("right");
     const meetingDetails = ref({
-      // Initialize your object structure here
       MeetingPlace: '',
       MeetingAddress: '',
       PlaceID: '',
-      DateTime: '',
       MeetingDesc: ''
     });
     let map = ref(null); // Google Maps 'Map'
@@ -162,6 +186,41 @@ export default defineComponent({
     const mapElement = ref(null); // Create a ref for the map container
     const searchInputElement = ref(null); // Create a ref for the search input
     const isComponentLoaded = ref(false);
+
+    const dateStatus = ref("error");
+
+    const rules = {
+      Description: [
+        {
+          required: true,
+        }
+      ],
+      DateTime: [
+        {
+          required: true,
+        }
+      ],
+      MeetingAddress: [
+        {
+          required: true,
+        }
+      ],
+      MeetingPlace: [
+        {
+          required: true,
+        }
+      ]
+    };
+
+    const handleDateSelection = (selectedDateTime) => {
+      if (selectedDateTime <= Date.now()) {
+        dateStatus.value = "error";
+      }
+      else {
+        meetingDetails.value.DateTime = selectedDateTime;
+        dateStatus.value = "success";
+      }
+    }
 
 
     const getGroupDetails = async (groupId) => {
@@ -174,9 +233,19 @@ export default defineComponent({
 
     watch(() => props.groupId, async (newVal) => {
       await getGroupDetails(newVal);
+      if(group.value){
+        try {
+          await initialMount();
+          if (meetingDetails.value.PlaceID) {
+            initializeMap();
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }, {immediate: true});
 
-    onMounted(async() => {
+    const initialMount = async() => {
       await getGroupDetails(props.groupId);
       if (group.value) {
         try {
@@ -188,15 +257,18 @@ export default defineComponent({
           let meetings = await store.dispatch("meeting/getMeeting", group.value.GroupID);
           meetingDetails.value = await getLatestMeeting(meetings);
           isMeetingExists.value = Boolean(meetingDetails.value);
-          if (meetingDetails.value.PlaceID) {
-            initializeMap();
-          }
         } catch (error) {
           console.error(error);
         }
       }
+    }
 
-    })
+    onMounted( async() => {
+      await initialMount();
+      if (meetingDetails.value.PlaceID) {
+        initializeMap();
+      }
+    });
 
     async function getLatestMeeting(meetings) {
       for (let meeting of meetings) {
@@ -208,6 +280,7 @@ export default defineComponent({
           meeting.Date = date;
           meeting.Time = time;
           meeting.DateTime =  Number(meetingX);
+          dateStatus.value = "success"
           return meeting;
         }
       }
@@ -216,7 +289,7 @@ export default defineComponent({
 
     const cancelEditing = () => {
       Object.assign(meetingDetails.value, originalMeetingDetails);
-      isEditing.value = false; // Exit editing mode.
+      isEditing.value = false;
     };
 
     const editMeeting = () => {
@@ -224,12 +297,28 @@ export default defineComponent({
       isEditing.value = true;
     };
 
+    const createMeeting = () => {
+      let currentTime = DateTime.now().toFormat('x');
+      meetingDetails.value = {
+        MeetingPlace: '',
+        MeetingAddress: '',
+        PlaceID: '',
+        DateTime: Number(currentTime), // using Luxon DateTime for current time handling
+        MeetingDesc: ''
+      };
+      originalMeetingDetails.value = {}; // Reset original details
+      console.log(meetingDetails.value);
+      isEditing.value = true;
+    };
+
     const saveMeetingDetails = async () => {
       if(isEditing.value) {
         try {
+          console.log(meetingDetails.value);
           meetingDetails.value.MeetingDate = DateTime.fromMillis(meetingDetails.value.DateTime).toISO();
           await store.dispatch("meeting/editMeeting", meetingDetails.value);
           message.info("Successfully Saved");
+          await initialMount();
           isEditing.value = false;
         } catch (error) {
           console.error(error);
@@ -239,14 +328,17 @@ export default defineComponent({
     }
 
     const createMeetingDetails = async () => {
+      console.log(meetingDetails.value);
       if(isEditing.value) {
         try {
-          await store.dispatch("user/editMeeting", meetingDetails.value);
-          message.info("Successfully Saved");
+          meetingDetails.value.MeetingDate = DateTime.fromMillis(meetingDetails.value.DateTime).toISO();
+          await store.dispatch("meeting/createMeeting", meetingDetails.value);
+          message.info("Successfully Created");
+          await initialMount();
           isEditing.value = false;
         } catch (error) {
           console.error(error);
-          message.error("Failed to save");
+          message.error("Failed to create");
         }
       }
     }
@@ -267,6 +359,7 @@ export default defineComponent({
         rating: place.rating ? place.rating : null,
         phone_number: place.formatted_phone_number ? place.formatted_phone_number : null,
         google_url: place.url ? place.url : `https://www.google.com/search?q=${encodeURIComponent(place.name)}`,
+        website: place.website,
         place_id: place.place_id,
       };
       // Show the side panel by setting the flag to true.
@@ -390,7 +483,7 @@ export default defineComponent({
               const service = new google.maps.places.PlacesService(marker.map);
               service.getDetails({
                 placeId: marker.placeId,  // Use the placeId from the marker
-                fields: ['name', 'formatted_address', 'rating', 'reviews','website','formatted_phone_number','photos', 'place_id']
+                fields: ['name', 'formatted_address', 'rating', 'reviews', 'url','website','formatted_phone_number','photos', 'place_id']
               }, (place, status) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                   displayPlaceDetails(place);
@@ -442,8 +535,12 @@ export default defineComponent({
       Check,
       isGroupOwner,
       formRef,
+      rules,
+      dateStatus,
+      handleDateSelection,
       cancelEditing,
       editMeeting,
+      createMeeting,
       saveMeetingDetails,
       createMeetingDetails,
       handleMeetingAction,
@@ -456,6 +553,7 @@ export default defineComponent({
       ...toRefs(meetingDetails), // Convert the reactive `meetingDetails` to refs
       selectedPlace,
       showSidePanel,
+      placement,
       confirmPlaceSelection,
       initializeMap,
       mapElement,
@@ -478,7 +576,7 @@ export default defineComponent({
   border-width: 3px !important;
   justify-content: center;
   align-items: center;
-  background-color: rgba(254,170,0,.60);
+  background-color: rgba(254,170,0,.30);
   border-radius: 30px;
 }
 
@@ -510,7 +608,6 @@ export default defineComponent({
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 400px;
-  margin-left: 170px;
   margin-top: 50px;
 
 }

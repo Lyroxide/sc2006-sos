@@ -1,71 +1,93 @@
 <template>
-  <n-space vertical class="register">
-    <n-space item-style="display:flex; margin:12px;" align="center" justify="center" style="flex-wrap: nowrap;">
-      <n-card title="Create Account" size="huge">
-        <n-form ref="formRef" :model="model" :rules="rules" style="width:300px">
-          <n-form-item path="displayName" label="Display Name">
-            <n-input v-model:value="model.displayName" @keydown.enter.prevent placeholder =""/>
-          </n-form-item>
-          <n-form-item path="email" label="Email">
-            <n-input v-model:value="model.email" @keydown.enter.prevent placeholder =""/>
-          </n-form-item>
-          <n-form-item path="username" label="Username">
-            <n-input v-model:value="model.username" @keydown.enter.prevent placeholder ="" />
-          </n-form-item>
-          <n-form-item path="password" label="Password">
-            <n-input
-                v-model:value="model.password"
-                type="password"
-                @input="handlePasswordInput"
-                @keydown.enter.prevent
-                placeholder ="Min 8 Characters"
-            />
-          </n-form-item>
-          <n-form-item ref="rPasswordFormItemRef" first path="confirmPassword" label="Confirm Password">
-            <n-input
-                v-model:value="model.confirmPassword"
-                :disabled="!model.password"
-                type="password"
-                @keydown.enter.prevent
-                placeholder ="Min 8 Characters"
-            />
-            </n-form-item>
+  <n-space vertical class="register" item-style="display:flex; height: 100%; margin: auto;" align="center" justify="center" style="flex-wrap: nowrap;">
+    <n-card size="huge" style="width:500px;">
+      <n-h1 style="text-align: center;">Create Account</n-h1>
+      <n-form ref="formRef" :model="model" :rules="rules" style="flex-wrap: nowrap;">
+        <n-form-item path="username" label="Username">
+          <n-input
+              v-model:value="model.username"
+              maxlength="39"
+              show-count
+              @keydown.enter.prevent
+              placeholder=""
+          />
+        </n-form-item>
+        <n-form-item path="email" label="Email">
+          <n-input
+              v-model:value="model.email"
+              @keydown.enter.prevent
+              placeholder=""
+          />
+        </n-form-item>
+        <n-form-item path="displayName" label="Display Name">
+          <n-input
+              v-model:value="model.displayName"
+              maxlength="100"
+              show-count
+              @keydown.enter.prevent
+              placeholder=""
+          />
+        </n-form-item>
+        <n-form-item path="password" label="Password">
+          <n-input
+              v-model:value="model.password"
+              type="password"
+              show-password-on="mousedown"
+              @input="handlePasswordInput"
+              @keydown.enter.prevent
+              placeholder="Min 12 Characters"
+          />
+        </n-form-item>
+        <n-form-item ref="rPasswordFormItemRef" first path="confirmPassword" label="Confirm Password">
+          <n-input
+              v-model:value="model.confirmPassword"
+              :disabled="!model.password"
+              type="password"
+              show-password-on="mousedown"
+              @keydown.enter.prevent
+              placeholder="Min 12 Characters"
+          />
+        </n-form-item>
+        <n-form-item path="age" label="Age" style="width:30%;">
+          <n-input-number
+              v-model:value="model.age"
+              :min="0"
+              :max="100"
+              @keydown.enter.prevent
+              placeholder=""
+          />
+        </n-form-item>
+        <n-form-item path="gender" label="Gender">
+          <n-select :value="model.gender" @update:value="model.gender = $event" :options="options"/>
+        </n-form-item>
 
-          <n-form-item path="age" label="Age" style="width:30%;">
-            <n-input
-                v-model:value="model.age"
-                @keydown.enter.prevent
-                placeholder=""
-            />
-          </n-form-item>
-
-          <n-form-item path="gender" label="Gender">
-            <n-select :value="model.gender" @update:value="model.gender = $event" :options="options"/>
-          </n-form-item>
-
-          <n-row :gutter="[0, 24]">
-            <n-col :span="16">
-              <div style="display: flex; justify-content: flex-end">
-                <n-button
-                    :disabled="!model.username || !model.email || !model.password || model.password !== model.confirmPassword || !model.age"
-                    round
-                    type="primary"
-                    @click="handleRegisterButtonClick">
-                  Register
-                </n-button>
-              </div>
-            </n-col>
-          </n-row>
-          <n-space item-style="display: flex; font-size:10px" align="center" justify="center">
-            <br>
-            <n-p>Already have an account?</n-p>
-            <n-a @click="goTo('/login')">
-              <n-p style="color: #342628;">Login</n-p>
-            </n-a>
-          </n-space>
-        </n-form>
-      </n-card>
-    </n-space>
+        <n-space item-style="display: flex;" align="center" justify="center">
+          <n-button
+              :disabled="!model.username || !model.email || !model.password || model.password !== model.confirmPassword || !model.age || !model.gender"
+              round
+              type="primary"
+              color="rgba(120,132,2,0.6)"
+              text-color="rgba(52,38,40,0.8)"
+              @click="handleRegisterButtonClick">
+            Register
+          </n-button>
+        </n-space>
+        <n-divider/>
+        <n-space item-style="display: flex;" align="center" justify="center">
+          <n-p>Already have an account?</n-p>
+          <n-a @click="goTo('/login')">
+            <n-button
+                round
+                type="primary"
+                color="rgba(120,132,2,0.6)"
+                text-color="rgba(52,38,40,0.8)"
+            >
+              Log In
+            </n-button>
+          </n-a>
+        </n-space>
+      </n-form>
+    </n-card>
   </n-space>
 </template>
 
@@ -126,6 +148,19 @@ export default defineComponent({
           required: true,
           message: "Password is required",
           trigger: ["input", "blur"]
+        },
+        {
+          min: 12,
+          message: "Password must be at least 12 characters",
+          trigger: ["input", "blur"]
+        },
+        {
+          validator: (rule, value) => {
+            const alphanumericRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+            return alphanumericRegex.test(value);
+          },
+          message: "Password must contain at least one letter and one number",
+          trigger: ["input", "blur"]
         }
       ],
       confirmPassword: [
@@ -160,6 +195,13 @@ export default defineComponent({
           },
           trigger: ["input", "blur"]
         }
+      ],
+      gender: [
+        {
+          required: true,
+          message: "Gender is required",
+          trigger: ["input", "blur"]
+        }
       ]
     };
 
@@ -181,9 +223,14 @@ export default defineComponent({
                 message.success("Registration Success");
               })
               .catch((err) => {
-                message.error(err.message);
-              }
-              );
+                if (err.response && err.response.data && err.response.data.errors) {
+                  err.response.data.errors.forEach(error => {
+                    message.error(error.msg);
+                  });
+                } else {
+                  message.error(err.message || 'Registration Failed');
+                }
+              });
         } else {
           console.log(errors);
         }
@@ -226,5 +273,14 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
+.register {
+  margin: 10% 0;
+}
+
+.n-card {
+  border-radius: 30px;
+  width: auto;
+}
 
 </style>

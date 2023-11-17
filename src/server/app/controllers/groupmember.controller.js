@@ -1,6 +1,7 @@
 import express from 'express';
 import GroupMember from '../models/GroupMember.js';
 import Group from '../models/Group.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
@@ -31,6 +32,24 @@ router.get('/group-members/user/:UserID', async (req, res) => {
     }
 });
 
+router.get('/group-members/:GroupID', async (req, res) => {
+    try {
+        let memberNames = [];
+        const GroupID = req.params.GroupID;
+        const members = await GroupMember.findAll({ where: { GroupID } });
+        for (let member of members) {
+            const users = await User.findAll({ where: { UserID: member.UserID }});
+            for (let user of users) {
+                memberNames.push(user.Name);
+            }
+
+        }
+        res.send(memberNames);
+    } catch(error) {
+        res.status(500).json({ message: error.message || `An error occurred while retrieving group members for user ${UserID}` });
+    }
+});
+
 // POST new group member
 router.post('/group-members', async (req, res) => {
     try {
@@ -46,13 +65,23 @@ router.post('/group-members', async (req, res) => {
 });
 
 // DELETE a group member
-router.delete('/group-members/:id', async (req, res) => {
+router.delete('/group-members/:userId/:groupId', async (req, res) => {
+    const { userId, groupId } = req.params;
     try {
-        const GroupMemberID = req.params.id
-        await GroupMember.destroy({ where: { GroupMemberID } });
-        res.status(204).json({ message: `Deleted GroupMember with id ${GroupMemberID}` });
+        const result = await GroupMember.destroy({
+            where: {
+                UserID: userId,
+                GroupID: groupId
+            }
+        });
+
+        if (result === 0) {
+            return res.status(404).json({ message: `No GroupMember found with UserID=${userId} and GroupID=${groupId}` });
+        }
+
+        res.status(204).json({ message: `Deleted GroupMember with UserID=${userId} and GroupID=${groupId}` });
     } catch(error) {
-        res.status(500).json({ message: error.message || `An error occurred while deleting the group member with id ${GroupMemberID}` });
+        res.status(500).json({ message: error.message || `An error occurred while deleting the group member with UserID=${userId} and GroupID=${groupId}` });
     }
 });
 

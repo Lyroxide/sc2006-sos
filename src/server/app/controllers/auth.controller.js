@@ -3,7 +3,7 @@ import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-
+import { Op } from "sequelize";
 
 const router = express.Router();
 
@@ -12,9 +12,8 @@ router.get('/users', async (req, res) => {
     return res.send(users);
 });
 
-// Validate and authenticate user login
 router.post('/users', [
-    check('username').notEmpty(),
+    check('loginInput').notEmpty(),
     check('password').notEmpty()
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -24,20 +23,36 @@ router.post('/users', [
         });
     }
 
-    const user = await User.findOne({ where: { username: req.body.username } });
+    const user = await User.findOne({
+        where: {
+            [Op.or]: [
+                { Username: req.body.loginInput },
+                { Email: req.body.loginInput }
+            ]
+        }
+    });
+
     if (!user) {
-        // User not found with provided username
-        return res.status(401).send("User not found");
+        return res.status(400).json({
+            errors: [{
+                msg: "Wrong Username or Email!"
+            }]
+        });
     }
+
     const passwordIsValid = bcrypt.compareSync(req.body.password, user.dataValues.Password);
     if (!passwordIsValid) {
-        // Password is not valid
-        return res.status(401).send("Provided password is incorrect");
+        return res.status(400).json({
+            errors: [{
+                msg: "Incorrect password!"
+            }]
+        });
     }
 
     const token = jwt.sign({ id: user.id }, 'secretKey', {
         expiresIn: 86400 // 24 hours
     });
+
     return res.status(200).send({
         id: user.dataValues.UserID,
         username: user.dataValues.Username,

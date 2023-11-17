@@ -1,7 +1,6 @@
 <template>
-
-  <n-space class="dashboard" item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap; align-items: center; justify-content: center;">
-    <n-space class="carousel-container" justify="center">
+  <n-space class="dashboard" item-style="display:flex;" align="center" justify="center" style="flex-wrap: nowrap;">
+    <n-space class="carousel-container">
       <n-carousel autoplay>
         <img class="carousel-img circle" src="../assets/Carou1.png">
         <img class="carousel-img circle" src="../assets/Carou2.png">
@@ -19,28 +18,32 @@
       </n-space>
 
       <n-scrollbar style="max-height: 200px">
-        <n-space class="vertical-scroll-container" item-style="display:block;margin:0px;" align="center" justify="center" style="flex-wrap: wrap;">
-          <n-card hoverable v-for="(meeting, index) in meetings" :key="meeting.GroupID" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
-            <n-space vertical align="center" justify="center" item-style="display: flex;">
-              <n-h1 class ="group-name">{{ meeting.GroupName }}</n-h1>
-              <n-space><n-text class="group-mdate">Date: {{ meeting.mDate }}</n-text></n-space>
-              <n-space><n-text class="group-mtime">Time: {{ meeting.mTime }}</n-text></n-space>
-              <n-space><n-text class="group-mloc">Location: {{ meeting.mLoc }}</n-text></n-space>
-            </n-space>
-          </n-card>
+        <n-space class="vertical-scroll-container" align="center" justify="center">
+          <template v-if="meetings.length > 0">
+            <n-card hoverable v-for="(meeting, index) in meetings" :key="meeting.GroupID" :class="[index % 3 === 0 ? 'custom-card-first' : index % 3 === 1 ? 'custom-card-second' : 'custom-card-third']">
+              <n-space vertical align="center" justify="center" item-style="display: flex;">
+                <n-h1 class ="group-name">{{ meeting.GroupName }}</n-h1>
+                <n-space><n-text class="group-mdate">Date: {{ meeting.Date }}</n-text></n-space>
+                <n-space><n-text class="group-mtime">Time: {{ meeting.Time }}</n-text></n-space>
+                <n-space><n-text class="group-mloc">Location: {{ meeting.MeetingAddress }}</n-text></n-space>
+              </n-space>
+            </n-card>
+          </template>
+          <template v-else>
+            <n-h1>There are no upcoming meetings.</n-h1>
+          </template>
+
         </n-space>
       </n-scrollbar>
     </n-space>
-
   </n-space>
-
 </template>
 
 
 <script>
-import { defineComponent, ref, computed, onMounted } from "vue";
-import { useMessage } from "naive-ui";
+import { defineComponent, ref, onMounted } from "vue";
 import store from "../store/index.js";
+import { DateTime } from "luxon";
 
 export default defineComponent({
   data() {
@@ -52,7 +55,6 @@ export default defineComponent({
   },
 
   beforeDestroy() {
-    // prevent memory leak
     clearInterval(this.interval);
   },
 
@@ -76,67 +78,51 @@ export default defineComponent({
 
   setup() {
     const meetings = ref([]);
-    const message = useMessage();
+    const meetingDetails = ref({})
 
-    // create dummy meetings
-
-    /* onMounted(async() => {
+    onMounted(async() => {
       const groups = await store.dispatch("group/getOwnGroups");
       for (let group of groups) {
-        const ms = await store.dispatch("meeting/getMeeting", group.GroupID);
-        for (let m of ms) {
-          // meetings.value.push(m);
-        }
+        const allMeetings = await store.dispatch("meeting/getMeeting", group.GroupID);
+        meetingDetails.value = await getLatestMeeting(allMeetings);
+        meetingDetails.value.GroupName = group.GroupName;
+        meetings.value.push(meetingDetails.value);
+        console.log(meetingDetails.value);
       }
     })
-    return {
-      meetings: meetings.value,
-    }; */
 
-    onMounted(async () => {
-      // Generate dummy group data
-      meetings.value = [
-        {
-          GroupID: 1,
-          GroupName: "cinnamoroll",
-          mDate: "2022-01-01",
-          mTime: "10:00 AM",
-          mLoc: "258 South Bridge Rd, #01-01, Singapore 058807",
-        },
-        {
-          GroupID: 2,
-          GroupName: "pochacco",
-          mDate: "2022-01-02",
-          mTime: "11:00 AM",
-          mLoc: "52 Tanjong Pagar Rd, Singapore 088473",
-        },
-        {
-          GroupID: 3,
-          GroupName: "pompompurin",
-          mDate: "2022-01-03",
-          mTime: "12:00 PM",
-          mLoc: "89 Neil Rd, #01-01, Singapore 088849",
-        },
-      ];
-
-    });
-    return {
-      meetings
+    async function getLatestMeeting(meetings) {
+      for (let meeting of meetings) {
+        let date = DateTime.fromISO(meeting.MeetingDate).toFormat('dd LLL yyyy');
+        let time = DateTime.fromISO(meeting.MeetingDate).toFormat('t');
+        let meetingX = DateTime.fromISO(meeting.MeetingDate).toFormat('x');
+        let currentX = DateTime.now().toFormat('x');
+        if (meetingX > currentX) {
+          meeting.Date = date;
+          meeting.Time = time;
+          meeting.DateTime =  Number(meetingX);
+          return meeting;
+        }
+      }
+      return null;
     }
+
+    return {
+      meetings,
+    };
   },
 });
 </script>
 
 
-
 <style scoped>
 .dashboard {
-  position: relative;
   flex-direction: row;
-  margin: 0 10% 0 10%;
-  height: 100vh;
+  width: 50vw;
+  height: 70vh;
+  margin: 15vh auto;
+  justify-content: center;
 }
-
 
 .time {
   font-size: 70px;
@@ -159,7 +145,6 @@ export default defineComponent({
   border-width: 3px !important;
 }
 
-
 @media screen and (min-width: 600px) {
   .carousel-container {
     width: 60%;
@@ -173,7 +158,6 @@ export default defineComponent({
   }
 
 }
-
 
 .custom-card-first {
   justify-content: center;
@@ -202,15 +186,15 @@ export default defineComponent({
   border-radius: 30px;
 }
 
-.vertical-scroll-container{
+.vertical-scroll-container {
   gap: 0;
 }
 
-.group-name{
-  margin: 0 0 0 0;
+.group-name {
+  margin: 0;
 }
 
-.group-mdate, .group-mtime, .group-mloc{
+.group-mdate, .group-mtime, .group-mloc {
   display: block;
   overflow: hidden;
   width: 100%;

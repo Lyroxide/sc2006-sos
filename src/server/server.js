@@ -1,10 +1,13 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './app/controllers/auth.controller.js';
-import { default as foodPreferenceRoutes, default as groupFoodPreferenceRoutes } from './app/controllers/foodpreference.controller.js';
+import foodPreferenceRoutes from './app/controllers/foodpreference.controller.js';
 import groupRoutes from './app/controllers/group.controller.js';
 import groupChatMessageRoutes from "./app/controllers/groupchatmessage.controller.js";
+import groupFoodPreferenceRoutes from "./app/controllers/groupfoodpreference.controller.js";
 import groupMemberRoutes from "./app/controllers/groupmember.controller.js";
 import groupPictureRoutes from "./app/controllers/grouppicture.controller.js";
 import groupRegionPreferenceRoutes from "./app/controllers/groupregionpreference.controller.js";
@@ -17,6 +20,9 @@ import userFoodPreferenceRoutes from "./app/controllers/userfoodpreference.contr
 import userRegionPreferenceRoutes from "./app/controllers/userregionpreference.controller.js";
 import { setupAssociations } from './app/models/associations.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 
 let corsOptions = {
@@ -27,6 +33,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api', foodPreferenceRoutes);
 app.use('/api', groupFoodPreferenceRoutes);
@@ -42,6 +49,10 @@ app.use('/api', groupRoutes);
 app.use('/api', locationRoutes);
 app.use('/api', resetPasswordRoutes);
 app.use('/api', groupChatMessageRoutes);
+
+
+console.log("__dirname: ", __dirname);
+console.log("uploads directory: ", path.join(__dirname, 'uploads'));
 
 setupAssociations();
 

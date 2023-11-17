@@ -87,29 +87,15 @@ CREATE TABLE `Groups` (
 );
 
 
--- Table: GroupChat
-CREATE TABLE GroupChat (
-  GroupChatID INT AUTO_INCREMENT,
+-- Table: GroupChatMessages
+CREATE TABLE GroupChatMessage (
+  GroupChatMessageID INT AUTO_INCREMENT,
   GroupID INT NOT NULL,
   UserID INT NOT NULL,
-  MessageDate DATETIME NOT NULL,
+  MessageDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   Message VARCHAR(3000) NOT NULL,
   PRIMARY KEY (GroupChatMessageID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
-  FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
-
-
--- Table: GroupChatMessages
-CREATE TABLE GroupChatMessages (
-  GroupChatMessagesID INT AUTO_INCREMENT,
-  GroupChatID INT NOT NULL,
-  UserID INT NOT NULL,
-  ChatDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  ChatMessage VARCHAR(255) NOT NULL,
-  Pinned CHAR(1) NOT NULL DEFAULT 'N',
-  PRIMARY KEY (GroupChatMessagesID),
-  FOREIGN KEY (GroupChatID) REFERENCES GroupChat(GroupChatID),
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
   FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
@@ -121,7 +107,7 @@ CREATE TABLE GroupMember (
   GroupID INT NOT NULL,
   PRIMARY KEY (GroupMemberID),
   FOREIGN KEY (UserID) REFERENCES Users(UserID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE
 );
 
 
@@ -131,7 +117,7 @@ CREATE TABLE GroupPicture (
   GroupID INT NOT NULL,
   PictureFile VARCHAR(255) NOT NULL,
   PRIMARY KEY (PictureID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE
 );
 
 
@@ -141,7 +127,7 @@ CREATE TABLE GroupFoodPreference (
   GroupID INT NOT NULL,
   FoodPreferenceID INT NOT NULL,
   PRIMARY KEY (GroupFoodPreferenceID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
   FOREIGN KEY (FoodPreferenceID) REFERENCES FoodPreference(FoodPreferenceID),
   UNIQUE KEY UQ_Group_Food_Preference (GroupID, FoodPreferenceID)
 );
@@ -153,7 +139,7 @@ CREATE TABLE GroupRegionPreference (
   GroupID INT NOT NULL,
   RegionPreferenceID INT NOT NULL,
   PRIMARY KEY (GroupRegionPreferenceID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID),
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
   FOREIGN KEY (RegionPreferenceID) REFERENCES RegionPreference(RegionPreferenceID),
   UNIQUE KEY UQ_Group_Region_Preference (GroupID, RegionPreferenceID)
 );
@@ -169,21 +155,9 @@ CREATE TABLE Meeting (
   MeetingDesc VARCHAR(3000) NOT NULL,
   MeetingPlace VARCHAR(255) NOT NULL,
   PRIMARY KEY (MeetingID),
-  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID)
+  FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE
 );
 
-
--- Table: Location
-CREATE TABLE Location (
-    LocationID INT AUTO_INCREMENT,
-    MeetingID INT NOT NULL,
-    LocationName VARCHAR(255) NOT NULL,
-    LocationAddress VARCHAR(255) NOT NULL,
-    Longitude DECIMAL(9 , 6 ) NOT NULL,
-    Latitude DECIMAL(9 , 6 ) NOT NULL,
-    PRIMARY KEY (LocationID),
-    FOREIGN KEY (MeetingID) REFERENCES Meeting (MeetingID)
-);
 
 -- Table: ResetPasswordToken
 CREATE TABLE ResetPasswordToken (
@@ -256,6 +230,7 @@ INSERT INTO FoodPreference (FoodPreferenceID, FoodType) VALUES
 (49, 'Fruits & Salads'),
 (50, 'High Tea');
 
+
 -- RegionPreference
 INSERT INTO RegionPreference (RegionPreferenceID, RegionType) VALUES
 (1, 'North'),
@@ -264,12 +239,14 @@ INSERT INTO RegionPreference (RegionPreferenceID, RegionType) VALUES
 (4, 'West'),
 (5, 'Central');
 
+
 -- UserPicture
-INSERT INTO UserPicture (PictureID, PictureFile, UserID) VALUES
-(1, 'Chrysanthemum.jpg', 1),
-(2, 'Desert.jpg', 2),
-(3, 'Hydrangeas.jpg', 3),
-(4, 'Jellyfish.jpg', 4);
+INSERT INTO UserPicture (PictureID, UserID, PictureFile) VALUES
+(1, 1, 'Grass.jpg'),
+(2, 2, 'Beer.jpg'),
+(3, 3, 'Sushi.jpg'),
+(4, 4, 'Cai.png');
+
 
 -- UserFoodPreference
 INSERT INTO UserFoodPreference (UserFoodPreferenceID, UserID, FoodPreferenceID) VALUES
@@ -278,12 +255,14 @@ INSERT INTO UserFoodPreference (UserFoodPreferenceID, UserID, FoodPreferenceID) 
 (3, 2, 3),
 (4, 3, 4);
 
+
 -- UserRegionPreference
 INSERT INTO UserRegionPreference (UserRegionPreferenceID, UserID, RegionPreferenceID) VALUES
 (1, 1, 1),
 (2, 1, 2),
 (3, 2, 3),
 (4, 3, 4);
+
 
 -- Groups
 INSERT INTO `Groups` (GroupID, OwnerID, GroupName, GroupDesc) VALUES
@@ -292,19 +271,15 @@ INSERT INTO `Groups` (GroupID, OwnerID, GroupName, GroupDesc) VALUES
 (3, 3, 'Sushi lovers', 'Sushi is love. Sushi is life.'),
 (4, 4, 'Caifan Gang', 'JIA FAN ZHE GE NA GE!!! Join us as we are on a hunt for cheap and nice caifan!');
 
--- GroupChat
-INSERT INTO GroupChat (GroupChatID, GroupID, UserID) VALUES
-(1, 1, 1),
-(2, 2, 2),
-(3, 3, 3),
-(4, 4, 4);
 
 -- GroupChatMessages
-INSERT INTO GroupChatMessages (GroupChatMessagesID, GroupChatID, UserID, ChatDate, ChatMessage, Pinned) VALUES
-(1, 1, 1, '2023-10-22 10:17:52', 'Hi everyone!', 'N'),
-(2, 2, 2, '2023-10-22 10:17:52', 'Hii everyone!', 'N'),
-(3, 3, 3, '2023-10-22 10:17:52', 'Hello everyone!', 'N'),
-(4, 4, 4, '2023-10-22 10:17:52', 'Helloo everyone!', 'N');
+INSERT INTO GroupChatMessage (GroupChatMessageID, GroupID, UserID, MessageDate, Message) VALUES
+(1, 1, 1, '2023-10-22 10:17:52', 'Hi everyone!'),
+(2, 2, 2, '2023-10-22 10:17:52', 'Hii everyone!'),
+(3, 3, 3, '2023-10-22 10:17:52', 'Hello everyone!'),
+(4, 4, 4, '2023-10-22 10:17:52', 'Helloo everyone!'),
+(5, 1, 2, '2023-10-22 10:27:52', 'wassup');
+
 
 -- GroupMember
 INSERT INTO GroupMember (GroupMemberID, UserID, GroupID) VALUES
@@ -314,12 +289,14 @@ INSERT INTO GroupMember (GroupMemberID, UserID, GroupID) VALUES
 (4, 4, 4),
 (5, 2, 1);
 
+
 -- GroupPicture
 INSERT INTO GroupPicture (PictureID, GroupID, PictureFile) VALUES
 (1, 1, 'Grass.jpg'),
 (2, 2, 'Beer.jpg'),
 (3, 3, 'Sushi.jpg'),
 (4, 4, 'Cai.png');
+
 
 -- GroupFoodPreference
 INSERT INTO GroupFoodPreference (GroupFoodPreferenceID, GroupID, FoodPreferenceID) VALUES
@@ -329,6 +306,7 @@ INSERT INTO GroupFoodPreference (GroupFoodPreferenceID, GroupID, FoodPreferenceI
 (4, 4, 9),
 (5, 1, 31);
 
+
 -- GroupRegionPreference
 INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPreferenceID) VALUES
 (1, 1, 1),
@@ -336,9 +314,21 @@ INSERT INTO GroupRegionPreference (GroupRegionPreferenceID, GroupID, RegionPrefe
 (3, 3, 3),
 (4, 4, 4);
 
+
 -- Meeting
 INSERT INTO Meeting (MeetingID, GroupID, PlaceID, MeetingDate, MeetingAddress, MeetingDesc, MeetingPlace) VALUES
-(1, 1, 'ChIJu3BeHTcZ2jERh81CchrSSgw','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot'),
-(2, 2, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-10-11 22:00:00', '165 Tg Pagar Rd, Amara Hotel, Singapore 088539', 'I managed to book for 8 pax. Join us to unwind after work.', 'Jigger & Pony'),
-(3, 3, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-11-30 18:00:00', '78 Airport Boulevard B2-227/228 Jewel, Singapore Changi Airport, 819666', 'Legit best sushi here. We will go in pax of 6s. 20% discount available!' ,'Sushiro Jewel Changi'),
-(4, 4, 'hIJFzUYYm8Z2jERs4gjq8fcHCA','2023-11-01 11:30:00', '#01-180 Yuhua Market & Food Centre, 347 Jurong East Ave 1, S600347', 'Super budget friendly, tons of options, but might be sold out at 1pm. So don\'t be late and join us at 11.30!' ,'Lam Chan Mixed Veg Rice');
+(2, 2, 'ChIJ36AdBg0Z2jERvFl0QFoqZ0E','2023-10-11 22:00:00', '165 Tg Pagar Rd, Amara Hotel, Singapore 088539', 'I managed to book for 8 pax. Join us to unwind after work.', 'Jigger & Pony'),
+(3, 3, 'ChIJQ51o40Y92jERStkiz0uY78w','2023-11-30 18:00:00', '78 Airport Boulevard B2-227/228 Jewel, Singapore Changi Airport, 819666', 'Legit best sushi here. We will go in pax of 6s. 20% discount available!' ,'Sushiro Jewel Changi'),
+(4, 4, 'ChIJZfromh8Q2jER5-7OVxJevCk','2023-11-01 11:30:00', '347 Jurong East Ave 1, #01-180, Singapore 600347', 'Super budget friendly, tons of options, but might be sold out at 1pm. So don\'t be late and join us at 11.30!' ,'Lam Chan Mixed Veg Rice');
+
+-- Meetings for Group 1: Grass
+INSERT INTO Meeting (GroupID, PlaceID, MeetingDate, MeetingAddress, MeetingDesc, MeetingPlace) VALUES
+(1, '', '2023-01-15 12:30:00', '101 Veg Location, Veggie Lane, Singapore 123456', 'Healthy Eating Gathering', 'Veggie Delight'),
+(1, '', '2023-02-10 11:45:00', '202 Green Terrace, Plant-Based Park, Singapore 654321', 'Plant-Based Buffet Meetup', 'Green Buffet'),
+(1, '', '2023-03-21 13:00:00', '333 Veggie Boulevard, Singapore 789101', 'Farmers Market Luncheon', 'Market Bites'),
+(1, '', '2023-04-18 12:00:00', '404 Salad Street, Singapore 223344', 'Salad Social', 'Salad Bowl Bistro'),
+(1, '', '2023-01-15 12:30:00', '101 Veg Location, Veggie Lane, Singapore 123456', 'Healthy Eating Gathering', 'Veggie Delight'),
+(1, '', '2023-02-10 11:45:00', '202 Green Terrace, Plant-Based Park, Singapore 654321', 'Plant-Based Buffet Meetup', 'Green Buffet'),
+(1, '', '2023-03-21 13:00:00', '333 Veggie Boulevard, Singapore 789101', 'Farmers Market Luncheon', 'Market Bites'),
+(1, '', '2023-04-18 12:00:00', '404 Salad Street, Singapore 223344', 'Salad Social', 'Salad Bowl Bistro'),
+(1, 'ChIJtcxff28U2jER1Ux43_QFQ2I','2023-12-12 11:30:00', '930 Yishun Avenue 2, #B2-09/11, Northpoint City North Wing, 930 Yishun Ave 2, #B2-09/11, Singapore 769098', 'Let\'s have some quick bites at Green Dot! We will be going Greendot @ Northpoint. No need to be super punctual, but it will be super crowded at noon.', 'Greendot');
