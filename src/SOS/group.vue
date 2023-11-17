@@ -21,14 +21,8 @@
             </n-button>
           </n-gi>
         </n-grid>
-
-
-        <div class="actions" style="margin-top:20px; margin-left:635px" >
-
-
-          </div>
       </n-space>
-      <n-tabs default-value="oasis" justify-content="space-evenly" type="line">
+      <n-tabs justify-content="space-evenly" type="line">
         <n-tab-pane name="detail" tab="Group Details">
           <GroupDetail :group-id="group.GroupID"/>
         </n-tab-pane>
@@ -82,61 +76,46 @@ export default {
     const userDetails = ref({});
     const memberCount = ref({});
 
-
     const getGroupDetails = async (groupId) => {
       if (groupId) {
         group.value = await store.dispatch('group/getGroupDetails', groupId)
             .catch(error => console.error(error));
         memberCount.value = group.value.memberCount.count;
+        userDetails.value = await store.dispatch("user/getUserDetails");
+        if (userDetails.value.UserID === group.value.OwnerID) {
+          isGroupOwner.value = true;
+        }
         return group.value;
 
       }
     };
+
     watch(() => props.groupId, async (newVal) => {
       if (newVal) {
-        group.value = await store.dispatch('group/getGroupDetails', newVal)
-            .catch(error => console.error(error));
+        await getGroupDetails(newVal);
       }
-
     }, {immediate: true});
-    console.log(isGroupOwner.value);
-    //check if current user is group owner
+
     onMounted(async() => {
       await getGroupDetails(props.groupId);
-      if (group.value) {
-        try {
-          userDetails.value = await store.dispatch("user/getUserDetails");
-          if (userDetails.value.UserID === group.value.OwnerID) {
-            isGroupOwner.value = true;
-            console.log(userDetails.value.UserID);
-            console.log(group.value.OwnerID);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
     })
 
     //leave group
     async function handleLeaveButtonClick() {
-       // e.preventDefault();
-            store.dispatch("group/leaveGroup", group.value.GroupID).then(
-                () => {
-                  router.push("/mygroups");
-                  message.success("Leave Success");
-                  context.emit('group-updated');
-                })
-                .catch((err) => {
-                      message.error(err.message);
-                      message.error('Leave fail');
-                    }
-                );
+      store.dispatch("group/leaveGroup", group.value.GroupID).then(
+          () => {
+            router.push("/mygroups");
+            message.success("Leave Success");
+            context.emit('group-updated');
+          })
+          .catch((err) => {
+                message.error(err.message);
+                message.error('Leave fail');
+              }
+          );
       }
     //delete group
     async function handleDeleteButtonClick() {
-      //handleLeaveButtonClick(); //to remove owner from group while deleting group??
-      //deleteMeeting Details along with group (optional)
       store.dispatch("group/deleteGroup",group.value.GroupID).then(
           () => {
             router.push("/mygroups");
@@ -149,6 +128,7 @@ export default {
               }
           );
     }
+
     return {
       group,
       memberCount,
@@ -181,8 +161,7 @@ export default {
           onNegativeClick: () => {
           }
         })
-      },
-
+      }
     };
   },
 };

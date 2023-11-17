@@ -1,27 +1,42 @@
 <template>
-  <h4>Description:</h4>
-  <n-scrollbar style="height: 300px">
-    {{group.GroupDesc}}
-    <n-space size="small" style="margin-top: 4px">
-      <n-tag
-          :bordered="false"
-          round
-          type="info"
-          :color="{ color: '#f4d1bc', borderColor: '#a6a6a6', textColor: '#342628' }"
-      >
-        <n-icon :component="LocationOutline" size="12" color="#342628"/>
-        {{ group.regionPreference }}
-      </n-tag>
-      <n-tag
-          v-for="fp in group.foodPreferences" :bordered="false"
-          round
-          type="info"
-          :color="{ color: '#f4d1bc', borderColor: '#a6a6a6', textColor: '#342628' }"
-      >
-        {{ fp }}
-      </n-tag>
-    </n-space>
-  </n-scrollbar>
+  <n-grid  :cols="2">
+    <n-gi class="description">
+      <n-h4>Description:</n-h4>
+      <n-scrollbar style="height: 300px">
+        {{group.GroupDesc}}
+        <n-space size="small" style="margin-top: 4px">
+          <n-tag
+              :bordered="false"
+              round
+              type="info"
+              :color="{ color: '#f4d1bc', borderColor: '#a6a6a6', textColor: '#342628' }"
+          >
+            <n-icon :component="LocationOutline" size="12" color="#342628"/>
+            {{ group.regionPreference }}
+          </n-tag>
+          <n-tag
+              v-for="fp in group.foodPreferences" :bordered="false"
+              round
+              type="info"
+              :color="{ color: '#f4d1bc', borderColor: '#a6a6a6', textColor: '#342628' }"
+          >
+            {{ fp }}
+          </n-tag>
+        </n-space>
+      </n-scrollbar>
+    </n-gi>
+    <n-gi style="margin-left:30px">
+      <n-space style="height: 300px" justify="center">
+        <n-image
+            v-if="group.pictureFilePath"
+            :src="`http://localhost:8080/uploads/${group.pictureFilePath}`"
+            alt="Group Picture"
+            style="width: auto; height: 300px; object-fit: none; object-position: center; overflow: hidden;"
+        />
+      </n-space>
+    </n-gi>
+  </n-grid>
+
   <n-divider/>
   <n-grid  :cols="2">
     <n-gi class="group-members">
@@ -37,7 +52,7 @@
 
     <n-gi style="margin-left:30px">
       <n-h4>Past Meetings:</n-h4>
-      <n-scrollbar style="max-height: 350px;">
+      <n-scrollbar style="max-height: 300px;">
 
           <n-timeline>
             <n-timeline-item
@@ -86,6 +101,9 @@ export default defineComponent({
     };
 
     const initialFetch = async () => {
+      const pictureData = await store.dispatch('group/getGroupPictureFilePath', group.value.GroupID);
+      console.log(pictureData);
+      group.value.pictureFilePath = pictureData.PictureFile;
       groupMembers.value = await store.dispatch('group/getAllGroupMembers');
       let allMeetings = await store.dispatch('meeting/getMeeting', group.value.GroupID);
       pastMeetings.value = allMeetings.slice(0, -1);
@@ -127,6 +145,11 @@ export default defineComponent({
 <style scoped>
 
 .group-members {
+  border-right: 1px solid rgb(239,239,245);
+}
+
+.description {
+  padding-right: 30px;
   border-right: 1px solid rgb(239,239,245);
 }
 </style>

@@ -6,7 +6,6 @@
           <n-thing :title="group.GroupName" content-style="margin-top: 10px;">
             <template #description>
               <n-space size="small" style="margin-top: 4px">
-                <img v-if="group.pictureFilePath" :src="`http://localhost:8080/uploads/${group.pictureFilePath}`" alt="Group Picture" style="width: 100%"/>
                 <n-tag
                     :bordered="false"
                     round
