@@ -17,29 +17,17 @@ import locationRoutes from "./app/controllers/location.controller.js";
 
 const app = express();
 
-
-/*
-let corsOptions = {
-    origin: "http://www.letsmakantogether.com:8080"
-};
-
-
-app.use(cors(corsOptions));
-*/
-
-//app.use(cors());
-
   app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     next();
   });
-  
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api', foodPreferenceRoutes);
 app.use('/api', groupFoodPreferenceRoutes);
 app.use('/api', groupMemberRoutes);
@@ -56,7 +44,7 @@ app.use('/api', locationRoutes);
 
 app.get('/', (req, res) => {
     res.json({message: "Welcome to the application."});
-    console.log(`Server is running on now.`);
+    console.log(`My server is now running at landing page.`);
 });
 
 const PORT = process.env.PORT || 8080;

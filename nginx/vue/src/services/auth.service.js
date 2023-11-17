@@ -1,12 +1,12 @@
 import axios from 'axios';
-
-const API_URL = '/api/users';
+import { API_URL } from './docker.ip.js';
 
 
 class AuthService {
+
     login(user) {
         return axios
-            .post(API_URL, {
+            .post(API_URL + "auth/users", {
                 username: user.username,
                 password: user.password
             })
@@ -14,7 +14,6 @@ class AuthService {
                 if (response.data.accessToken) {
                     localStorage.setItem('user', JSON.stringify(response.data));
                 }
-
                 return response.data;
             });
     }
@@ -24,10 +23,13 @@ class AuthService {
     }
 
     register(user) {
-        return axios.post(API_URL, {
+        return axios.post(API_URL + "users", {
+            name: user.name,
             username: user.username,
             email: user.email,
-            password: user.password
+            password: user.password,
+            age: user.age,
+            gender: user.gender
         });
     }
 }

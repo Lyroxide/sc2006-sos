@@ -22,17 +22,23 @@ router.post('/users', [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-
+  
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
-    const user = await User.create({ ...req.body, password: hashedPassword });
-
-    return res.send(user);
+    const user = {
+        Username: req.body.username,
+        Email: req.body.email,
+        Password: hashedPassword,
+        Age: req.body.age,
+        Gender: req.body.gender,
+        Name: req.body.name,
+    }
+    let newUser = await User.create(user);
+    return res.send(newUser);
 });
 
 // Get a user by id
 router.get('/users/:id', async (req, res) => {
     const user = await User.findByPk(req.params.id);
-
     if (user) {
         return res.send(user);
     } else {

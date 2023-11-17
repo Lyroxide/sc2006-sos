@@ -16,37 +16,35 @@
             <n-input
                 v-model:value="model.password"
                 type="password"
+                @input="handlePasswordInput"
                 @keydown.enter.prevent
-                placeholder =""
+                placeholder ="Min 8 Characters"
             />
           </n-form-item>
-          <n-form-item path="confirmPassword" label="Confirm Password">
+          <n-form-item ref="rPasswordFormItemRef" first path="confirmPassword" label="Confirm Password">
             <n-input
                 v-model:value="model.confirmPassword"
+                :disabled="!model.password"
                 type="password"
                 @keydown.enter.prevent
-                placeholder =""
+                placeholder ="Min 8 Characters"
             />
             </n-form-item>
 
-          <n-space style=" display: flex; ; flex-direction:row; flex-wrap: nowrap;">
-            <n-form-item path="age" label="Age" style="width:40%;">
-              <n-input v-model:value="model.age" @keydown.enter.prevent
-              placeholder=""/>
-            </n-form-item>
+          <n-form-item path="age" label="Age" style="width:30%;">
+            <n-input
+                v-model:value="model.age"
+                @keydown.enter.prevent
+                placeholder=""
+            />
+          </n-form-item>
 
-            <n-form-item path="gender" label="Gender" style="margin-right:40px">
-              <select v-model="model.gender">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Prefer Not to Say">Prefer Not to Say</option>
-              </select>
-            </n-form-item>
-
-          </n-space>
+          <n-form-item path="gender" label="Gender">
+            <n-select :value="model.gender" @update:value="model.gender = $event" :options="options"/>
+          </n-form-item>
 
           <n-row :gutter="[0, 24]">
-            <n-col :span="15">
+            <n-col :span="16">
               <div style="display: flex; justify-content: flex-end">
                 <n-button
                     :disabled="!model.username || !model.email || !model.password || model.password !== model.confirmPassword || !model.age"
@@ -58,13 +56,12 @@
               </div>
             </n-col>
           </n-row>
-          <n-space horizontal item-style="display: flex; font-size:10px" align="center" justify="center">
-            <p>Already have an account?</p>
-            <router-link to="/login" #="{ navigate, href }" custom style="margin-right:20px;">
-              <n-a :href="href" @click="navigate">
-                <n-text class="nav">Login</n-text>
-              </n-a>
-            </router-link>
+          <n-space item-style="display: flex; font-size:10px" align="center" justify="center">
+            <br>
+            <n-p>Already have an account?</n-p>
+            <n-a @click="goTo('/login')">
+              <n-p style="color: #342628;">Login</n-p>
+            </n-a>
           </n-space>
         </n-form>
       </n-card>
@@ -75,11 +72,15 @@
 <script>
 import { defineComponent, ref } from "vue";
 import { useMessage } from "naive-ui";
-import store from "../store/index.js";
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   setup() {
+    const store = useStore();
+    const router = useRouter();
     const formRef = ref(null);
+    const rPasswordFormItemRef = ref(null);
     const message = useMessage();
     const modelRef = ref({
       displayName: null,
@@ -90,6 +91,13 @@ export default defineComponent({
       age: null,
       gender: null
     });
+
+    function validatePasswordStartWith(rule, value) {
+      return !!modelRef.value.password && modelRef.value.password.startsWith(value) && modelRef.value.password.length >= value.length;
+    }
+    function validatePasswordSame(rule, value) {
+      return value === modelRef.value.password;
+    }
 
     const rules = {
       displayName: [
@@ -125,12 +133,31 @@ export default defineComponent({
           required: true,
           message: "Confirm Password is required",
           trigger: ["input", "blur"]
+        },
+        {
+          validator: validatePasswordStartWith,
+          message: "Password is not same as re-entered password!",
+          trigger: "input"
+        },
+        {
+          validator: validatePasswordSame,
+          message: "Password is not same as re-entered password!",
+          trigger: ["blur", "password-input"]
         }
       ],
       age: [
         {
           required: true,
-          message: "Age is required",
+          validator(rule, value) {
+            if (!value) {
+              return new Error("Age is required");
+            } else if (!/^\d*$/.test(value)) {
+              return new Error("Age should be an integer");
+            } else if (Number(value) < 18) {
+              return new Error("Age should be above 18");
+            }
+            return true;
+          },
           trigger: ["input", "blur"]
         }
       ]
@@ -140,15 +167,22 @@ export default defineComponent({
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
-          store.dispatch("auth/register", modelRef.value).then(
+          let user = {
+            name: modelRef.value.displayName,
+            email: modelRef.value.email,
+            username: modelRef.value.username,
+            password: modelRef.value.password,
+            age: modelRef.value.age,
+            gender: modelRef.value.gender
+          };
+          store.dispatch("auth/register", user).then(
               () => {
-                this.$router.push("/profile");
+                router.push("/login");
                 message.success("Registration Success");
               })
               .catch((err) => {
-                    // An error occurred, display its message
-                    message.error(err.message);
-                  }
+                message.error(err.message);
+              }
               );
         } else {
           console.log(errors);
@@ -156,11 +190,36 @@ export default defineComponent({
       });
     }
 
+    const goTo = (path) => {
+      router.push(path)
+    }
+
     return {
       formRef,
+      rPasswordFormItemRef,
       model: modelRef,
       rules,
-      handleRegisterButtonClick
+      goTo,
+      handlePasswordInput() {
+        if (modelRef.value.confirmPassword) {
+          rPasswordFormItemRef.value?.validate({ trigger: "password-input" });
+        }
+      },
+      handleRegisterButtonClick,
+      options: [
+        {
+          label: "Male",
+          value: "Male",
+        },
+        {
+          label: "Female",
+          value: "Female"
+        },
+        {
+          label: "Prefer not to say",
+          value: "Prefer not to say"
+        }
+      ]
     };
   },
 });
