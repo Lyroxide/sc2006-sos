@@ -10,8 +10,6 @@
         </n-dialog-provider>
       </n-message-provider>
     </n-config-provider>
-
-    <Footer/>
   </n-layout>
 
 </template>
