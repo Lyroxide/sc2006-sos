@@ -111,7 +111,7 @@ export default defineComponent({
     const placement = ref("left");
     const type = ref("card");
     const fileInput = ref(null);
-    var previewImage = ref(null);
+    const previewImage = ref(null);
 
     const message = useMessage()
     const showModal = ref(false)
@@ -201,18 +201,18 @@ export default defineComponent({
       });
     }
 
-  function onFileChange(e) {
-    const file = e.target.files[0];
-    model.value.selectedFile = file;
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewImage.value = e.target.result;
-        //console.log('Image selected, previewImage:', model.value.previewImage);
-      };
-      reader.readAsDataURL(file);
+    function onFileChange(e) {
+      const file = e.target.files[0];
+      model.value.selectedFile = file;
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImage.value = e.target.result;
+          //console.log('Image selected, previewImage:', model.value.previewImage);
+        };
+        reader.readAsDataURL(file);
+      }
     }
-  }
 
     async function fileInputClick() {
       //console.log('fileInputClick called');
@@ -229,8 +229,8 @@ export default defineComponent({
       model.value.GroupDesc = null;
       model.value.regionPref = null;
       model.value.selectedFile = null;
-      previewImage.value = null;
       model.value.foodPref = [];
+      previewImage.value = null;
     }
 
     function clearImage() {
@@ -269,12 +269,6 @@ export default defineComponent({
 
     onMounted(async() => {
       await fetchGroupDetails();
-
-      // Fetch group picture file path
-
-      // for (let group of groups.value) {
-      //   await store.dispatch('group/getGroupPictureFilePath', group.GroupID);
-      // }
 
       const foodPrefProxy = await store.dispatch("preference/getAllFoodPreferences");
       for (let p of foodPrefProxy) {
