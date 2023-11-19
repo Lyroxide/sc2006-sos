@@ -1,0 +1,22 @@
+[req]
+    distinguished_name = req_distinguished_name
+    x509_extensions = v3_req
+    prompt = no
+	
+[req_distinguished_name]
+    countryName = SG
+    stateOrProvinceName = SG
+    localityName = Singapore
+    organizationName = SOS
+    organizationalUnitName = SOS
+
+[v3_req]
+    subjectKeyIdentifier = hash
+    authorityKeyIdentifier = keyid,issuer
+    basicConstraints = CA:TRUE
+    subjectAltName = @alt_names
+
+[alt_names]
+    DNS.1 = www.letsmakantogether.com
+    DNS.2 = letsmakantogether.com
+    IP.1 = 192.168.233.129

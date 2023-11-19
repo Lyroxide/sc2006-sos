@@ -1,0 +1,39 @@
+Frontend Vue:
+
+docker.ip.js:
+-> Add
+const API_URL = '/api/';
+
+groupdetails.vue:
+-Edit URL for Static Image Hosting
+
+Backend Node:
+
+server.js:
+-> Add
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    next();
+  });
+  
+ --> Remove
+ Cors related features
+
+--> Edit Port
+Backend change to 8080 or Frontend Change to 5000 (Ownself Decide)
+ 
+ db.config.js:
+ --> Edit DockerIp
+ const sequelize = new Sequelize('LetsMakanTogether', 'root', '123456789', {
+    host: '172.17.0.2',
+    port: 3306,
+    dialect: 'mysql',
+    define: {
+        freezeTableName: true,
+        timestamps: false
+    }
+});
+ 
+

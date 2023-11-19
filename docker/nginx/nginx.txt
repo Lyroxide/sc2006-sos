@@ -1,0 +1,14 @@
+Documentation for Nginx
+
+Pre-req:
+- Disable Apache Web Server if installed
+	- sudo systemctl disable apache2
+	- sudo systemctl stop apache2
+
+Others:
+- SSL to enabled HTTPs settings
+
+Installation:
+	- Run bash script to run
+
+Path Settings:
