@@ -1,8 +1,8 @@
-# Project Title
+# LetsMakanTogether
 
 ## Introduction
 
-Provide a brief introduction about your project. Explain what it does, who it's for, and why it's useful.
+At Let'sMakanTogether, we believe that sharing a meal with friends is one of life's simple joys and it can be challenging to do so in today's fast-paced world. That's why we've created this platform that makes it easier than ever to connect with like-minded food enthusiasts and turn dining into a social experience.
 
 ## Directory Structure
 
