@@ -134,6 +134,9 @@ export default defineComponent({
         return;
       }
       try {
+        if (userMessage.value === "\n" || userMessage.value === "") {
+          return;
+        }
         let data = {
           MessageDate: DateTime.now().toISO(),
           Message: userMessage

@@ -34,7 +34,7 @@
           <n-a @click="goTo('/editprofile')">
             <n-text class="nav-text" :class="{ 'selected': $route.path === '/editprofile' }">My Profile</n-text>
           </n-a>
-          <n-button strong round type="error" @click="signOut">Sign Out</n-button>
+          <n-button strong round type="error" @click="handleConfirmSignOut">Sign Out</n-button>
         </n-space>
 
 
@@ -64,6 +64,7 @@
 <script>
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router';
+import { useDialog } from 'naive-ui';
 
 export default {
   computed: {
@@ -74,6 +75,7 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
+    const dialog = useDialog()
 
     const signOut = () => {
       store.dispatch('auth/logout');
@@ -86,7 +88,20 @@ export default {
 
     return {
       signOut,
-      goTo
+      goTo,
+      handleConfirmSignOut () {
+        dialog.warning({
+          title: 'Confirm',
+          content: 'Are you sure you want to sign out?',
+          positiveText: 'SIGN OUT',
+          negativeText: 'CANCEL',
+          onPositiveClick: () => {
+            signOut()
+          },
+          onNegativeClick: () => {
+          }
+        })
+      },
     }
   }
 };

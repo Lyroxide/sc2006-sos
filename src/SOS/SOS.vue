@@ -1,17 +1,15 @@
 <template>
   <metainfo />
   <n-layout class="site">
-    <Header/>
-    <n-config-provider :theme-overrides="themeOverrides">
-      <n-global-style />
-      <n-message-provider>
-        <n-dialog-provider>
+    <n-dialog-provider>
+      <Header/>
+      <n-config-provider :theme-overrides="themeOverrides">
+        <n-global-style />
+        <n-message-provider>
           <router-view/>
-        </n-dialog-provider>
-      </n-message-provider>
-    </n-config-provider>
-
-    <Footer/>
+        </n-message-provider>
+      </n-config-provider>
+    </n-dialog-provider>
   </n-layout>
 
 </template>
