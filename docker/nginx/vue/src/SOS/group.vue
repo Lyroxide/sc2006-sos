@@ -68,8 +68,8 @@ export default {
   emits: ['group-updated'],
   setup(props, { emit }) {
     const context = { emit };
-    const message = useMessage()
-    const dialog = useDialog()
+    const message = useMessage();
+    const dialog = useDialog();
     const group = ref({});
     const isGroupOwner = ref(false);
     const router = useRouter();
