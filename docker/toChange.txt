@@ -6,6 +6,7 @@ const API_URL = '/api/';
 
 groupdetails.vue:
 -Edit URL for Static Image Hosting
+-> Remove http:localhost:8080
 
 Backend Node:
 
