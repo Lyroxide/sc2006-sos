@@ -32,15 +32,91 @@ Instructions on how to install these software will be provided in the "Installin
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development environment running.
+**Step 1: Install Node.js**
 
-## Running the tests
+- Visit the official Node.js website: https://nodejs.org/ and download the latest stable version for your Operating System (OS).
 
-Explain how to run the automated tests for this system.
+  ```sh
+  node --version
+  npm --version
+  ```
 
-## Deployment
+**Step 2: Install MySQL**
 
-Add additional notes about how to deploy this on a live system.
+- Go to the MySQL official website: https://dev.mysql.com/downloads/mysql/ and install MySQL for your OS.
+
+- During installation, you'll be prompted to set the root password. Remember this, as you will need it to access the database.
+
+**Step 3: Install Nginx**
+
+- If you're on macOS, you can use homebrew to install Nginx:
+
+  ```sh
+  brew install nginx
+  ```
+
+- For Windows users, download Nginx from the official website: http://nginx.org/en/download.html
+
+- For Linux (Ubuntu), you can use the package manager:
+
+  ```sh
+  sudo apt update
+  sudo apt install nginx
+  ```
+
+- Confirm Nginx is installed by typing the following in your terminal or command line:
+
+  ```sh
+  nginx -v
+  ```
+
+- Start Nginx:
+
+  ```sh
+  # macOS/Linux
+  sudo nginx
+
+  # Windows, use the command prompt as Administrator
+  start nginx
+  ```
+
+**Step 4: Clone Your Project Repository**
+
+- Clone your project repository from the version control system into your desired workspace using:
+  
+  ```sh
+  git clone https://github.com/Lyroxide/sc2006-sos.git
+  ```
+
+**Step 5: Development Environment Setup**
+
+- Navigate to your project directory and install npm packages:
+
+  ```sh
+  cd vue
+  npm install
+  cd ../
+  cd server
+  npm install
+  ```
+
+- Set up your local configuration by editing `server/app/config/db.config.js`, ensuring your root password is set correctly. The local sql file can be found at `./database`.
+  
+- Run the project:
+
+  ```sh
+  cd server
+  node server.js
+  cd ../
+  cd vue
+  npm run dev
+  ```
+
+
+**Step 6: Access the Application**
+
+- On your web browser, go to `http://localhost:8080`.
+
 
 ## Built With
 
@@ -50,26 +126,11 @@ Add additional notes about how to deploy this on a live system.
 - [MySQL](https://www.mysql.com/) - Database
 - [Docker](https://www.docker.com/) - Containerization
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
 
 ## Authors
 
-- **Your Name** - *Initial work* - [YourName](https://github.com/yourname)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See the list of [authors](https://github.com/Lyroxide/sc2006-sos/contributors) who participated in this project.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc
