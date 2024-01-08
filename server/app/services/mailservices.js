@@ -4,9 +4,9 @@ const transporter = createTransport({
 host: "smtp-relay.brevo.com",
 port: 587,
 auth: {
-    user: "ktan227@e.ntu.edu.sg",
+    user: "",
     pass:
-    "xsmtpsib-68897084d15b425307a826186318c96d2dbc5c68537ae6bb6b358258bc5fc96e-cSmRMyw9xgHJzNIX",
+    "",
 },
 });
 
